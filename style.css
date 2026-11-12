@@ -266,3 +266,9 @@ footer{margin:24px var(--page-gutter) 0;padding:24px 0}
 .relation-roster small{font-size:11px;color:#7a8190}
 .relation-roster p{font-size:12px;line-height:1.55;margin:4px 0 4px;color:#333b4a}
 .relation-roster .relation-case-status{font-size:11px}
+
+/* The person under the pointer (and its photo) always sits above every other dot and label. */
+.graph #nodes .node:hover,.graph #nodes .node:focus-visible,.graph #nodes .node.hover-node{z-index:40}
+.graph #nodes .node:hover .portrait,.graph #nodes .node:focus-visible .portrait{z-index:41}
+.node:hover>small,.node:focus-visible>small{top:calc(22px + var(--dot-size,9px)/2 + 32px);z-index:42}
+.node.hover-node strong,.node.hover-node.rel-node strong{color:#1f3cc4;font-weight:800;font-size:11px;background:#fafbfce8}
