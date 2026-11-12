@@ -326,3 +326,4 @@ footer{margin:24px var(--page-gutter) 0;padding:24px 0}
 /* 기소 내용: separate it visually from the court's judgments */
 .charge p.allegation{background:#eef1fb;border-left:3px solid #4b5be7;border-radius:6px;padding:10px 12px;color:#1f2a44;font-weight:600}
 .charge p.allegation>b{color:#3949c7;font-weight:800;font-size:11px;letter-spacing:.02em}
+.relation-account p.allegation,.relation-roster p.allegation{background:#eef1fb;border-left:3px solid #4b5be7;border-radius:6px;padding:8px 10px;color:#1f2a44;font-weight:600}
