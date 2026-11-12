@@ -18,7 +18,7 @@ function timelineKind(text, upcoming) {
   return 'other';
 }
 function timelineEvents(list) {
-  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const today = new Intl.DateTimeFormat('sv-SE', {timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date()).replaceAll('-', '.');
   const groups = new Map();
   for (const p of list) for (const r of p.records || []) {
     if (filter !== 'all' && r.agency !== filter) continue;
@@ -26,8 +26,8 @@ function timelineEvents(list) {
       const m = String(s[2] || '').match(/(\d{4})\.(\d{2})\.(\d{2})/);
       if (!m) return;
       const date = new Date(+m[1], +m[2] - 1, +m[3]);
-      const planned = /예정/.test(s[2]) || /예정/.test(s[0]) || date >= today;
-      if (/보도|제출/.test(s[2]) && !planned) return; // report or filing dates are not court decisions
+      const planned = /예정/.test(s[2]) || /예정/.test(s[0]) || m[0] > today;
+      if (/보도|제출|배당/.test(s[2]) && !planned) return; // report or filing dates are not court decisions
       const key = [m[0], s[1], r.family || r.id, s[0]].join('|');
       if (!groups.has(key)) groups.set(key, {date, ymd: m[0], text: s[0], court: s[1], stage: timelineStageName(r, i),
         label: r.label, agency: r.agency, upcoming: planned, people: [], caseId: r.id});
@@ -69,3 +69,4 @@ document.addEventListener('click', e => {
   const b = e.target.closest('[data-case-link]');
   if (b) { e.stopPropagation(); if ($('#comparison').open) $('#comparison').close(); go(b.dataset.id, b.dataset.caseLink); }
 }, true);
+
