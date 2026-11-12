@@ -335,3 +335,8 @@ footer{margin:24px var(--page-gutter) 0;padding:24px 0}
 .indictment p{margin:6px 0 0;font-size:13px;line-height:1.7;font-weight:600;color:#1f2a44}
 .indictment p b{display:block;font-size:12px;font-weight:800;color:#3949c7;margin-bottom:1px}
 .indictment p:first-of-type{margin-top:0}
+.indictment{padding:14px 16px}
+.indictment h4{font-size:13.5px}
+.indictment p{font-size:15.5px;line-height:1.7}
+.indictment p b{font-size:13.5px}
+@media (max-width:760px){.indictment p{font-size:15px}}
