@@ -328,3 +328,10 @@ footer{margin:24px var(--page-gutter) 0;padding:24px 0}
 .charge p.allegation>b{color:#3949c7;font-weight:800;font-size:11px;letter-spacing:.02em}
 .relation-account p.allegation,.relation-roster p.allegation{background:#eef1fb;border-left:3px solid #4b5be7;border-radius:6px;padding:8px 10px;color:#1f2a44;font-weight:600}
 .site-version{display:inline-block;font-size:11px;opacity:.6;margin-right:10px}
+
+/* 기소 내용 directly under the case name */
+.indictment{background:#eef1fb;border-left:3px solid #4b5be7;border-radius:8px;padding:12px 14px;margin:10px 0 16px}
+.indictment h4{margin:0 0 6px;font-size:12px;font-weight:800;color:#3949c7;letter-spacing:.02em}
+.indictment p{margin:6px 0 0;font-size:13px;line-height:1.7;font-weight:600;color:#1f2a44}
+.indictment p b{display:block;font-size:12px;font-weight:800;color:#3949c7;margin-bottom:1px}
+.indictment p:first-of-type{margin-top:0}
