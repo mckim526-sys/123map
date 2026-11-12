@@ -1,3 +1,4 @@
+// 보류 중: 3분 요약. 다시 쓰려면 index.html의 지도 섹션 앞에 <section class="brief" id="brief"></section>을, timeline.js 뒤에 <script src="brief.js"></script>를 넣는다.
 // "3분 요약": a four-step story above the map for readers who arrive without background.
 // Counts and dates are computed from reader-data.js so the summary never drifts from the records.
 (function () {
