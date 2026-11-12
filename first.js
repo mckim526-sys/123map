@@ -7,6 +7,11 @@
   const AGENCY_RANK = {'내란특검': 0, '종합특검': 1, '해병대 특검': 2, '김건희 특검': 3};
   // 편집 순서: 내란의 핵심 사건부터.
   const CASE_RANK = {'yoon-main': 0, 'yoon-drone': 1, 'yoon-obstruction': 2, 'keon-three': 0, 'keon-gifts': 1, 'case108': 2};
+  // 첫 화면 큰 사진: 사용 권한 있는 파일을 assets/에 넣고 여기 적으면 교체된다. credit은 사진 아래 표기.
+  const FIGURE_PHOTOS = {yoon: null, keon: null}; // 예: {file: 'first-yoon.jpg', credit: 'ⓒ연합뉴스', position: '50% 20%'}
+  const bigFace = p => { const o = FIGURE_PHOTOS[p.id]; return o
+    ? `<img class="root-img" src="assets/${esc(o.file)}" alt="" style="object-position:${esc(o.position || '50% 25%')}">${o.credit ? `<span class="root-credit">${esc(o.credit)}</span>` : ''}`
+    : face(p, 'root-img'); };
   const face = (p, cls) => p.photo
     ? `<img class="${cls}" src="assets/${esc(p.photoFile || p.id + '.jpg')}" alt="" style="object-position:${esc(p.photoPosition || '50% 25%')}">`
     : `<span class="${cls} initials" aria-hidden="true">${esc(p.name.slice(0, 1))}</span>`;
@@ -42,7 +47,7 @@
     return {text: r.status || '진행 확인 중', tone: 'muted'};
   }
 
-  const root = document.getElementById('first');
+  const root = document.getElementById('first'), rootsBox = document.getElementById('roots');
   let path = [];
   function render(focusLayer) {
     const crumbs = [`<button data-crumb="0">처음</button>`].concat(path.map((id, i) => {
@@ -50,11 +55,11 @@
       return `<button data-crumb="${i + 1}" ${i === path.length - 1 ? 'aria-current="step"' : ''}>${esc(label)}</button>`;
     })).join('<span aria-hidden="true">›</span>');
     let html = `<nav class="crumbs" aria-label="현재 위치">${crumbs}</nav>`;
-    html += `<section class="layer layer-roots"><div class="roots">${ROOTS.map(id => { const p = byId.get(id); const on = path[0] === id, off = path.length && !on; return `
+    rootsBox.innerHTML = ROOTS.map(id => { const p = byId.get(id); const on = path[0] === id, off = path.length && !on; return `
       <button class="root ${on ? 'on' : ''} ${off ? 'off' : ''}" data-root="${esc(id)}" aria-pressed="${on}">
-        ${face(p, 'root-img')}<span class="root-label"><b>${esc(p.name)}</b><small>사건 ${p.records.length}건</small></span>
-      </button>`; }).join('')}</div>
-      ${path.length ? '' : '<p class="hint">사진을 눌러 보세요</p>'}</section>`;
+        ${bigFace(p)}<span class="root-label"><small>${esc(p.role || '')}</small><b>${esc(p.name)}</b><em>사건 ${p.records.length}건 보기</em></span>
+      </button>`; }).join('');
+    document.body.classList.toggle('exploring', path.length > 0);
     for (let i = 0; i < path.length; i++) {
       if (i % 2 === 0) {
         const p = byId.get(path[i]), chosen = path[i + 1];
@@ -91,13 +96,13 @@
         <li class="step ${t}"><span>${k === 2 ? '대법원' : k + 1 + '심'}</span><b>${esc(s[0] || '—')}</b><small>${esc([s[2], s[1]].filter(Boolean).join(' · '))}</small></li>`; }).join('<li class="arrow" aria-hidden="true">→</li>')}</ol>
       <p class="more"><a href="index.html#person/${encodeURIComponent(q.id)}/${encodeURIComponent(rec.id)}">이 재판 자세히 보기 ↗</a></p></section>`;
   }
-  root.addEventListener('click', e => {
+  [root, rootsBox].forEach(el => el.addEventListener('click', e => {
     const b = e.target.closest('button'); if (!b) return;
     if (b.dataset.root) { path = path[0] === b.dataset.root ? [] : [b.dataset.root]; render(0); return; }
     if (b.dataset.case) { const d = +b.dataset.depth; path = path.slice(0, d); if (path[d] !== b.dataset.case) path[d] = b.dataset.case; render(d); return; }
     if (b.dataset.person) { const d = +b.dataset.depth; path = path.slice(0, d).concat(b.dataset.person); render(`${d}-p`); return; }
     if (b.dataset.crumb) { path = path.slice(0, +b.dataset.crumb); render(path.length - 1); }
-  });
+  }));
   // 주소의 #yoon/yoon-main/kim 같은 경로를 복원한다 (공유용).
   const start = location.hash.slice(1).split('/').filter(Boolean).map(decodeURIComponent);
   if (start.length && byId.has(start[0])) {
@@ -108,5 +113,14 @@
     }
     path = ok;
   }
+  // 첫 화면 숫자: 데이터에서 계산.
+  const people = persons.filter(p => p.group !== 'witness');
+  const recs = people.flatMap(p => p.records);
+  const judged = recs.filter(r => (r.stages || []).some(s => /징역|무죄|벌금|공소기각|무기|집행유예/.test(s[0] || '') && !/구형|예정/.test(s[0] || ''))).length;
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const nextDates = recs.flatMap(r => (r.stages || []).map(s => ((s[2] || '').match(/(\d{4})\.(\d{2})\.(\d{2})/) || null)).filter(Boolean))
+    .map(m => new Date(+m[1], +m[2] - 1, +m[3])).filter(d => d >= today).sort((a, b) => a - b);
+  const stats = document.getElementById('stats');
+  if (stats) stats.innerHTML = `<div><b>${people.length}</b><span>기록한 인물</span></div><div><b>${judged}</b><span>판결이 나온 재판</span></div>${nextDates[0] ? `<div><b>${nextDates[0].getMonth() + 1}.${nextDates[0].getDate()}</b><span>다음 재판 일정</span></div>` : ''}`;
   render(path.length - 1);
 })();
