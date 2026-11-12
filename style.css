@@ -216,3 +216,9 @@ footer{margin:24px var(--page-gutter) 0;padding:24px 0}
 .explanation .legend{display:inline-flex;align-items:center;gap:6px;margin-right:14px;font-weight:600}
 .legend i{display:inline-block;width:22px;height:0;border-top:3px solid #345aee}
 .legend i.lg-rel{border-top:2px dashed #aab6dc}
+
+/* Selected trial tab: its co-defendants' lines become thick */
+.active-edge.case-edge .edge-stroke{stroke:#2f50e0;stroke-width:4.4;stroke-dasharray:none;opacity:1}
+.active-edge.dim-edge .edge-stroke{stroke:#d6dae4;stroke-width:.9;stroke-dasharray:3 4;opacity:.55}
+.node.case-node .dot{transform:scale(1.35);box-shadow:0 0 0 5px rgba(47,80,224,.25)}
+.node.case-node strong{color:#2944c4;font-weight:800}
