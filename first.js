@@ -122,5 +122,8 @@
     .map(m => new Date(+m[1], +m[2] - 1, +m[3])).filter(d => d >= today).sort((a, b) => a - b);
   const stats = document.getElementById('stats');
   if (stats) stats.innerHTML = `<div><b>${people.length}</b><span>기록한 인물</span></div><div><b>${judged}</b><span>판결이 나온 재판</span></div>${nextDates[0] ? `<div><b>${nextDates[0].getMonth() + 1}.${nextDates[0].getDate()}</b><span>다음 재판 일정</span></div>` : ''}`;
+  // 지도에서 재판을 고르면 사람·재판 층으로 바로 내려간다.
+  window.trialSize = (p, r) => trialIds(p, r).length;
+  window.firstGo = (pid, cid) => { if (!byId.has(pid)) return; path = [pid, cid]; render(1); const t = root.querySelector('[data-layer="1"]'); if (t) t.scrollIntoView({block: 'start', behavior: 'smooth'}); };
   render(path.length - 1);
 })();
