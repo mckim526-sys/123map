@@ -175,3 +175,5 @@ footer{margin:24px var(--page-gutter) 0;padding:24px 0}
 .trial-progress li.done{background:#dce5fd;color:#3e5db6}.trial-progress li.current{background:#2257e7;color:#fff}.trial-progress li.final{background:#1b7276;color:#fff}.trial-progress li.unknown{background:#f0f1f4;color:#9299a5}
 .trial-progress li small{font-size:9px;font-weight:500}.trial-progress>p{font-size:11px!important;line-height:1.5;margin:7px 0 0!important;color:#586783}
 .relation-popup .trial-progress{margin:12px 0 6px}.relation-popup .trial-progress li{min-height:31px;font-size:11px;padding:6px 8px 6px 12px}.relation-popup .trial-progress>p{font-size:10px!important}
+
+#coverage small{display:block;font-size:10.5px;line-height:1.4;margin-top:4px;opacity:.72}
