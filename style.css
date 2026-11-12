@@ -220,7 +220,7 @@ footer{margin:24px var(--page-gutter) 0;padding:24px 0}
 /* Selected trial tab: its co-defendants' lines become thick */
 .active-edge.case-edge .edge-stroke{stroke:#2f50e0;stroke-width:4.4;stroke-dasharray:none;opacity:1}
 .active-edge.dim-edge .edge-stroke{stroke:#d6dae4;stroke-width:.9;stroke-dasharray:3 4;opacity:.55}
-.node.case-node .dot{transform:scale(1.35);box-shadow:0 0 0 5px rgba(47,80,224,.25)}
+.node.case-node .dot{transform:translate(-50%,-50%) scale(1.35);box-shadow:0 0 0 5px rgba(47,80,224,.25)}
 .node.case-node strong{color:#2944c4;font-weight:800}
 
 /* Hover on the map: fade every line, light up the person under the pointer.
@@ -231,10 +231,27 @@ footer{margin:24px var(--page-gutter) 0;padding:24px 0}
 .graph.hovering #edges .edge.hover-edge.rel-edge .edge-stroke{opacity:.75;stroke:#9fb0e6;stroke-width:1.1;stroke-dasharray:3 4}
 .graph #nodes .node.hover-node,.graph #nodes .node.hover-peer{opacity:1;z-index:6}
 .graph #nodes .node.hover-peer-weak{opacity:.7}
-.node.hover-node .dot{transform:scale(1.4);background:#2f50e0;box-shadow:0 0 0 5px rgba(47,80,224,.2);transition:transform .15s}
+.node.hover-node .dot{transform:translate(-50%,-50%) scale(1.4);background:#2f50e0;box-shadow:0 0 0 5px rgba(47,80,224,.2);transition:transform .15s}
 .node.hover-node strong{color:#1f3cc4;font-weight:800}
 .node.hover-peer strong{color:#2944c4;font-weight:700}
 .node.hover-peer .dot{background:#5b74e8}
 
 /* The centre person already labels the map; its hover note would cover the name. */
 .node.center:hover>small,.node.center:focus-visible>small{display:none}
+
+/* Depth: same-trial people sit in front and larger, other relations recede. */
+.node.co-node{z-index:5}
+.node.co-node .dot{transform:translate(-50%,-50%) scale(1.2)}
+.node.rel-node{z-index:2}
+.node.rel-node .dot{transform:translate(-50%,-50%) scale(.78)}
+.node.rel-node strong{font-size:10px;color:#8a8f99;background:transparent}
+.node.muted-node{z-index:1}
+.node.selected,.node.center{z-index:7}
+#edges .edge.rel-edge{opacity:.85}
+
+/* Motion: people glide to their new place; lines fade in once they have arrived. */
+#nodes.animating .node{transition:left .5s cubic-bezier(.22,.8,.26,1),top .5s cubic-bezier(.22,.8,.26,1),opacity .35s}
+#nodes .node.entering{opacity:0}
+#edges .edge{animation:edgeIn .35s ease-out .32s both}
+@keyframes edgeIn{from{opacity:0}to{opacity:1}}
+@media (prefers-reduced-motion: reduce){#nodes.animating .node{transition:none}#edges .edge{animation:none}}
