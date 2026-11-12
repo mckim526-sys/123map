@@ -201,3 +201,18 @@ footer{margin:24px var(--page-gutter) 0;padding:24px 0}
 .tl-night li{display:grid;grid-template-columns:92px 1fr;gap:14px;padding:6px 0;border-top:1px dashed var(--line)}
 .tl-night time{color:var(--muted);font-size:12px}
 @media (max-width:760px){.tl-event,.tl-night li{grid-template-columns:1fr;gap:4px}#timeline{max-height:none}}
+
+/* Co-defendant emphasis */
+.edge.co-edge .edge-stroke{stroke:#9aa4bd;stroke-width:1.7}
+.edge.rel-edge .edge-stroke{stroke:#d3d6de;stroke-width:1;stroke-dasharray:3 4}
+.active-edge.co-edge .edge-stroke{stroke:#345aee;stroke-width:3}
+.active-edge.rel-edge .edge-stroke{stroke:#aab6dc;stroke-width:1.2;stroke-dasharray:4 4;opacity:.75}
+.node.rel-node{opacity:.5}
+.node.co-node{opacity:1}
+.node.co-node .dot{box-shadow:0 0 0 4px rgba(52,90,238,.22);background:#345aee}
+.node.co-node strong{color:#2944c4;font-weight:700}
+.related-people button.co{border-color:#345aee;color:#2944c4}
+.related-people button.rel{opacity:.75}
+.explanation .legend{display:inline-flex;align-items:center;gap:6px;margin-right:14px;font-weight:600}
+.legend i{display:inline-block;width:22px;height:0;border-top:3px solid #345aee}
+.legend i.lg-rel{border-top:2px dashed #aab6dc}

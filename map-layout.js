@@ -1,5 +1,5 @@
 // Deterministic agency views: preserve every person and draw only recorded relations.
-function agencyMapLayout(people, rootId, related) {
+function agencyMapLayout(people, rootId, related, strong = () => false) {
   const root = people.find(p => p.id === rootId) || people[0];
   if (!root) return { positions: [], edges: [] };
   const ordered = [root, ...people.filter(p => p !== root)];
@@ -9,10 +9,10 @@ function agencyMapLayout(people, rootId, related) {
     return { p, x: i ? 450 + 360 * radius * Math.cos(angle) : 450,
       y: i ? 292 + 235 * radius * Math.sin(angle) : 292, degree: 0 };
   });
-  const links = [];
+  const links = [], strongLinks = new Set();
   for (let i = 0; i < nodes.length; i++) for (let j = i + 1; j < nodes.length; j++) {
     if (related(nodes[i].p, nodes[j].p)) {
-      links.push([i, j]); nodes[i].degree++; nodes[j].degree++;
+      links.push([i, j]); if (strong(nodes[i].p, nodes[j].p)) strongLinks.add(i + ',' + j); nodes[i].degree++; nodes[j].degree++;
     }
   }
   // Repulsion protects labels; springs keep each recorded case group together.
@@ -29,8 +29,9 @@ function agencyMapLayout(people, rootId, related) {
     for (const [i, j] of links) {
       const dx = nodes[j].x - nodes[i].x, dy = nodes[j].y - nodes[i].y;
       const distance = Math.max(1, Math.hypot(dx, dy));
-      const ideal = (i === 0 || j === 0) ? 145 : 95;
-      const pull = (distance - ideal) * .014;
+      const co = strongLinks.has(i + ',' + j);
+      const ideal = co ? 78 : (i === 0 || j === 0) ? 145 : 95;
+      const pull = (distance - ideal) * (co ? .022 : .014);
       force[i].x += dx / distance * pull; force[i].y += dy / distance * pull;
       force[j].x -= dx / distance * pull; force[j].y -= dy / distance * pull;
     }
@@ -46,7 +47,9 @@ function agencyMapLayout(people, rootId, related) {
   // A minimum spanning forest retains indirect links without a tangle of duplicate lines.
   const parent = nodes.map((_, i) => i);
   const find = i => parent[i] === i ? i : (parent[i] = find(parent[i]));
-  links.sort(([a, b], [c, d]) => Math.hypot(nodes[a].x - nodes[b].x, nodes[a].y - nodes[b].y) - Math.hypot(nodes[c].x - nodes[d].x, nodes[c].y - nodes[d].y));
+  // Co-defendant links win the spanning forest first, so the overview keeps each trial together.
+  const rank = ([a, b]) => (strongLinks.has(a + ',' + b) ? 0 : 10000) + Math.hypot(nodes[a].x - nodes[b].x, nodes[a].y - nodes[b].y);
+  links.sort((x, y) => rank(x) - rank(y));
   const edges = [];
   for (const [a, b] of links) {
     const ra = find(a), rb = find(b);
