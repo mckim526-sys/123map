@@ -255,3 +255,14 @@ footer{margin:24px var(--page-gutter) 0;padding:24px 0}
 #edges .edge{animation:edgeIn .35s ease-out .32s both}
 @keyframes edgeIn{from{opacity:0}to{opacity:1}}
 @media (prefers-reduced-motion: reduce){#nodes.animating .node{transition:none}#edges .edge{animation:none}}
+
+/* Same-trial roster in the connection popup */
+.relation-roster-note{font-size:12px;color:#5b6475;line-height:1.6;margin:10px 0 6px}
+.relation-roster{list-style:none;padding:0;margin:10px 0 14px;border-top:1px solid #e6e9f2}
+.relation-roster li{padding:10px 0 10px 10px;border-bottom:1px solid #e6e9f2;border-left:3px solid transparent}
+.relation-roster li.pair{border-left-color:#4b5be7;background:#f5f7ff}
+.relation-roster button{font:inherit;font-weight:700;font-size:14px;color:#2944c4;background:none;border:0;padding:0;cursor:pointer;margin-right:6px}
+.relation-roster button:hover{text-decoration:underline}
+.relation-roster small{font-size:11px;color:#7a8190}
+.relation-roster p{font-size:12px;line-height:1.55;margin:4px 0 4px;color:#333b4a}
+.relation-roster .relation-case-status{font-size:11px}
