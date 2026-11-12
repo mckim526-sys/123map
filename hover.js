@@ -5,7 +5,7 @@
   if (!graph || !matchMedia('(hover: hover)').matches) return;
   let current = null;
   function clear() {
-    graph.querySelectorAll('.hover-node,.hover-peer').forEach(el => el.classList.remove('hover-node', 'hover-peer'));
+    graph.querySelectorAll('.hover-node,.hover-peer,.hover-peer-weak').forEach(el => el.classList.remove('hover-node', 'hover-peer', 'hover-peer-weak'));
     graph.querySelectorAll('.hover-edge').forEach(el => el.classList.remove('hover-edge'));
     graph.classList.remove('pointing');
     current = null;
@@ -14,14 +14,18 @@
     if (id === current) return;
     clear(); current = id;
     graph.classList.add('pointing');
-    const peers = new Set();
+    // Same-trial lines (co-edge) are lit strongly; other relations stay thin and dashed.
+    const strong = new Set(), weak = new Set();
     graph.querySelectorAll('#edges .edge').forEach(edge => {
       const {from, to} = edge.dataset;
-      if (from === id || to === id) { edge.classList.add('hover-edge'); peers.add(from === id ? to : from); }
+      if (from !== id && to !== id) return;
+      edge.classList.add('hover-edge');
+      (edge.classList.contains('co-edge') ? strong : weak).add(from === id ? to : from);
     });
     graph.querySelectorAll('#nodes .node').forEach(node => {
       if (node.dataset.id === id) node.classList.add('hover-node');
-      else if (peers.has(node.dataset.id)) node.classList.add('hover-peer');
+      else if (strong.has(node.dataset.id)) node.classList.add('hover-peer');
+      else if (weak.has(node.dataset.id)) node.classList.add('hover-peer-weak');
     });
   }
   graph.addEventListener('mouseenter', () => graph.classList.add('hovering'));

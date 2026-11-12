@@ -223,12 +223,18 @@ footer{margin:24px var(--page-gutter) 0;padding:24px 0}
 .node.case-node .dot{transform:scale(1.35);box-shadow:0 0 0 5px rgba(47,80,224,.25)}
 .node.case-node strong{color:#2944c4;font-weight:800}
 
-/* Hover on the map: fade every line, light up the person under the pointer */
-.graph.hovering #edges .edge .edge-stroke{opacity:.18;transition:opacity .15s,stroke-width .15s}
-.graph.hovering.pointing #nodes .node:not(.hover-node):not(.hover-peer){opacity:.3}
-.graph.hovering #edges .edge.hover-edge .edge-stroke{opacity:1;stroke:#2f50e0;stroke-width:3.4;stroke-dasharray:none}
+/* Hover on the map: fade every line, light up the person under the pointer.
+   Same-trial lines get strong; other relations stay thin dashed so a hub does not flood the map. */
+.graph.hovering #edges .edge .edge-stroke{opacity:.15;transition:opacity .15s,stroke-width .15s}
+.graph.hovering.pointing #nodes .node:not(.hover-node):not(.hover-peer):not(.hover-peer-weak){opacity:.28}
+.graph.hovering #edges .edge.hover-edge.co-edge .edge-stroke{opacity:1;stroke:#2f50e0;stroke-width:2.6;stroke-dasharray:none}
+.graph.hovering #edges .edge.hover-edge.rel-edge .edge-stroke{opacity:.75;stroke:#9fb0e6;stroke-width:1.1;stroke-dasharray:3 4}
 .graph #nodes .node.hover-node,.graph #nodes .node.hover-peer{opacity:1;z-index:6}
-.node.hover-node .dot{transform:scale(1.55);background:#2f50e0;box-shadow:0 0 0 6px rgba(47,80,224,.22);transition:transform .15s}
+.graph #nodes .node.hover-peer-weak{opacity:.7}
+.node.hover-node .dot{transform:scale(1.4);background:#2f50e0;box-shadow:0 0 0 5px rgba(47,80,224,.2);transition:transform .15s}
 .node.hover-node strong{color:#1f3cc4;font-weight:800}
 .node.hover-peer strong{color:#2944c4;font-weight:700}
 .node.hover-peer .dot{background:#5b74e8}
+
+/* The centre person already labels the map; its hover note would cover the name. */
+.node.center:hover>small,.node.center:focus-visible>small{display:none}
