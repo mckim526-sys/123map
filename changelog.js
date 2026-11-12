@@ -1,6 +1,7 @@
 // Reader-facing record of what changed on the site. Add one plain-language line per published change
 // (newest first). The "recently checked trials" list below it is built automatically from lastChecked.
 const SITE_CHANGES = [
+  ['2026-11-12', '조태용 대법원 선고·김기현 부부 항소심 일정을 추가하고, 군검사 상고와 국정원 지휘부 공판준비 경과를 보완했습니다. 공개 기사 링크는 MBC 원문으로 정리했습니다.'],
   ['2026-11-12', '재판 상세에서 기소 내용을 사건 이름 바로 아래로 옮기고, 아래 혐의 카드에는 법원 판단만 남겼습니다.'],
   ['2026-11-12', '재판 상세와 연결 팝업에서 기소 내용을 색과 굵은 글씨로 구분해 법원 판단과 헷갈리지 않게 했습니다.'],
   ['2026-11-12', '법률 용어 풀이와 이 업데이트 기록을 추가했습니다.'],
