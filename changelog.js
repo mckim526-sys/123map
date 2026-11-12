@@ -1,6 +1,7 @@
 // Reader-facing record of what changed on the site. Add one plain-language line per published change
 // (newest first). The "recently checked trials" list below it is built automatically from lastChecked.
 const SITE_CHANGES = [
+  ['2026-11-12', '재판 상세에서 기소 내용을 색과 굵은 글씨로 구분해 법원 판단과 헷갈리지 않게 했습니다.'],
   ['2026-11-12', '법률 용어 풀이와 이 업데이트 기록을 추가했습니다.'],
   ['2026-11-12', '같은 재판 연결선을 누르면 그 재판 피고인 전원의 기소 내용과 최근 판단을 함께 보여 주도록 했습니다.'],
   ['2026-11-12', '윤석열 체포방해 재판과 경호처 4명 재판을 서로 다른 재판으로 분리했습니다.'],

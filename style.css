@@ -322,3 +322,7 @@ footer{margin:24px var(--page-gutter) 0;padding:24px 0}
 .checked-list time,.change-list time{color:var(--muted);font-variant-numeric:tabular-nums;font-size:12px}
 .checked-list li{grid-template-rows:auto auto}.checked-list li time{grid-row:1/3}
 .checked-list li,.change-list li{row-gap:2px}
+
+/* 기소 내용: separate it visually from the court's judgments */
+.charge p.allegation{background:#eef1fb;border-left:3px solid #4b5be7;border-radius:6px;padding:10px 12px;color:#1f2a44;font-weight:600}
+.charge p.allegation>b{color:#3949c7;font-weight:800;font-size:11px;letter-spacing:.02em}
