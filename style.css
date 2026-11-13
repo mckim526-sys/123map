@@ -399,3 +399,6 @@ footer{margin:24px var(--page-gutter) 0;padding:24px 0}
  .cal-ev{font-size:0;height:6px;padding:0;border-left-width:0;border-radius:3px}
  .cal-ev.guilty{background:#c2410c}.cal-ev.final{background:#7f1d1d}.cal-ev.acquit{background:#2563eb}.cal-ev.upcoming{background:var(--teal)}.cal-ev:not(.guilty):not(.final):not(.acquit):not(.upcoming){background:#9aa0ad}
  .cal-more{font-size:9.5px;padding:0}}
+/* Timeline scrolls with the page (no inner scroll box), so day details never hide inside a nested scroller */
+#timeline{max-height:none;overflow:visible}
+#timeline .tl-day-head,#timeline .cal-nav{scroll-margin-top:16px}

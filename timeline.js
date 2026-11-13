@@ -92,7 +92,7 @@ function tlCalendarHtml(events) {
     <div class="cal-months" aria-label="일정이 있는 달">${years.map(yr => `<span class="cal-year">${yr}</span>${months.filter(x => x.startsWith(yr)).map(x => `<button data-tl-month="${x}" class="${x === tlState.month ? 'on' : ''}">${Number(x.slice(5))}월</button>`).join('')}`).join('')}</div>
     <div class="cal-grid" role="grid">${['일', '월', '화', '수', '목', '금', '토'].map((w, i) => `<span class="cal-wd ${i === 0 ? 'sun' : ''}">${w}</span>`).join('')}${cells.join('')}</div>
     <p class="cal-legend"><span class="guilty">유죄</span><span class="acquit">무죄·공소기각</span><span class="final">확정</span><span class="upcoming">예정</span></p>
-    <h3 class="tl-section">${tlState.day && tlState.day.startsWith(tlState.month) ? `${Number(tlState.day.slice(5, 7))}월 ${Number(tlState.day.slice(8))}일` : `${m}월 전체`} <small>${dayList.length}건</small>${tlState.day ? ' <button class="link-button" data-tl-day="">이 달 전체 보기</button>' : ''}</h3>
+    <h3 class="tl-section tl-day-head">${tlState.day && tlState.day.startsWith(tlState.month) ? `${Number(tlState.day.slice(5, 7))}월 ${Number(tlState.day.slice(8))}일` : `${m}월 전체`} <small>${dayList.length}건</small>${tlState.day ? ' <button class="link-button" data-tl-day="">이 달 전체 보기</button>' : ''}</h3>
     ${dayList.map(tlCard).join('') || '<p class="empty">이 달에는 기록된 재판 일정이 없습니다.</p>'}`;
 }
 function renderTimeline() {
@@ -113,7 +113,14 @@ document.addEventListener('click', e => {
   if (t.dataset.tlMode) tlState.mode = t.dataset.tlMode;
   if (t.dataset.tlMonth) { tlState.month = t.dataset.tlMonth; tlState.day = null; }
   if (t.hasAttribute('data-tl-day')) tlState.day = t.dataset.tlDay && t.dataset.tlDay !== tlState.day ? t.dataset.tlDay : null;
+  // 다시 그려도 화면이 튀지 않게: 날짜를 고르면 아래 상세로, 달을 바꾸면 달력 머리로 부드럽게 이동
+  const pickedDay = t.hasAttribute('data-tl-day') && tlState.day, changedMonth = !!t.dataset.tlMonth;
+  const keep = window.scrollY;
   renderTimeline();
+  window.scrollTo(0, keep);
+  const el = document.getElementById('timeline');
+  const target = pickedDay ? el.querySelector('.tl-day-head') : changedMonth ? el.querySelector('.cal-nav') : null;
+  if (target) requestAnimationFrame(() => target.scrollIntoView({block: pickedDay ? 'start' : 'nearest', behavior: 'smooth'}));
 });
 document.addEventListener('click', e => {
   const b = e.target.closest('[data-case-link]');
