@@ -37,7 +37,7 @@
   }
   const decided = s => s && s[0] && !/미확인|미도달|판단 전|대기|진행 중|확인 중|없음/.test(s[0]);
   const planned = s => s && /예정/.test((s[0] || '') + (s[2] || ''));
-  const tone = t => /예정/.test(t) ? 'next' : /무죄|공소기각/.test(t) ? 'acquit' : /징역|무기|벌금|사형|유죄|자격정지/.test(t) ? 'guilty' : 'muted';
+  const tone = t => /예정/.test(t) ? 'next' : /확정/.test(t) ? 'final' : /무죄|공소기각/.test(t) ? 'acquit' : /징역|무기|벌금|사형|유죄|자격정지/.test(t) ? 'guilty' : 'muted';
   const stageName = i => (i === 2 ? '대법원' : i + 1 + '심');
   const shortDate = s => ((s && s[2] || '').match(/\d{4}\.\d{2}\.\d{2}/) || [''])[0];
   function headline(r) {
@@ -55,7 +55,7 @@
 
   // ── 가운데 두 사람 ── (사진 교체: file·위치·출처 표기)
   const FIG_PHOTO = {yoon: {file: 'clock-yoon.jpg', pos: '50% 25%', credit: ''}, keon: {file: 'clock-keon.jpg', pos: '50% 35%', credit: ''}};
-  const figFace = p => { const o = FIG_PHOTO[p.id]; return o ? `<img class="fig-img" src="assets/${esc(o.file)}" alt="${esc(p.name)}" style="object-position:${esc(o.pos)}">${o.credit ? `<span class="fig-credit">${esc(o.credit)}</span>` : ''}` : face(p, 'fig-img'); };
+  const figFace = p => { const o = FIG_PHOTO[p.id]; return o ? `<span class="fig-photo"><img class="fig-img" src="assets/${esc(o.file)}" alt="${esc(p.name)}" style="object-position:${esc(o.pos)}">${o.credit ? `<span class="fig-credit">${esc(o.credit)}</span>` : ''}</span>` : `<span class="fig-photo">${face(p, 'fig-img')}</span>`; };
   const stage = document.getElementById('stage'), list = document.getElementById('cases');
   const FIGS = ['yoon', 'keon'].map(id => byId.get(id));
   stage.innerHTML = FIGS.map(p => `
@@ -77,9 +77,9 @@
     return `<div class="trial">
       ${(r.charges || []).length ? `<p class="charges">${r.charges.map(c => `<span>${esc(c.name)}</span>`).join('')}</p>` : ''}
       <ol class="defendants">${ids.map(id => { const q = byId.get(id), rec = recordFor(q, p, r); if (!rec) return ''; const st = rec.stages || []; return `
-        <li><a class="who" href="index.html#person/${encodeURIComponent(q.id)}/${encodeURIComponent(rec.id)}">${face(q, 'who-img')}<span><b>${esc(q.name)}</b><small>${esc(q.role || '')}</small></span></a>
+        <li><a class="who" href="v2/#person/${encodeURIComponent(q.id)}/${encodeURIComponent(rec.id)}">${face(q, 'who-img')}<span><b>${esc(q.name)}</b><small>${esc(q.role || '')}</small></span></a>
           <ol class="steps">${[0, 1, 2].map(i => { const s = st[i] || []; const t = planned(s) ? 'next' : decided(s) ? tone(s[0]) : 'muted'; return `<li class="${t}"><i>${stageName(i)}</i><b>${esc(s[0] || '—')}</b>${shortDate(s) ? `<small>${esc(shortDate(s))}</small>` : ''}</li>`; }).join('')}</ol></li>`; }).join('')}</ol>
-      <p class="trial-foot">${ids.length > 1 ? `함께 재판받는 ${ids.length}명` : '단독 재판'} · 이름을 누르면 재판 상세로 이동합니다</p>
+      <p class="trial-foot">${ids.length > 1 ? `함께 재판받는 ${ids.length}명` : '단독 재판'} · 이름을 누르면 재판 지도의 상세로 이동합니다</p>
     </div>`;
   }
   function renderCases() {
@@ -87,7 +87,7 @@
     document.body.classList.toggle('picked', !!current);
     if (!current) { list.innerHTML = ''; return; }
     const p = byId.get(current);
-    list.innerHTML = `<h2 class="cases-title"><b>${esc(p.name)}</b>의 사건 ${p.records.length}건</h2>
+    list.innerHTML = `<h2 class="cases-title">${esc(p.name)}의 사건 <span class="badge">${p.records.length}건</span></h2>
       <ol>${sorted(p).map((r, i) => { const h = headline(r), n = trialIds(p, r).length, open = openCase === r.id; return `
         <li class="case ${open ? 'open' : ''}" style="--i:${i}">
           <button class="case-head" data-case="${esc(r.id)}" aria-expanded="${open}">
