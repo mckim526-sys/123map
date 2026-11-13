@@ -238,3 +238,6 @@ body.picked .hero { display: none; }
 
 /* 재판 지도를 숨길 때 크기를 유지(display:none이면 관계도가 크기 0으로 다시 배치돼 깨짐) */
 .app-frame[hidden] { display: block; visibility: hidden; pointer-events: none; }
+
+/* 사건을 펼친 상태: 고른 사람의 사진이 항상 위(큰 칸), 다른 사람은 아래 작게 */
+body.picked .fig.on { order: -1; }
