@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="only light">
+  <title>12·3 재판 지도</title>
+  <meta name="description" content="네 특검 관련 인물과 사건, 혐의별 1·2·3심 판단을 살펴보는 재판 지도">
+  <link rel="icon" href="data:,">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/tokens.css?v=80">
+  <link rel="stylesheet" href="css/app.css?v=80">
+</head>
+<body>
+  <button class="sheet-backdrop" id="sheetBackdrop" aria-label="재판 상세 닫기" hidden></button>
+
+  <!-- ① 앱 머리글 (위계 1): 제목을 누르면 시작 화면(#start)으로 -->
+  <header class="appbar" id="hero">
+    <div class="container appbar__inner">
+      <a class="appbar__brand" href="#start" aria-label="12·3 재판 지도 시작 화면">
+        <b>12·3 재판 지도</b><span>내란 · 김건희 · 해병대 · 종합특검</span>
+      </a>
+      <p class="appbar__stat"><strong data-bind="total">–</strong>명 수록</p>
+      <button class="appbar__btn" id="sourcesBtn">출처·보도 ↗</button>
+      <button class="appbar__btn" id="changesBtn">업데이트 기록</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="workspace" id="workspace">
+      <div class="board">
+        <!-- ② 주요 조작 (위계 2): 보기 전환 + 검색 / 특검 필터 -->
+        <div class="toolbar">
+          <div class="toolbar__row">
+            <nav class="segmented" aria-label="재판 지도 보기">
+              <button class="is-active" data-view="map">관계도</button>
+              <button data-view="list">재판 목록</button>
+              <button data-view="timeline">타임라인</button>
+            </nav>
+            <label class="searchbox">
+              <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5"/><path d="M13 13l4 4"/></svg>
+              <input id="searchInput" type="search" placeholder="인물 이름·직책·사건 검색" aria-label="인물 검색" autocomplete="off">
+            </label>
+          </div>
+          <div class="toolbar__row toolbar__row--filter">
+            <span class="toolbar__label">특검</span>
+            <div class="chips" id="agencyFilter" role="group" aria-label="특검 필터"></div>
+          </div>
+        </div>
+
+        <!-- ③ 콘텐츠 (위계 3) -->
+        <div class="content-card">
+          <div class="content-card__head">
+            <div>
+              <h2 class="content-card__title"><span id="viewTitle">인물·사건 연결 지도</span><span class="badge badge--neutral" id="resultCount">–</span></h2>
+              <p class="content-card__meta" id="mapContext"></p>
+            </div>
+          </div>
+
+          <div class="pane" id="mapPane">
+            <!-- 인물을 골랐을 때: '○○ 중심' + 선택 해제 -->
+            <div class="map-focus" id="mapFocus" hidden></div>
+            <div class="graph" id="graph">
+              <svg id="edgeLayer" viewBox="0 0 900 620" preserveAspectRatio="none" aria-label="인물 사이의 연결 관계"></svg>
+              <div id="groupLayer"></div><!-- 사건 뱃지는 누를 수 있는 버튼이라 aria-hidden 두지 않음 -->
+              <div id="nodeLayer"></div>
+            </div>
+            <!-- 확대·축소·전체 보기 (끌어서 이동, 모바일은 두 손가락 확대도 가능) -->
+            <div class="map-zoom" id="mapZoom" role="group" aria-label="관계도 확대·축소">
+              <button data-zoom="in" aria-label="확대">+</button>
+              <button data-zoom="out" aria-label="축소">−</button>
+              <button data-zoom="fit" aria-label="관계도 전체 보기">전체</button>
+            </div>
+          </div>
+          <div class="pane list-pane" id="listPane" hidden></div>
+          <div class="pane timeline-pane" id="timelinePane" hidden></div>
+
+          <!-- ④ 보조 정보 (위계 4) -->
+          <div class="content-card__foot" id="mapFoot">
+            <div class="legend" id="mapLegend">
+              <span class="legend__item"><i class="legend__co"></i>같은 재판에서 함께 기소·재판</span>
+              <span class="legend__item"><i class="legend__rel"></i>그 밖의 사건·가족 관계</span>
+            </div>
+            <p class="caption legend__note">선은 같은 사건·기소 내용 또는 가족 관계를 뜻하며 공모나 유죄를 뜻하지 않습니다. 인물을 누르면 재판 상세, 선을 누르면 사건 설명이 열립니다.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 재판 상세 패널 -->
+      <aside class="detail" id="detail" aria-live="polite"></aside>
+    </section>
+  </main>
+
+  <!-- 출처·보도 (머리글 버튼과 같은 이름) -->
+  <dialog class="modal" id="sourcesDialog" aria-labelledby="sourcesTitle">
+    <header class="modal__head">
+      <div>
+        <p class="eyebrow">확인한 보도와 수록 기준</p>
+        <h2 id="sourcesTitle">출처·보도</h2>
+      </div>
+      <button class="icon-btn" data-close aria-label="닫기">×</button>
+    </header>
+    <div class="modal__body">
+      <p class="body-text">기사 제목을 누르면 해당 언론사의 원문으로 이동합니다. 보도일과 사건의 최신 진행 상태는 다를 수 있습니다.</p>
+      <p class="callout">사건별 확인 시점이 다릅니다 · 최근 반영 2026.11.12 · MBC·연합뉴스·뉴스1·뉴시스 보도를 대조합니다. 형량은 심급별로 구분하며 확정판결을 뜻하지 않습니다.</p>
+      <div class="coverage" id="coverage"></div>
+      <p class="caption">숫자는 특검별 관련 수록 인물 수입니다. 특검 이전에 기소된 인물과 박정훈 등 관련 인물도 포함하며, 특검별 중복 인물이 있어 합산한 기소 인원과 다릅니다. 익명 피고인과 법인까지 포함한 전체 명단은 대조 중입니다.</p>
+      <h3 class="section-title">보도 목록</h3>
+      <div class="source-links" id="sourceLinks"></div>
+    </div>
+  </dialog>
+
+  <!-- 업데이트 기록: 본 사이트 changelog.js의 SITE_CHANGES를 그대로 보여 줌 -->
+  <dialog class="modal" id="changesDialog" aria-labelledby="changesTitle">
+    <header class="modal__head">
+      <div>
+        <p class="eyebrow">사이트 변경 기록</p>
+        <h2 id="changesTitle">업데이트 기록</h2>
+      </div>
+      <button class="icon-btn" data-close aria-label="닫기">×</button>
+    </header>
+    <div class="modal__body changes">
+      <ul id="changeList"></ul>
+      <p class="caption">전체 수정 이력은 <a href="https://github.com/mckim526-sys/123map/commits/main" target="_blank" rel="noopener">GitHub 저장소 기록 ↗</a>에서 볼 수 있습니다.</p>
+    </div>
+  </dialog>
+
+  <!-- 1·2·3심 나란히 비교 -->
+  <dialog class="modal modal--wide" id="compareDialog" aria-labelledby="compareTitle">
+    <header class="modal__head">
+      <div>
+        <p class="eyebrow" id="compareEyebrow">혐의별 1·2·3심 판단 나란히 보기</p>
+        <h2 id="compareTitle"></h2>
+      </div>
+      <button class="icon-btn" data-close aria-label="닫기">×</button>
+    </header>
+    <div class="modal__body" id="compareBody"></div>
+  </dialog>
+
+  <!-- 인물 사이 연결 팝업 -->
+  <div class="relation-pop" id="relationPop" role="dialog" aria-labelledby="relationTitle" hidden></div>
+
+  <!-- 짧은 안내 (예: 선택한 인물에게 해당 특검 사건이 없을 때) -->
+  <p class="toast" id="toast" role="status" aria-live="polite" hidden></p>
+
+  <script src="js/config.js?v=80"></script>
+  <script src="js/loader.js?v=80"></script>
+</body>
+</html>

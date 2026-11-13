@@ -23,3 +23,7 @@
 - `index.html`이 불러오는 CSS·JS 주소의 `?v=` 값은 배포할 때마다 새 값(예: 날짜-시각)으로 바꾼다. 브라우저·CDN 캐시 때문에 일부 파일만 옛 버전으로 보이는 것을 막는다.
 - 독자가 알아야 할 변경(재판 결과 반영, 인물·재판 추가·정정, 화면 기능 변경)은 `changelog.js`의 `SITE_CHANGES` 맨 앞에 날짜와 쉬운 한 문장으로 추가한다. 재판 기록을 원문과 대조했으면 해당 기록의 `lastChecked`를 갱신한다.
 - 별도 작업본이 필요해도 시작점은 항상 이 저장소의 최신 기본 브랜치다.
+
+## v2/ (새 화면 시험판)
+- `v2/`는 새 디자인 시험판입니다. 데이터·사진은 루트의 `reader-data.js`, `assets/`, `changelog.js`를 그대로 씁니다(`v2/js/config.js`).
+- v2 안을 고칠 때는 `v2/AGENTS.md`, `v2/DESIGN-SYSTEM.md`를 따르고, `v2/js/loader.js`의 `VERSION`과 `v2/index.html`의 `?v=`를 올립니다.
