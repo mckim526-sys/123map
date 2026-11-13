@@ -7,12 +7,17 @@
   // ── 흐른 시간 ──
   const pad = n => String(n).padStart(2, '0');
   const elapsed = document.getElementById('elapsed');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const born = performance.now();
   function tick() {
     let s = Math.max(0, Math.floor((Date.now() - START) / 1000));
     const d = Math.floor(s / 86400); s %= 86400;
     const h = Math.floor(s / 3600); s %= 3600;
     const m = Math.floor(s / 60); s %= 60;
-    elapsed.innerHTML = `<span class="days"><b>${d.toLocaleString('ko-KR')}</b><i>일</i></span><span class="hms">${pad(h)}<em>:</em>${pad(m)}<em>:</em><span class="sec">${pad(s)}</span></span>`;
+    // 처음 1.4초는 날수가 0부터 차오른다
+    const t = reduce ? 1 : Math.min(1, (performance.now() - born) / 1400), shown = Math.round(d * (1 - Math.pow(1 - t, 3)));
+    elapsed.innerHTML = `<span class="days"><b>${shown.toLocaleString('ko-KR')}</b><i>일</i></span><span class="hms">${pad(h)}<em>:</em>${pad(m)}<em>:</em><span class="sec">${pad(s)}</span></span><span class="minute" aria-hidden="true"><span style="width:${(s / 59 * 100).toFixed(1)}%"></span></span>`;
+    if (t < 1) requestAnimationFrame(tick);
     elapsed.setAttribute('aria-label', `${d}일 ${h}시간 ${m}분 지났습니다`);
   }
   tick(); setInterval(tick, 1000);
@@ -56,8 +61,16 @@
   stage.innerHTML = FIGS.map(p => `
     <button class="fig" data-fig="${p.id}" aria-pressed="false" aria-controls="cases">
       ${figFace(p)}
-      <span class="fig-label"><b>${esc(p.name)}</b><small>${esc(p.role)} · 사건 ${p.records.length}건</small></span>
+      <span class="fig-no">${p.id === 'yoon' ? '01' : '02'}</span>
+      <span class="fig-label"><small>${esc(p.role)}</small><b>${esc(p.name)}</b><em>사건 ${p.records.length}건 보기 <i aria-hidden="true">→</i></em></span>
     </button>`).join('');
+  if (!reduce && matchMedia('(hover: hover)').matches) {
+    document.addEventListener('mousemove', e => {
+      if (document.body.classList.contains('picked')) return;
+      const x = e.clientX / innerWidth - .5, y = e.clientY / innerHeight - .5;
+      stage.style.setProperty('--px', (x * 10).toFixed(1) + 'px'); stage.style.setProperty('--py', (y * 8).toFixed(1) + 'px');
+    });
+  }
   let current = null, openCase = null;
   function trialHtml(p, r) {
     const ids = trialIds(p, r);

@@ -183,3 +183,48 @@ body.picked .fig.off{width:46%;align-self:flex-end;margin-top:0}
 body.picked .wrap .cases{background:#0b0d12c4;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border:1px solid #ffffff14;border-radius:6px;padding:18px 18px 8px}
 body.picked .since{margin-bottom:0}
 @media (max-width:900px){body.picked .wrap .cases{padding:14px 10px 4px}}
+
+/* ── 다듬기: 필름 질감, 큰 윤곽 글자, 등장 연출, 사진 액자 ── */
+body::before{opacity:.09;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .55 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");animation:grain 1.2s steps(4) infinite}
+@keyframes grain{25%{transform:translate(-2%,1%)}50%{transform:translate(1%,-2%)}75%{transform:translate(2%,2%)}}
+body::after{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(130% 100% at 30% 35%,transparent 45%,#000000a6 100%)}
+.wrap{position:relative}
+.wrap::before{content:'12·3';position:absolute;left:clamp(0px,1vw,20px);top:58px;z-index:-1;font-family:"Inter","Inter Display",sans-serif;font-weight:200;font-size:clamp(220px,30vw,460px);line-height:.8;letter-spacing:-.06em;color:transparent;-webkit-text-stroke:1px #ffffff10;pointer-events:none;user-select:none}
+body.picked .wrap::before{opacity:0}
+.since{color:#d6d8de}
+.since .pulse{width:7px;height:7px}
+.elapsed .days b{background:linear-gradient(180deg,#fff 30%,#c9ccd4);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.elapsed .minute{display:block;width:min(360px,100%);height:1px;margin-top:16px;background:#ffffff1f;overflow:hidden}
+.elapsed .minute span{display:block;height:100%;background:var(--accent);transition:width 1s linear}
+body.picked .elapsed .minute{display:none}
+.lead{letter-spacing:-.01em}
+.lead::first-line{color:#fff}
+/* 등장: 위에서부터 차례로 */
+.since,.elapsed,.lead,.sub,.fig{animation:enter .9s cubic-bezier(.16,.84,.24,1) both}
+.elapsed{animation-delay:.08s}.lead{animation-delay:.22s}.sub{animation-delay:.3s}.fig:nth-child(1){animation-delay:.36s}.fig:nth-child(2){animation-delay:.5s}
+@keyframes enter{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+/* 사진: 살짝 떨어진 가는 액자선, 번호, 마우스를 올리면 '사건 보기' */
+.stage{--px:0px;--py:0px}
+.fig{overflow:visible;background:transparent;box-shadow:none;translate:var(--px) var(--py);transition:transform .5s cubic-bezier(.2,.8,.2,1),opacity .4s,width .5s,translate .6s ease-out}
+.fig:nth-child(2){translate:calc(var(--px) * -1.4) calc(var(--py) * -1.4)}
+.fig::before{content:'';position:absolute;inset:0;border-radius:3px;overflow:hidden;box-shadow:0 40px 80px #000c}
+.fig::after{inset:-10px;border:1px solid #ffffff1c;border-radius:4px;transition:inset .5s,border-color .4s}
+.fig:hover::after,.fig.on::after{inset:-14px;border-color:#e5484d99}
+.fig .fig-img{border-radius:3px}
+.fig-img{filter:grayscale(1) contrast(1.12) brightness(.92)}
+.fig:hover .fig-img,.fig.on .fig-img{filter:grayscale(.15) contrast(1.05)}
+.fig-label{border-radius:0 0 3px 3px;padding:80px 16px 16px;background:linear-gradient(transparent,#000000eb 70%)}
+.fig-label small{display:block;font-size:11px;letter-spacing:.14em;color:#b9bdc7}
+.fig-label b{margin:4px 0 0;font-size:clamp(24px,2.6vw,34px)}
+.fig-label em{display:flex;align-items:center;gap:6px;margin-top:10px;font-style:normal;font-size:12px;font-weight:600;color:#fff;opacity:0;transform:translateY(6px);transition:opacity .35s,transform .35s}
+.fig-label em i{font-style:normal;color:var(--accent);transition:transform .35s}
+.fig:hover .fig-label em,.fig:focus-visible .fig-label em{opacity:1;transform:none}
+.fig:hover .fig-label em i{transform:translateX(4px)}
+.fig-no{position:absolute;top:-34px;left:0;font-family:"Inter",sans-serif;font-weight:300;font-size:13px;letter-spacing:.2em;color:#ffffff66}
+.fig-no::after{content:'';display:inline-block;width:28px;height:1px;background:#ffffff40;margin-left:10px;vertical-align:middle}
+body.picked .fig-no,body.picked .fig-label em{display:none}
+body.picked .fig.off::after{inset:-6px}
+.cue{letter-spacing:.06em}
+@media (hover:none){.fig-label em{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){body::before,.since,.elapsed,.lead,.sub,.fig{animation:none}.fig{translate:none}}
+@media (max-width:900px){.wrap::before{font-size:52vw;top:70px}.fig-no{top:-26px}}
