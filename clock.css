@@ -241,3 +241,7 @@ body.picked .hero { display: none; }
 
 /* 사건을 펼친 상태: 고른 사람의 사진이 항상 위(큰 칸), 다른 사람은 아래 작게 */
 body.picked .fig.on { order: -1; }
+/* 좁은 화면: 펼친 상태도 한 줄(사진 → 사건 목록) */
+@media (max-width: 900px) {
+  body.picked .wrap { grid-template-columns: 1fr; grid-template-areas: "stage" "cases"; }
+}

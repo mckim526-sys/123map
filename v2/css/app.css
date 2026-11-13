@@ -992,3 +992,10 @@ body[data-view="night"] .toolbar, body[data-view="night"] .content-card__head { 
 .graph.has-solo .node:not(.is-selected):not(.is-root) { opacity: .4; }
 .graph.has-solo .group-tag:not(.is-active) { opacity: .35; }
 .graph.has-solo .node:hover, .graph.has-solo .group-tag:hover { opacity: 1; }
+
+/* 모바일: 확대·축소 버튼을 가로 한 줄로 작게 (인물을 덜 가리게) */
+@media (max-width: 760px) {
+  .map-zoom { flex-direction: row; right: var(--sp-2); bottom: var(--sp-2); background: var(--surface-glass); }
+  .map-zoom button { width: 32px; height: 28px; font-size: var(--fs-body); }
+  .map-zoom button[data-zoom="fit"] { width: 40px; }
+}
