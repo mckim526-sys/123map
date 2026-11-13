@@ -1,6 +1,11 @@
 <!doctype html>
 <html lang="ko">
 <head>
+  <script>
+    // clock.html 안에 들어가 있으면 머리글을 그쪽이 맡음. 따로 열었을 때 첫 주소면 처음 화면(clock.html)으로
+    if (window.top !== window) document.documentElement.classList.add('is-embedded');
+    else if (!location.hash || location.hash === '#start') location.replace('../clock.html');
+  </script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="color-scheme" content="only light">
@@ -10,13 +15,13 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/tokens.css?v=85">
-  <link rel="stylesheet" href="css/app.css?v=85">
+  <link rel="stylesheet" href="css/tokens.css?v=87">
+  <link rel="stylesheet" href="css/app.css?v=87">
 </head>
 <body>
   <button class="sheet-backdrop" id="sheetBackdrop" aria-label="재판 상세 닫기" hidden></button>
 
-  <!-- ① 앱 머리글 (위계 1): 제목을 누르면 시작 화면(#start)으로 -->
+  <!-- ① 앱 머리글 (위계 1): 왼쪽 '12·3 이후 흐른 시간'을 누르면 처음 화면(clock.html)으로 -->
   <header class="appbar" id="hero">
     <div class="container appbar__inner">
       <a class="appbar__brand appbar__clock" href="../clock.html" data-elapsed title="처음 화면으로" aria-label="12·3 이후 흐른 시간 · 처음 화면으로"><small>12·3 이후</small><b>–</b></a>
@@ -145,8 +150,8 @@
   <!-- 짧은 안내 (예: 선택한 인물에게 해당 특검 사건이 없을 때) -->
   <p class="toast" id="toast" role="status" aria-live="polite" hidden></p>
 
-  <script src="js/config.js?v=85"></script>
-  <script src="js/loader.js?v=85"></script>
+  <script src="js/config.js?v=87"></script>
+  <script src="js/loader.js?v=87"></script>
   <script src="../elapsed-bar.js?v=2" defer></script>
 </body>
 </html>

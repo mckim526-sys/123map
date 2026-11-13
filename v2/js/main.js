@@ -1,7 +1,7 @@
 // 앱 상태 · 라우팅 · 이벤트 연결
 //
 // 주소(해시) 체계
-//   #start                 시작 화면(오프닝): 두 핵심 인물만. 주소가 비어 있으면 여기로
+//   #start · 빈 주소        처음 화면 clock.html(12·3 이후 흐른 시간 + 두 인물)로 보냄
 //   #map                   전체 관계도
 //   #person/<id>[/<case>]  인물 재판 상세
 (() => {
@@ -113,16 +113,20 @@
   function applyRoute() {
     const person = personRoute(location.hash);
     if (person) return select(person.id, person.caseId);
-    const view = location.hash.slice(1);
+    const view = location.hash.slice(1) || 'map';
     if (VIEWS.includes(view) && view !== S.view) setView(view);
+    if (!location.hash || location.hash === '#start') { // 처음 화면은 clock (안에 들어가 있으면 관계도)
+      if (window.top === window) return location.replace('../clock.html');
+      history.replaceState(null, '', '#map');
+    }
     const start = !VIEWS.includes(view);
     if (start && S.view !== 'map') setView('map');
-    if (start && location.hash !== '#start') history.replaceState(null, '', '#start'); // 빈 주소·알 수 없는 주소
+    if (start) history.replaceState(null, '', '#map'); // 알 수 없는 주소는 전체 관계도
     if (start) {
       S.agency = 'all'; S.query = ''; $('#searchInput').value = '';
       $$('[data-agency]').forEach(v => v.classList.toggle('is-active', v.dataset.agency === 'all'));
     }
-    S.intro = start;
+    S.intro = false; // 두 인물 오프닝은 clock.html이 맡음
     hideDetail();
     render();
     MapView.centerOnMobile(S.agency);

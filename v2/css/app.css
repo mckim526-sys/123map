@@ -977,3 +977,7 @@ body.has-detail .detail {
 .night-pane .nm-phase__list button:hover { border-color: var(--gray-400); color: var(--text-primary); }
 .night-pane .nm-phase__list button.is-past { color: #e2a3a5; border-color: #e5484d55; }
 .night-pane .nm-phase__list button.is-active { background: var(--night-hot); border-color: var(--night-hot); color: #fff; }
+
+/* clock.html 안에 들어간 경우: 머리글은 clock.html이 맡음 */
+.is-embedded .appbar { display: none; }
+.is-embedded main.container { padding-top: var(--sp-4); }

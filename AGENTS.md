@@ -29,3 +29,4 @@
 - v2 안을 고칠 때는 `v2/AGENTS.md`, `v2/DESIGN-SYSTEM.md`를 따르고, `v2/js/loader.js`의 `VERSION`과 `v2/index.html`의 `?v=`를 올립니다.
 - 머리글 왼쪽의 '12·3 이후 흐른 시간'은 루트 `elapsed-bar.js`(clock.html · v2 공용)가 그립니다. 누르면 처음 화면 `clock.html`로 갑니다.
 - v2 보기는 주소로 열 수 있습니다: `v2/#map` `#list` `#timeline` `#night` (clock.html 머리글 바로가기가 이 주소를 씀). '그날 밤' 탭만 어두운 바탕(`.night-pane` 안에서 토큰을 덮어씀)입니다.
+- `clock.html`이 처음 화면이자 재판 지도를 담는 페이지입니다. 머리글 보기 바로가기나 인물 이름을 누르면 같은 페이지 안(iframe, `clock-app.js`)에서 v2를 엽니다. 주소: `clock.html` · `#map` `#list` `#timeline` `#night` · `#person/<id>/<caseId>`. v2는 안에 들어가면 자체 머리글을 숨기고(`.is-embedded`), 따로 열었을 때 첫 주소면 clock.html로 보냅니다.

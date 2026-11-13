@@ -77,9 +77,9 @@
     return `<div class="trial">
       ${(r.charges || []).length ? `<p class="charges">${r.charges.map(c => `<span>${esc(c.name)}</span>`).join('')}</p>` : ''}
       <ol class="defendants">${ids.map(id => { const q = byId.get(id), rec = recordFor(q, p, r); if (!rec) return ''; const st = rec.stages || []; return `
-        <li><a class="who" href="v2/#person/${encodeURIComponent(q.id)}/${encodeURIComponent(rec.id)}">${face(q, 'who-img')}<span><b>${esc(q.name)}</b><small>${esc(q.role || '')}</small></span></a>
+        <li><a class="who" href="#person/${encodeURIComponent(q.id)}/${encodeURIComponent(rec.id)}">${face(q, 'who-img')}<span><b>${esc(q.name)}</b><small>${esc(q.role || '')}</small></span></a>
           <ol class="steps">${[0, 1, 2].map(i => { const s = st[i] || []; const t = planned(s) ? 'next' : decided(s) ? tone(s[0]) : 'muted'; return `<li class="${t}"><i>${stageName(i)}</i><b>${esc(s[0] || '—')}</b>${shortDate(s) ? `<small>${esc(shortDate(s))}</small>` : ''}</li>`; }).join('')}</ol></li>`; }).join('')}</ol>
-      <p class="trial-foot">${ids.length > 1 ? `함께 재판받는 ${ids.length}명` : '단독 재판'} · 이름을 누르면 재판 지도의 상세로 이동합니다</p>
+      <p class="trial-foot">${ids.length > 1 ? `함께 재판받는 ${ids.length}명` : '단독 재판'} · 이름을 누르면 재판 상세가 열립니다</p>
     </div>`;
   }
   function renderCases() {
