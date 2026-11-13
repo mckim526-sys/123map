@@ -480,7 +480,8 @@ const MapView = (() => {
     const active = last?.egoMode && last.activeCase ? last.badges.find(b => b.id === last.activeCase.id) : null;
     $$('.group-tag', groupLayer).forEach((t, i) => t.classList.toggle('is-active', !!active && last.badges[i] === active));
     const ids = new Set(active?.ids || []);
-    graph.classList.toggle('has-case', !!active && ids.size > 0); // 단독 사건이면 선 강조 없음
+    graph.classList.toggle('has-case', !!active && ids.size > 0);
+    graph.classList.toggle('has-solo', !!active && ids.size === 0); // 단독 사건: 다른 사람과 잇는 선은 모두 흐리게
     $$('.edge', edgeLayer).forEach(e => e.classList.toggle('is-case', ids.has(e.dataset.to) || ids.has(e.dataset.from) && e.dataset.from !== last.center.id));
   }
   // 그 사건 무리(+중심 인물)를 한 번 강조

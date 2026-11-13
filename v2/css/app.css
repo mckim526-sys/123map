@@ -986,3 +986,9 @@ body[data-view="night"] .toolbar, body[data-view="night"] .content-card__head { 
   .nm-track { position: sticky; bottom: 0; padding: 0 var(--sp-3); overflow-x: auto; }
   .nm-track__rail { min-width: 640px; }
 }
+
+/* 단독 사건을 고르면: 함께 재판받는 사람이 없으므로 모든 연결선과 다른 인물을 흐리게, 중심 인물과 그 사건 뱃지만 또렷하게 */
+.graph.has-solo .edge .edge__line { opacity: .1; }
+.graph.has-solo .node:not(.is-selected):not(.is-root) { opacity: .4; }
+.graph.has-solo .group-tag:not(.is-active) { opacity: .35; }
+.graph.has-solo .node:hover, .graph.has-solo .group-tag:hover { opacity: 1; }
