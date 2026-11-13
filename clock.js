@@ -12,7 +12,7 @@
     const d = Math.floor(s / 86400); s %= 86400;
     const h = Math.floor(s / 3600); s %= 3600;
     const m = Math.floor(s / 60); s %= 60;
-    elapsed.innerHTML = `<span class="u"><b>${d.toLocaleString('ko-KR')}</b><i>일</i></span><span class="u"><b>${pad(h)}</b><i>시간</i></span><span class="u"><b>${pad(m)}</b><i>분</i></span><span class="u sec"><b>${pad(s)}</b><i>초</i></span>`;
+    elapsed.innerHTML = `<span class="days"><b>${d.toLocaleString('ko-KR')}</b><i>일</i></span><span class="hms">${pad(h)}<em>:</em>${pad(m)}<em>:</em><span class="sec">${pad(s)}</span></span>`;
     elapsed.setAttribute('aria-label', `${d}일 ${h}시간 ${m}분 지났습니다`);
   }
   tick(); setInterval(tick, 1000);
