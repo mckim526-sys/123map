@@ -9,20 +9,24 @@
 <meta name="theme-color" content="#0b0d12">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="clock.css?v=20261113-0935b">
+<link rel="stylesheet" href="clock.css?v=20261113-0950">
 </head>
 <body>
 <nav class="top"><a class="brand" href="index.html">12·3 내란 재판 지도</a><span class="beta">시험 페이지</span><a class="to-map" href="index.html">전체 관계도 →</a></nav>
+<div class="backdrop" role="img" aria-label="2024년 12월 3일 밤, 국회 상공에 진입하는 계엄군 헬기"></div>
 <header class="hero">
   <p class="since"><span class="pulse" aria-hidden="true"></span>2024. 12. 3. 22:27 비상계엄 선포로부터</p>
   <p class="elapsed" id="elapsed" role="timer" aria-live="off"></p>
   <p class="sub">시간이 흐르는 동안, 법정은 어디까지 왔을까요</p>
-  <div class="stage" id="stage" aria-label="인물을 눌러 사건 보기"></div>
-  <p class="cue">사진을 누르면 사건이 펼쳐집니다</p>
 </header>
-<main class="cases" id="cases" aria-live="polite"></main>
+<section class="arena" id="arena">
+  <div class="stage" id="stage" aria-label="인물을 눌러 사건 보기"></div>
+  <div class="cases" id="cases" aria-live="polite"></div>
+</section>
+<p class="cue">사진을 누르면 사건이 펼쳐집니다</p>
+<p class="bg-credit">배경: 국회에 진입하는 계엄군 헬기 · 사진 서울신문</p>
 <footer class="foot">재판 기록은 본 사이트 데이터와 공개 보도를 바탕으로 합니다.</footer>
-<script src="reader-data.js?v=20261113-0935b"></script>
-<script src="clock.js?v=20261113-0935b"></script>
+<script src="reader-data.js?v=20261113-0950"></script>
+<script src="clock.js?v=20261113-0950"></script>
 </body>
 </html>

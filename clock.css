@@ -92,3 +92,35 @@ body.picked .cue{display:none}
  .trial{padding:4px 0 16px}
  .defendants>li{grid-template-columns:1fr}}
 .fig-credit{position:absolute;top:8px;right:10px;font-size:10px;color:#ffffffb3;text-shadow:0 1px 2px #000}
+
+/* 배경 사진 + 옆으로 펼치는 배치 */
+body{background:var(--bg)}
+.backdrop{position:fixed;inset:0;z-index:-2;background:url(assets/clock-heli.jpg) 50% 35%/cover no-repeat;filter:grayscale(.85) contrast(1.1) brightness(.42);transform:scale(1.05)}
+.backdrop::after{content:'';position:absolute;inset:0;background:radial-gradient(110% 80% at 50% 30%,#0b0d1255 0,#0b0d12d9 60%,#0b0d12 100%),linear-gradient(transparent 55%,#0b0d12)}
+body::before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.06;background-image:repeating-linear-gradient(0deg,#fff 0 1px,transparent 1px 3px)}
+.hero{min-height:auto;padding:110px 16px 0}
+body.picked .hero{padding-bottom:0}
+.arena{max-width:1240px;margin:0 auto;padding:clamp(28px,5vh,56px) 16px 60px;display:grid;grid-template-columns:1fr;justify-items:center;transition:all .5s}
+.arena .stage{margin-top:0}
+.arena .cases{display:none;width:100%;max-width:none;padding:0}
+body.picked .arena{grid-template-columns:minmax(220px,300px) minmax(0,1fr);gap:clamp(22px,3vw,44px);align-items:start;justify-items:stretch}
+body.picked .arena .cases{display:block}
+body.picked .stage{position:sticky;top:70px;flex-direction:column;align-items:stretch;gap:12px}
+body.picked .fig{width:100%}
+body.picked .fig.off{width:46%;align-self:flex-end;opacity:.5;transform:none}
+body.picked .fig.off .fig-label small{display:none}
+body.picked .fig.off .fig-label b{font-size:18px}
+.cases-title{text-align:left;margin-top:0}
+.case{transform:translateX(-14px)}
+@keyframes drop{to{opacity:1;transform:none}}
+.cue{text-align:center;margin:-30px 0 40px}
+body.picked .cue{display:none}
+.bg-credit{position:fixed;right:14px;bottom:10px;margin:0;font-size:10.5px;color:#ffffff66;z-index:5}
+@media (max-width:900px){
+ body.picked .arena{grid-template-columns:1fr}
+ body.picked .stage{position:static;flex-direction:row;justify-content:center}
+ body.picked .fig{width:clamp(110px,30vw,170px)}body.picked .fig.off{width:clamp(80px,22vw,120px);align-self:flex-end}
+ .case{transform:translateY(-10px)}
+ .bg-credit{position:static;text-align:center;padding:0 16px 16px}}
+body.picked .arena .cases{background:#0b0d12c4;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border:1px solid #ffffff14;border-radius:10px;padding:18px 18px 8px}
+@media (max-width:900px){body.picked .arena .cases{padding:14px 10px 4px}}

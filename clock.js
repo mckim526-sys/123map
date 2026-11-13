@@ -90,7 +90,8 @@
   stage.addEventListener('click', e => {
     const b = e.target.closest('.fig'); if (!b) return;
     current = current === b.dataset.fig ? null : b.dataset.fig; openCase = null; renderCases();
-    if (current) setTimeout(() => list.scrollIntoView({block: 'start', behavior: 'smooth'}), 120);
+    if (current && matchMedia('(max-width: 900px)').matches) setTimeout(() => list.scrollIntoView({block: 'start', behavior: 'smooth'}), 120);
+    else if (current) document.getElementById('arena').scrollIntoView({block: 'nearest', behavior: 'smooth'});
   });
   list.addEventListener('click', e => {
     const b = e.target.closest('[data-case]'); if (!b) return;
