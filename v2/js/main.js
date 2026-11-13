@@ -88,6 +88,8 @@
     MapView.centerOnMobile(S.agency);
   }
 
+  const VIEWS = ['map', 'list', 'timeline', 'night'];
+
   // ── 주소 ──
   // 시작 화면을 벗어나는 조작(필터·검색 등)은 주소를 #map 으로 바꿔 둠
   const leaveIntro = () => {
@@ -111,7 +113,10 @@
   function applyRoute() {
     const person = personRoute(location.hash);
     if (person) return select(person.id, person.caseId);
-    const start = location.hash !== '#map';
+    const view = location.hash.slice(1);
+    if (VIEWS.includes(view) && view !== S.view) setView(view);
+    const start = !VIEWS.includes(view);
+    if (start && S.view !== 'map') setView('map');
     if (start && location.hash !== '#start') history.replaceState(null, '', '#start'); // 빈 주소·알 수 없는 주소
     if (start) {
       S.agency = 'all'; S.query = ''; $('#searchInput').value = '';
@@ -193,10 +198,10 @@
     panel.addEventListener('pointercancel', end);
   })()
 
-  // 상세를 닫으면 전체 관계도(#map)로
+  // 상세를 닫으면 지금 보기의 주소(#map · #list · #timeline · #night)로
   function closeDetail() {
     hideDetail();
-    history.replaceState(null, '', '#map');
+    history.replaceState(null, '', '#' + S.view);
     S.intro = false;
     render();
     MapView.centerOnMobile(S.agency);
@@ -255,13 +260,19 @@
   });
 
   // 보기 전환 (페이지는 스크롤하지 않으므로 각 영역의 스크롤만 처음으로)
-  $$('[data-view]').forEach(b => b.addEventListener('click', () => {
-    S.view = b.dataset.view;
-    $$('[data-view]').forEach(v => { v.classList.toggle('is-active', v === b); v.setAttribute('aria-pressed', v === b); });
+  // 보기 전환 · 주소: 관계도 #map, 그 밖의 보기 #list #timeline #night (인물 주소일 때는 주소를 그대로 둠)
+  function setView(view) {
+    S.view = VIEWS.includes(view) ? view : 'map';
+    $$('[data-view]').forEach(v => { const on = v.dataset.view === S.view; v.classList.toggle('is-active', on); v.setAttribute('aria-pressed', on); });
     $('#mapPane').hidden = S.view !== 'map';
     $('#listPane').hidden = S.view !== 'list';
     $('#timelinePane').hidden = S.view !== 'timeline';
     $('#nightPane').hidden = S.view !== 'night';
+  }
+  $$('[data-view]').forEach(b => b.addEventListener('click', () => {
+    setView(b.dataset.view);
+    if (S.view !== 'map') S.intro = false;
+    if (!personRoute(location.hash)) history.replaceState(null, '', '#' + S.view);
     render();
     $('#listPane').scrollTop = 0; $('#timelinePane').scrollTop = 0;
     revealSelection();

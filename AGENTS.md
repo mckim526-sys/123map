@@ -27,3 +27,5 @@
 ## v2/ (새 화면 시험판)
 - `v2/`는 새 디자인 시험판입니다. 데이터·사진은 루트의 `reader-data.js`, `assets/`, `changelog.js`를 그대로 씁니다(`v2/js/config.js`).
 - v2 안을 고칠 때는 `v2/AGENTS.md`, `v2/DESIGN-SYSTEM.md`를 따르고, `v2/js/loader.js`의 `VERSION`과 `v2/index.html`의 `?v=`를 올립니다.
+- 머리글 왼쪽의 '12·3 이후 흐른 시간'은 루트 `elapsed-bar.js`(clock.html · v2 공용)가 그립니다. 누르면 처음 화면 `clock.html`로 갑니다.
+- v2 보기는 주소로 열 수 있습니다: `v2/#map` `#list` `#timeline` `#night` (clock.html 머리글 바로가기가 이 주소를 씀). '그날 밤' 탭만 어두운 바탕(`.night-pane` 안에서 토큰을 덮어씀)입니다.

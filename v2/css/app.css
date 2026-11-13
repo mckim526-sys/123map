@@ -928,3 +928,52 @@ body.has-detail .detail {
   .nm-list button { grid-template-columns: 64px 1fr; }
   .nm-cases__list { grid-template-columns: 1fr; }
 }
+
+/* 머리글 왼쪽: 12·3 이후 흐른 시간 (누르면 처음 화면 clock.html) */
+.appbar__clock { flex-direction: column; align-items: flex-start; gap: 0; line-height: 1.15; }
+.appbar__clock small { font-size: var(--fs-caption); color: var(--gray-400); font-weight: var(--fw-medium); }
+.appbar__clock b { font-size: var(--fs-subtitle); font-weight: var(--fw-heavy); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.appbar__clock b i { font-style: normal; font-weight: var(--fw-medium); margin-left: 1px; color: var(--gray-300); }
+.appbar__clock b .t { font-style: normal; font-weight: var(--fw-medium); color: var(--gray-300); }
+.appbar__clock:hover b { text-decoration: none; }
+.appbar__clock:hover small { color: var(--text-inverse); }
+
+/* 9-3 ── 그날 밤은 어둡게: 이 영역만 어두운 바탕 토큰으로 바꿔 씀.
+   예외: 지금 장면의 장소·지나온 경로는 '불이 켜진' 붉은색(--night-hot). 그 밖의 선택 표시는 기존 규칙 그대로 */
+.night-pane {
+  --night-hot: #e5484d;
+  --text-primary: var(--gray-0); --text-secondary: var(--gray-300); --text-tertiary: var(--gray-500);
+  --bg-page: #0e131d; --bg-subtle: #161d2a; --bg-muted: #1f2736; --bg-accent: #2a1a20;
+  --border-default: #263042; --border-strong: #3a465c;
+  background: var(--bg-hero); color: var(--text-primary);
+}
+.night-pane .nm-map { background: #0b0f17; }
+.night-pane .nm-river { stroke: #1c3358; }
+.night-pane .nm-area { fill: #4a5568; }
+.night-pane .nm-area.river { fill: #4d6fa3; }
+.night-pane .nm-inset rect { fill: #10161f; stroke: #2e3a4f; }
+.night-pane .nm-pin .ring { fill: #0b0f17; stroke: #3a465c; }
+.night-pane .nm-pin .dot { fill: #5b6475; }
+.night-pane .nm-pin .name { stroke: #0b0f17; }
+.night-pane .nm-pin .sub { stroke: #0b0f17; }
+.night-pane .nm-pin.is-seen .dot { fill: #b5464a; }
+.night-pane .nm-pin.is-seen .ring { stroke: #e5484d66; }
+.night-pane .nm-pin.is-seen .name { fill: var(--gray-200); }
+.night-pane .nm-pin .halo { fill: var(--night-hot); }
+.night-pane .nm-pin.is-active .halo { opacity: .28; }
+.night-pane .nm-pin.is-active .ring { stroke: var(--night-hot); }
+.night-pane .nm-pin.is-active .dot { fill: var(--night-hot); }
+.night-pane .nm-pin.is-active .name { fill: #fff; }
+.night-pane .nm-trail { stroke: var(--night-hot); stroke-opacity: .55; }
+.night-pane .nm-date { color: #ff8a8d; }
+.night-pane .nm-list time { color: #ff8a8d; }
+.night-pane .nm-list button.is-active { background: #e5484d24; }
+.night-pane .nm-src a { color: var(--gray-300); }
+.night-pane .nm-play { background: var(--night-hot); }
+.night-pane .nm-play:hover { background: #cf3b40; }
+.night-pane .icon-btn { background: var(--bg-muted); color: var(--text-primary); }
+.night-pane .icon-btn:hover { background: #2b3446; }
+.night-pane .nm-case:hover { border-color: var(--gray-500); }
+.night-pane .nm-phase__list button:hover { border-color: var(--gray-400); color: var(--text-primary); }
+.night-pane .nm-phase__list button.is-past { color: #e2a3a5; border-color: #e5484d55; }
+.night-pane .nm-phase__list button.is-active { background: var(--night-hot); border-color: var(--night-hot); color: #fff; }

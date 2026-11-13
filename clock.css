@@ -182,3 +182,19 @@ body.picked .cases { display: block; background: var(--bg-page); border: 1px sol
   .case, .since, .elapsed, .lead, .sub, .fig, .since .pulse { animation: none; opacity: 1; transform: none; }
   .fig { translate: none; }
 }
+
+/* 머리글: 왼쪽 흐른 시간(처음 화면) · 오른쪽 재판 지도 보기 바로가기 (v2와 같은 모양) */
+.appbar__clock { flex-direction: column; align-items: flex-start; gap: 0; line-height: 1.15; }
+.appbar__clock small { font-size: var(--fs-caption); color: var(--gray-400); font-weight: var(--fw-medium); }
+.appbar__clock b { font-size: var(--fs-subtitle); font-weight: var(--fw-heavy); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.appbar__clock b i { font-style: normal; font-weight: var(--fw-medium); margin-left: 1px; color: var(--gray-300); }
+.appbar__clock b .t { font-style: normal; font-weight: var(--fw-medium); color: var(--gray-300); }
+.appbar__clock:hover small { color: var(--text-inverse); }
+.appbar__nav { margin-left: auto; display: flex; gap: var(--sp-1); }
+.appbar__nav a { height: var(--h-sm); display: inline-flex; align-items: center; padding: 0 var(--sp-3); border-radius: var(--r-pill); font-size: var(--fs-label); font-weight: var(--fw-medium); color: var(--gray-300); text-decoration: none; transition: background var(--motion), color var(--motion); }
+.appbar__nav a:hover { background: var(--on-dark-hover); color: var(--text-inverse); }
+.appbar__nav a[href$="#night"] { border: 1px solid var(--on-dark-border); color: var(--text-inverse); }
+@media (max-width: 760px) {
+  .appbar__nav { gap: 0; overflow-x: auto; scrollbar-width: none; }
+  .appbar__nav a { padding: 0 var(--sp-2); font-size: var(--fs-caption); white-space: nowrap; }
+}

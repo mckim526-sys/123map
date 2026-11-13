@@ -11,10 +11,14 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="v2/css/tokens.css?v=80">
-<link rel="stylesheet" href="clock.css?v=20261113-1330">
+<link rel="stylesheet" href="clock.css?v=20261113-1640">
 </head>
 <body>
-<header class="appbar"><div class="appbar__inner"><a class="appbar__brand" href="v2/#start"><b>12·3 재판 지도</b><span>내란 · 김건희 · 해병대 · 종합특검</span></a><span class="appbar__beta">시험 페이지</span><a class="appbar__btn" href="v2/#map">전체 관계도 →</a></div></header>
+<header class="appbar"><div class="appbar__inner">
+  <a class="appbar__brand appbar__clock" href="clock.html" data-elapsed title="처음 화면" aria-label="12·3 이후 흐른 시간 · 처음 화면"><small>12·3 이후</small><b>–</b></a>
+  <nav class="appbar__nav" aria-label="재판 지도 보기">
+    <a href="v2/#map">관계도</a><a href="v2/#list">재판 목록</a><a href="v2/#timeline">타임라인</a><a href="v2/#night">그날 밤</a>
+  </nav></div></header>
 <div class="backdrop2" role="img" aria-label="2024년 12월 3일 밤, 국회 운동장에 내려앉는 계엄군 헬기"></div>
 <div class="backdrop" role="img" aria-label="2024년 12월 4일 새벽, 국회 본관 창문을 깨고 진입하는 계엄군"></div>
 <div class="wrap" id="arena">
@@ -30,7 +34,8 @@
 <p class="cue">사진을 누르면 사건이 펼쳐집니다</p>
 <p class="bg-credit">오른쪽 위: 국회 운동장에 내려앉는 계엄군 헬기 · 왼쪽 아래: 국회 본관 창문을 깨고 진입하는 계엄군</p>
 <footer class="foot">재판 기록은 본 사이트 데이터와 공개 보도를 바탕으로 합니다.</footer>
-<script src="reader-data.js?v=20261113-1330"></script>
-<script src="clock.js?v=20261113-1330"></script>
+<script src="reader-data.js?v=20261113-1640"></script>
+<script src="clock.js?v=20261113-1640"></script>
+<script src="elapsed-bar.js?v=2" defer></script>
 </body>
 </html>
