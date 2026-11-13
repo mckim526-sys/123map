@@ -981,3 +981,19 @@ body.has-detail .detail {
 /* clock.html 안에 들어간 경우: 머리글은 clock.html이 맡음 */
 .is-embedded .appbar { display: none; }
 .is-embedded main.container { padding-top: var(--sp-4); }
+
+/* 그날 밤: 넓은 화면에서는 스크롤 없이 지도가 영역을 가득 채움.
+   왼쪽 설명·이어지는 재판만 그 칸 안에서 스크롤, 지도는 남은 높이에 맞춰 커짐 */
+body[data-view="night"] .toolbar__row--filter, body[data-view="night"] .content-card__head { display: none; }
+@container (min-width: 901px) {
+  .nm { height: 100%; grid-template-columns: minmax(300px, 360px) minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto; grid-template-areas: "copy map" "steps map"; gap: var(--sp-4) var(--sp-6); }
+  .nm-steps { grid-template-columns: 1fr; gap: var(--sp-3); }
+  .nm-phase__list { flex-wrap: wrap; }
+  .nm-phase--night .nm-phase__list { flex-wrap: nowrap; }
+  .nm-copy { height: 100%; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding-right: var(--sp-2); scrollbar-width: thin; }
+  .nm-text { min-height: 0; }
+  .nm-map { height: 100%; min-height: 0; display: flex; flex-direction: column; padding: var(--sp-2); }
+  .nm-map svg { flex: 1; min-height: 0; height: 100%; }
+  .nm-map .caption { flex: none; margin-top: var(--sp-1); }
+  .nm-steps { padding-top: var(--sp-3); }
+}

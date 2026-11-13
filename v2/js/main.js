@@ -267,6 +267,7 @@
   // 보기 전환 · 주소: 관계도 #map, 그 밖의 보기 #list #timeline #night (인물 주소일 때는 주소를 그대로 둠)
   function setView(view) {
     S.view = VIEWS.includes(view) ? view : 'map';
+    document.body.dataset.view = S.view; // 그날 밤은 특검 필터·카드 머리 없이 지도를 크게 (app.css)
     $$('[data-view]').forEach(v => { const on = v.dataset.view === S.view; v.classList.toggle('is-active', on); v.setAttribute('aria-pressed', on); });
     $('#mapPane').hidden = S.view !== 'map';
     $('#listPane').hidden = S.view !== 'list';
