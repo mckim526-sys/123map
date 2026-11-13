@@ -228,3 +228,10 @@ body.picked .fig.off::after{inset:-6px}
 @media (hover:none){.fig-label em{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){body::before,.since,.elapsed,.lead,.sub,.fig{animation:none}.fig{translate:none}}
 @media (max-width:900px){.wrap::before{font-size:52vw;top:70px}.fig-no{top:-26px}}
+/* 오른쪽 위: 국회 운동장에 내려앉는 헬기 (아래 창문 진입 장면과 함께 두 사람을 감싼다) */
+.backdrop2{position:fixed;top:0;right:0;z-index:-2;width:min(760px,50vw);aspect-ratio:1450/570;background:url(assets/clock-landing.jpg) 50% 50%/cover no-repeat;filter:grayscale(.6) contrast(1.2) brightness(1.05);
+ -webkit-mask-image:radial-gradient(120% 140% at 100% 0%,#000 38%,transparent 78%);mask-image:radial-gradient(120% 140% at 100% 0%,#000 38%,transparent 78%)}
+body.picked .backdrop2{opacity:.5}
+@media (max-width:900px){.backdrop2{width:100vw;opacity:.55}}
+.backdrop2{aspect-ratio:1080/440;filter:grayscale(.5) contrast(1.25) brightness(1.35);-webkit-mask-image:radial-gradient(85% 120% at 45% 20%,#000 40%,transparent 80%);mask-image:radial-gradient(85% 120% at 45% 20%,#000 40%,transparent 80%)}
+.backdrop2{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 30%),linear-gradient(#000 55%,transparent 100%);-webkit-mask-composite:source-in;mask-image:linear-gradient(90deg,transparent 0,#000 30%),linear-gradient(#000 55%,transparent 100%);mask-composite:intersect}
