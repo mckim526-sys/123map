@@ -49,7 +49,7 @@
   const sorted = p => [...p.records].sort((a, b) => (CASE_RANK[a.id] ?? 9) - (CASE_RANK[b.id] ?? 9) || (AGENCY_RANK[a.agency] ?? 9) - (AGENCY_RANK[b.agency] ?? 9) || trialIds(p, b).length - trialIds(p, a).length);
 
   // ── 가운데 두 사람 ── (사진 교체: file·위치·출처 표기)
-  const FIG_PHOTO = {yoon: {file: 'clock-yoon.jpg', pos: '45% 30%', credit: ''}, keon: {file: 'clock-keon.jpg', pos: '50% 35%', credit: ''}};
+  const FIG_PHOTO = {yoon: {file: 'clock-yoon.jpg', pos: '50% 25%', credit: ''}, keon: {file: 'clock-keon.jpg', pos: '50% 35%', credit: ''}};
   const figFace = p => { const o = FIG_PHOTO[p.id]; return o ? `<img class="fig-img" src="assets/${esc(o.file)}" alt="${esc(p.name)}" style="object-position:${esc(o.pos)}">${o.credit ? `<span class="fig-credit">${esc(o.credit)}</span>` : ''}` : face(p, 'fig-img'); };
   const stage = document.getElementById('stage'), list = document.getElementById('cases');
   const FIGS = ['yoon', 'keon'].map(id => byId.get(id));
