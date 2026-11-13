@@ -216,3 +216,11 @@ body.in-app .appbar__nav { display: none; }
   .app-frame { top: 56px; }
   .appbar__tools button { padding: 0 var(--sp-2); font-size: var(--fs-caption); }
 }
+
+/* 흐른 시간은 한 곳에만: 큰 숫자가 화면에 보이는 동안 머리글 시간은 숨기고,
+   사진을 눌러 사건을 펼치면 본문 시간 줄을 접고 머리글 시간만 남김 */
+.appbar__clock { transition: opacity var(--motion); }
+body.hero-visible:not(.in-app):not(.picked) .appbar__clock { opacity: 0; pointer-events: none; }
+body.picked .since, body.picked .elapsed { display: none; }
+body.picked .wrap { grid-template-areas: "stage cases"; }
+body.picked .hero { display: none; }

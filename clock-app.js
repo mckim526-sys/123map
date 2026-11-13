@@ -32,6 +32,9 @@
     const b = e.target.closest('[data-app-btn]');
     if (b) { const t = frame.contentDocument && frame.contentDocument.getElementById(b.dataset.appBtn); if (t) t.click(); }
   });
+  // 큰 흐른 시간이 보이는 동안은 머리글 시간을 숨김 (clock.css)
+  const big = document.getElementById('elapsed');
+  if (big && 'IntersectionObserver' in window) new IntersectionObserver(([e]) => document.body.classList.toggle('hero-visible', e.isIntersecting), {rootMargin: '-56px 0px 0px 0px'}).observe(big);
   addEventListener('hashchange', sync);
   addEventListener('popstate', sync);
   sync();
