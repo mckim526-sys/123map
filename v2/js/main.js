@@ -33,11 +33,14 @@
     ListView.render(list, S.agency, sel);
     TimelineView.render(list, S.agency, sel);
     if (S.view === 'timeline') $('#resultCount').textContent = `${TimelineView.count()}건`;
+    NightView.render();
+    if (S.view === 'night') $('#resultCount').textContent = `장소 ${NightView.count()}곳`;
     if (S.view === 'map') $('#resultCount').textContent = `${$$('#nodeLayer .node').length}명`; // 관계도: 실제로 그려진 인원
     // 목록·타임라인에서는 관계도 안내 대신 보기별 설명을 표시
     if (S.view === 'list') $('#mapContext').textContent = '인물마다 대표 사건의 최근 판단과 진행 단계를 보여 줍니다 · 누르면 재판 상세가 열립니다';
     if (S.view === 'timeline') $('#mapContext').textContent = '선고·확정·결심·예정 일정을 달력으로 · 날짜를 누르면 그날 일정을 모아 봅니다 · 함께 선고된 피고인은 한 항목';
-    $('#viewTitle').textContent = { map: '인물·사건 연결 지도', list: '재판 목록', timeline: '재판 타임라인' }[S.view];
+    if (S.view === 'night') $('#mapContext').textContent = '2024년 12월 3일 밤, 어디서 무슨 일이 있었나 · 장소를 누르면 그곳의 일과 이어지는 재판을 봅니다';
+    $('#viewTitle').textContent = { map: '인물·사건 연결 지도', list: '재판 목록', timeline: '재판 타임라인', night: '그날 밤, 장소별로' }[S.view];
   }
 
   // 목록·타임라인으로 넘어가면 선택한 인물이 보이는 위치로 스크롤
@@ -258,6 +261,7 @@
     $('#mapPane').hidden = S.view !== 'map';
     $('#listPane').hidden = S.view !== 'list';
     $('#timelinePane').hidden = S.view !== 'timeline';
+    $('#nightPane').hidden = S.view !== 'night';
     render();
     $('#listPane').scrollTop = 0; $('#timelinePane').scrollTop = 0;
     revealSelection();

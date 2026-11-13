@@ -2,11 +2,11 @@
 (function boot() {
   const cfg = window.APP_CONFIG;
   const modules = ['js/util.js', 'js/model.js', 'js/layout.js', 'js/progress.js',
-    'js/views/map.js', 'js/views/detail.js', 'js/views/list.js', 'js/views/timeline.js',
+    'js/views/map.js', 'js/views/detail.js', 'js/views/list.js', 'js/views/timeline.js', 'js/views/night.js',
     'js/views/relation.js', 'js/views/dialogs.js', 'js/main.js'];
 
   // 파일을 고치면 VERSION을 올려 브라우저 캐시를 무효화
-  const VERSION = '82';
+  const VERSION = '84';
   const load = src => new Promise((resolve, reject) => {
     const s = document.createElement('script');
     s.src = src; s.async = false;

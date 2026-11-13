@@ -195,7 +195,7 @@ body.has-detail .workspace { grid-template-columns: minmax(0, 1fr) var(--panel-w
 .content-card__foot { flex: none; padding: var(--sp-3) var(--sp-5); border-top: 1px solid var(--border-default); background: var(--bg-subtle); }
 .pane { flex: 1; min-height: 0; background: var(--bg-page); }
 /* 목록·타임라인은 카드 안에서만 세로 스크롤 */
-.list-pane, .timeline-pane { overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; }
+.list-pane, .timeline-pane, .night-pane { overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; }
 
 /* 7 ── 관계도 */
 #mapPane { position: relative; display: flex; flex-direction: column; overflow: hidden; padding: var(--sp-4) var(--sp-6); background: var(--bg-subtle); }
@@ -846,4 +846,85 @@ body.has-detail .detail {
   .cal-dot--upcoming { background: var(--accent); }
   .cal-dot--other { background: var(--gray-400); }
   .cal-nav__title { min-width: 96px; font-size: var(--fs-subtitle); }
+}
+
+/* 9-2 ── 그날 밤: 장소별 개략도. 지금 장면 장소 = 파랑(선택됨), 지나온 장소 = 검정, 아직 = 회색 */
+.night-pane { padding: var(--sp-5); container-type: inline-size; }
+.nm { display: grid; grid-template-columns: minmax(280px, 360px) minmax(0, 1fr); grid-template-areas: "copy map" "steps steps"; gap: var(--sp-5) var(--sp-8); align-items: start; }
+.nm-copy { grid-area: copy; min-width: 0; }
+.nm-date { font-size: var(--fs-label); line-height: var(--lh-label); font-weight: var(--fw-bold); color: var(--text-secondary); }
+.nm-clock { margin-top: var(--sp-1); font-size: var(--fs-display); line-height: var(--lh-display); font-weight: var(--fw-heavy); font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+.nm-clock.is-text { font-size: var(--fs-headline); line-height: var(--lh-headline); }
+.nm-place-name { margin: var(--sp-1) 0 0; font-size: var(--fs-title); line-height: var(--lh-title); font-weight: var(--fw-bold); }
+.nm-text { margin-top: var(--sp-3); min-height: 6em; font-size: var(--fs-body); line-height: var(--lh-body); color: var(--text-primary); }
+.nm-list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--sp-1); }
+.nm-list button { width: 100%; display: grid; grid-template-columns: 72px 1fr; gap: var(--sp-3); padding: var(--sp-2); border: 0; border-radius: var(--r-sm); background: none;
+  text-align: left; font: inherit; font-size: var(--fs-body); line-height: var(--lh-body); color: var(--text-secondary); cursor: pointer; transition: background var(--motion); }
+.nm-list button:hover { background: var(--bg-subtle); }
+.nm-list button.is-active { background: var(--bg-accent); color: var(--text-primary); }
+.nm-list time { font-weight: var(--fw-bold); color: var(--text-primary); font-variant-numeric: tabular-nums; }
+.nm-src { margin-top: var(--sp-2); font-size: var(--fs-caption); line-height: var(--lh-caption); color: var(--text-tertiary); }
+.nm-src a { color: var(--text-secondary); text-decoration: underline; text-underline-offset: 2px; }
+.nm-controls { display: flex; align-items: center; gap: var(--sp-2); margin-top: var(--sp-4); }
+.nm-play span { font-size: var(--fs-caption); }
+.nm-cases { margin-top: var(--sp-5); padding-top: var(--sp-4); border-top: 1px solid var(--border-default); }
+.nm-cases__title { margin-bottom: var(--sp-2); font-size: var(--fs-caption); font-weight: var(--fw-bold); color: var(--text-tertiary); }
+.nm-cases__list { display: grid; gap: var(--sp-2); }
+.nm-case { display: flex; align-items: center; gap: var(--sp-2); padding: var(--sp-2) var(--sp-3); border: 1px solid var(--border-default); border-radius: var(--r-sm); background: var(--bg-page);
+  text-align: left; font: inherit; cursor: pointer; transition: border-color var(--motion), background var(--motion); }
+.nm-case:hover { border-color: var(--border-accent); background: var(--bg-subtle); }
+.nm-case span { min-width: 0; }
+.nm-case b { display: block; font-size: var(--fs-label); line-height: var(--lh-label); font-weight: var(--fw-bold); }
+.nm-case small { display: block; font-size: var(--fs-caption); line-height: var(--lh-caption); color: var(--text-tertiary); }
+.nm-map { grid-area: map; margin: 0; min-width: 0; padding: var(--sp-3); border-radius: var(--r-md); background: var(--bg-subtle); }
+.nm-map svg { display: block; width: 100%; height: auto; overflow: visible; }
+.nm-map .caption { margin-top: var(--sp-2); text-align: right; font-size: var(--fs-caption); color: var(--text-tertiary); }
+.nm-river { fill: none; stroke: var(--blue-100); stroke-width: 34; stroke-linecap: round; stroke-linejoin: round; }
+.nm-area { fill: var(--gray-400); font-size: 15px; letter-spacing: .2em; text-anchor: middle; font-family: var(--font); }
+.nm-area.river { fill: var(--blue-300); }
+.nm-inset rect { fill: var(--bg-page); stroke: var(--border-strong); stroke-dasharray: 4 4; }
+.nm-inset text { fill: var(--text-tertiary); font-size: 13px; font-family: var(--font); }
+.nm-trail { fill: none; stroke: var(--accent); stroke-opacity: .5; stroke-width: 2; stroke-dasharray: 5 6; animation: nm-dash 1.2s linear infinite; }
+@keyframes nm-dash { to { stroke-dashoffset: -22; } }
+.nm-pin { cursor: pointer; outline: none; }
+.nm-pin .halo { fill: var(--accent); opacity: 0; transition: opacity var(--motion); }
+.nm-pin .ring { fill: var(--bg-page); stroke: var(--gray-300); stroke-width: 1.5; transition: stroke var(--motion); }
+.nm-pin .dot { fill: var(--gray-400); transition: fill var(--motion); }
+.nm-pin .name { fill: var(--text-secondary); font-size: 19px; font-weight: 700; font-family: var(--font); paint-order: stroke; stroke: var(--bg-subtle); stroke-width: 5px; stroke-linejoin: round; }
+.nm-pin .sub { fill: var(--text-tertiary); font-size: 13px; font-family: var(--font); paint-order: stroke; stroke: var(--bg-subtle); stroke-width: 4px; }
+.nm-pin:hover .ring, .nm-pin:focus-visible .ring { stroke: var(--border-accent); }
+.nm-pin.is-seen .dot { fill: var(--gray-900); }
+.nm-pin.is-seen .ring { stroke: var(--gray-900); }
+.nm-pin.is-seen .name { fill: var(--text-primary); }
+.nm-pin.is-active .halo { opacity: .14; animation: nm-breathe 1.8s ease-in-out infinite; }
+.nm-pin.is-active .ring { stroke: var(--accent); stroke-width: 2.5; }
+.nm-pin.is-active .dot { fill: var(--accent); }
+.nm-pin.is-active .name { fill: var(--text-accent); font-weight: 800; }
+@keyframes nm-breathe { 50% { opacity: .05; } }
+.nm-steps { grid-area: steps; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: var(--sp-4); align-items: end; padding-top: var(--sp-4); border-top: 1px solid var(--border-default); }
+.nm-phase { min-width: 0; }
+.nm-phase__label { margin-bottom: var(--sp-2); font-size: var(--fs-caption); font-weight: var(--fw-bold); color: var(--text-tertiary); }
+.nm-phase__list { display: flex; gap: var(--sp-1); }
+.nm-phase--night .nm-phase__list { overflow-x: auto; scrollbar-width: thin; padding-bottom: var(--sp-1); }
+.nm-phase__list button { flex: none; height: 28px; padding: 0 var(--sp-2); border: 1px solid var(--border-default); border-radius: var(--r-pill); background: var(--bg-page);
+  font: inherit; font-size: var(--fs-caption); font-weight: var(--fw-medium); color: var(--text-tertiary); white-space: nowrap; font-variant-numeric: tabular-nums; cursor: pointer; transition: border-color var(--motion), color var(--motion); }
+.nm-phase__list button:hover { border-color: var(--border-accent); color: var(--text-accent); }
+.nm-phase__list button.is-past { color: var(--text-primary); border-color: var(--border-strong); }
+.nm-phase__list button.is-active { background: var(--gray-900); border-color: var(--gray-900); color: var(--text-inverse); font-weight: var(--fw-bold); }
+@media (prefers-reduced-motion: reduce) { .nm-trail, .nm-pin.is-active .halo { animation: none; } }
+/* 상세가 열려 영역이 좁아져도 지도가 작아지지 않게: 영역 너비 기준으로 한 줄 배치 (지도 먼저) */
+@container (max-width: 900px) {
+  .nm { grid-template-columns: 1fr; grid-template-areas: "map" "copy" "steps"; }
+  .nm-text { min-height: 0; }
+  .nm-cases__list { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+  .nm-steps { grid-template-columns: 1fr; }
+}
+@media (max-width: 760px) {
+  .night-pane { padding: var(--sp-4); }
+  .nm-map { padding: var(--sp-2); margin-inline: calc(-1 * var(--sp-2)); }
+  .nm-pin .name { font-size: 32px; stroke-width: 7px; }
+  .nm-pin .sub { display: none; }
+  .nm-area { font-size: 24px; } .nm-inset text { font-size: 22px; }
+  .nm-list button { grid-template-columns: 64px 1fr; }
+  .nm-cases__list { grid-template-columns: 1fr; }
 }

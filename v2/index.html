@@ -10,8 +10,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/tokens.css?v=82">
-  <link rel="stylesheet" href="css/app.css?v=82">
+  <link rel="stylesheet" href="css/tokens.css?v=84">
+  <link rel="stylesheet" href="css/app.css?v=84">
 </head>
 <body>
   <button class="sheet-backdrop" id="sheetBackdrop" aria-label="재판 상세 닫기" hidden></button>
@@ -38,6 +38,7 @@
               <button class="is-active" data-view="map">관계도</button>
               <button data-view="list">재판 목록</button>
               <button data-view="timeline">타임라인</button>
+              <button data-view="night">그날 밤</button>
             </nav>
             <label class="searchbox">
               <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5"/><path d="M13 13l4 4"/></svg>
@@ -76,6 +77,7 @@
           </div>
           <div class="pane list-pane" id="listPane" hidden></div>
           <div class="pane timeline-pane" id="timelinePane" hidden></div>
+          <div class="pane night-pane" id="nightPane" hidden></div>
 
           <!-- ④ 보조 정보 (위계 4) -->
           <div class="content-card__foot" id="mapFoot">
@@ -145,7 +147,7 @@
   <!-- 짧은 안내 (예: 선택한 인물에게 해당 특검 사건이 없을 때) -->
   <p class="toast" id="toast" role="status" aria-live="polite" hidden></p>
 
-  <script src="js/config.js?v=82"></script>
-  <script src="js/loader.js?v=82"></script>
+  <script src="js/config.js?v=84"></script>
+  <script src="js/loader.js?v=84"></script>
 </body>
 </html>
