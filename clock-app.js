@@ -11,7 +11,9 @@
     const h = location.hash, app = isApp(h);
     document.body.classList.toggle('in-app', app);
     frame.hidden = !app; tools.hidden = !app;
-    const view = /^#person\//.test(h) ? '' : h.slice(1);
+    // 인물 주소일 때는 지도 안에서 지금 보는 보기를 표시 (처음엔 관계도)
+    const inner = frame.contentDocument && frame.contentDocument.querySelector('[data-view].is-active');
+    const view = /^#person\//.test(h) ? (inner ? inner.dataset.view : 'map') : h.slice(1);
     document.querySelectorAll('[data-go]').forEach(a => a.setAttribute('aria-current', a.dataset.go === view ? 'page' : 'false'));
     if (!app) return;
     if (!frame.src) { frame.src = 'v2/' + h; frameHash = h; return; }
@@ -29,6 +31,10 @@
   });
   document.addEventListener('click', e => {
     if (e.target.closest('[data-home]')) { e.preventDefault(); history.pushState(null, '', location.pathname); sync(); scrollTo(0, 0); return; }
+    // 지도가 이미 열려 있으면 머리글 탭은 지도 안의 보기만 바꿈 (고른 인물·상세는 그대로)
+    const go = e.target.closest('[data-go]');
+    const innerTab = go && isApp(location.hash) && frame.contentDocument && frame.contentDocument.querySelector(`[data-view="${go.dataset.go}"]`);
+    if (innerTab) { e.preventDefault(); innerTab.click(); sync(); return; }
     const b = e.target.closest('[data-app-btn]');
     if (b) { const t = frame.contentDocument && frame.contentDocument.getElementById(b.dataset.appBtn); if (t) t.click(); }
   });

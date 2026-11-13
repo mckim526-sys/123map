@@ -980,7 +980,28 @@ body.has-detail .detail {
 
 /* clock.html 안에 들어간 경우: 머리글은 clock.html이 맡음 */
 .is-embedded .appbar { display: none; }
-.is-embedded main.container { padding-top: var(--sp-4); }
+/* 보기 탭은 clock.html의 남색 머리글로 올라감 → 특검 필터와 검색을 한 줄로, 여백을 줄여 관계도를 크게 */
+.is-embedded .container { max-width: 1600px; padding-inline: var(--sp-5); }
+.is-embedded .workspace { padding-block: var(--sp-3); gap: var(--sp-4); }
+.is-embedded .toolbar .segmented { display: none; }
+.is-embedded .toolbar { flex-direction: row-reverse; align-items: center; justify-content: space-between; gap: var(--sp-4); margin-bottom: var(--sp-3); }
+.is-embedded .toolbar__row:first-child { flex: 0 1 320px; }
+.is-embedded .toolbar__row:first-child .searchbox { width: 100%; height: var(--h-md); }
+.is-embedded .toolbar__row--filter { flex: 1; min-width: 0; }
+.is-embedded .content-card__head { padding: var(--sp-3) var(--sp-5); }
+.is-embedded .content-card__head > div { display: flex; align-items: baseline; gap: var(--sp-3); min-width: 0; }
+.is-embedded .content-card__meta { margin: 0; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.is-embedded .content-card__foot { display: flex; align-items: center; gap: var(--sp-5); padding: var(--sp-2) var(--sp-5); }
+.is-embedded .legend { flex: none; margin: 0; }
+.is-embedded .legend__note { margin: 0; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.is-embedded .graph { min-height: 240px; }
+@media (max-width: 760px) {
+  .is-embedded .container { padding-inline: var(--gutter); }
+  .is-embedded .toolbar { flex-direction: column; align-items: stretch; gap: var(--sp-2); }
+  .is-embedded .toolbar__row:first-child { flex: none; }
+  .is-embedded .content-card__head > div { display: block; }
+  .is-embedded .content-card__foot { display: block; }
+}
 
 /* 그날 밤: 넓은 화면에서는 스크롤 없이 지도가 영역을 가득 채움.
    왼쪽 설명·이어지는 재판만 그 칸 안에서 스크롤, 지도는 남은 높이에 맞춰 커짐 */

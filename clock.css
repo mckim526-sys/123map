@@ -205,16 +205,19 @@ body.in-app { overflow: hidden; }
 body.in-app .wrap, body.in-app .cue, body.in-app .bg-credit, body.in-app .foot, body.in-app .backdrop, body.in-app .backdrop2 { display: none; }
 .appbar__nav a[aria-current="page"] { background: var(--text-inverse); color: var(--gray-900); font-weight: var(--fw-bold); }
 .appbar__nav a[href$="#night"][aria-current="page"] { background: #e5484d; border-color: #e5484d; color: #fff; }
-/* 재판 지도를 열면 보기 전환은 지도 안의 탭이 맡고, 머리글 오른쪽엔 출처·업데이트 기록만 */
-body.in-app .appbar__nav { display: none; }
-.appbar__tools { display: flex; gap: var(--sp-2); margin-left: auto; }
+/* 재판 지도를 열어도 보기 탭은 남색 머리글에 (지도 안의 탭은 숨김). 오른쪽 끝에 출처·업데이트 기록 */
+.appbar__tools { display: flex; gap: var(--sp-2); margin-left: var(--sp-3); padding-left: var(--sp-3); border-left: 1px solid var(--on-dark-border); }
+body.in-app .appbar__nav { margin-left: var(--sp-6); margin-right: auto; }
+body.in-app .appbar__nav a { height: var(--h-md); padding: 0 var(--sp-4); font-size: var(--fs-body); }
 .appbar__tools[hidden] { display: none; }
 .appbar__tools button { height: var(--h-sm); padding: 0 var(--sp-3); border: 1px solid var(--on-dark-border); border-radius: var(--r-pill); background: none; font-size: var(--fs-label); font-weight: var(--fw-medium); color: var(--text-inverse); cursor: pointer; white-space: nowrap; }
 .appbar__tools button:hover { background: var(--on-dark-hover); }
 @media (max-width: 760px) {
   .appbar__inner { gap: var(--sp-2); }
   .app-frame { top: 56px; }
-  .appbar__tools button { padding: 0 var(--sp-2); font-size: var(--fs-caption); }
+  .appbar__tools { display: none !important; } /* 좁은 화면: 보기 탭만 */
+  body.in-app .appbar__nav { margin-left: auto; margin-right: 0; }
+  body.in-app .appbar__nav a { height: var(--h-sm); padding: 0 var(--sp-2); font-size: var(--fs-caption); }
 }
 
 /* 흐른 시간은 한 곳에만: 큰 숫자가 화면에 보이는 동안 머리글 시간은 숨기고,
