@@ -545,7 +545,7 @@ const MapView = (() => {
   // 어느 쪽이든 페이지 스크롤은 없음(관계도 영역 안에서만 움직임). view.x·y = 관계도 왼쪽 위의 영역 안 좌표
   const pane = $('#mapPane');
   const view = { s: 1, x: 0, y: 0 }, DEFAULT_S = .9, MAX_S = 2.5;
-  let viewKey = null, viewMode = null;
+  let viewKey = null, viewMode = null, moved = false; // moved: 사용자가 끌거나 확대했는지 (데스크톱 기본 보기 유지 판단)
   const fitS = () => Math.min(pane.clientWidth / graph.offsetWidth, pane.clientHeight / graph.offsetHeight);
   const minS = () => isMobile() ? Math.min(fitS() * .9, DEFAULT_S) : .5;
   function applyView() {
@@ -560,11 +560,12 @@ const MapView = (() => {
   function zoomAt(s, cx, cy) {
     s = Math.min(MAX_S, Math.max(minS(), s));
     const k = s / view.s;
-    view.x = cx - (cx - view.x) * k; view.y = cy - (cy - view.y) * k; view.s = s;
+    view.x = cx - (cx - view.x) * k; view.y = cy - (cy - view.y) * k; view.s = s; moved = true;
     clampView(); applyView();
   }
   // 기본 보기: 중심 인물(관계도 50%, 47%)을 영역 가운데로
   function resetView(fit = false) {
+    moved = false;
     if (!isMobile()) { view.s = 1; view.x = graph.offsetLeft; view.y = graph.offsetTop; applyView(); return; }
     view.s = fit ? Math.min(fitS(), 1) : Math.max(DEFAULT_S, fitS());
     view.x = pane.clientWidth / 2 - graph.offsetWidth * .5 * view.s;
@@ -581,6 +582,8 @@ const MapView = (() => {
     viewKey = layoutKey;
     if (layoutKey === 'intro') { if (prev !== 'intro') resetView(); else applyView(); return; }
     if (prev === null || prev === 'intro') { resetView(true); return; }
+    // 데스크톱에서 직접 옮기지 않았다면 기본 보기 그대로 ('○○ 중심' 줄이 생기거나 사라져 관계도 자리가 바뀌어도 어긋나지 않게)
+    if (!isMobile() && !moved) { resetView(); return; }
     clampView(); applyView();
   }
 
@@ -611,7 +614,7 @@ const MapView = (() => {
       const dx = ps[0].x - gesture.p0.x, dy = ps[0].y - gesture.p0.y;
       if (Math.hypot(dx, dy) > 6) dragged = true;
       if (!dragged) return;
-      view.x = gesture.vx + dx; view.y = gesture.vy + dy;
+      view.x = gesture.vx + dx; view.y = gesture.vy + dy; moved = true;
       clampView(); applyView();
     } else if (gesture.type === 'pinch' && ps.length >= 2) {
       dragged = true;

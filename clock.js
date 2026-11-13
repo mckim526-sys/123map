@@ -79,7 +79,8 @@
       <ol class="defendants">${ids.map(id => { const q = byId.get(id), rec = recordFor(q, p, r); if (!rec) return ''; const st = rec.stages || []; return `
         <li><a class="who" href="#person/${encodeURIComponent(q.id)}/${encodeURIComponent(rec.id)}">${face(q, 'who-img')}<span><b>${esc(q.name)}</b><small>${esc(q.role || '')}</small></span></a>
           <ol class="steps">${[0, 1, 2].map(i => { const s = st[i] || []; const t = planned(s) ? 'next' : decided(s) ? tone(s[0]) : 'muted'; return `<li class="${t}"><i>${stageName(i)}</i><b>${esc(s[0] || '—')}</b>${shortDate(s) ? `<small>${esc(shortDate(s))}</small>` : ''}</li>`; }).join('')}</ol></li>`; }).join('')}</ol>
-      <p class="trial-foot">${ids.length > 1 ? `함께 재판받는 ${ids.length}명` : '단독 재판'} · 이름을 누르면 재판 상세가 열립니다</p>
+      <p class="trial-foot">${ids.length > 1 ? `함께 재판받는 ${ids.length}명` : '단독 재판'} · 이름을 누르면 그 사람의 관계도와 재판 상세가 열립니다
+        <a class="to-map" href="#person/${encodeURIComponent(p.id)}/${encodeURIComponent(r.id)}">이 재판을 관계도에서 보기 →</a></p>
     </div>`;
   }
   function renderCases() {
@@ -87,7 +88,7 @@
     document.body.classList.toggle('picked', !!current);
     if (!current) { list.innerHTML = ''; return; }
     const p = byId.get(current);
-    list.innerHTML = `<h2 class="cases-title">${esc(p.name)}의 사건 <span class="badge">${p.records.length}건</span></h2>
+    list.innerHTML = `<h2 class="cases-title">${esc(p.name)}의 사건 <span class="badge">${p.records.length}건</span><a class="to-map" href="#person/${encodeURIComponent(p.id)}/${encodeURIComponent(sorted(p)[0].id)}">${esc(p.name)} 관계도 →</a></h2>
       <ol>${sorted(p).map((r, i) => { const h = headline(r), n = trialIds(p, r).length, open = openCase === r.id; return `
         <li class="case ${open ? 'open' : ''}" style="--i:${i}">
           <button class="case-head" data-case="${esc(r.id)}" aria-expanded="${open}">
