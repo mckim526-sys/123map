@@ -126,3 +126,8 @@ body.picked .arena .cases{background:#0b0d12c4;backdrop-filter:blur(6px);-webkit
 @media (max-width:900px){body.picked .arena .cases{padding:14px 10px 4px}}
 .backdrop{filter:grayscale(.8) contrast(1.15) brightness(.6)}
 .backdrop::after{background:radial-gradient(110% 80% at 50% 30%,#0b0d1233 0,#0b0d12c4 62%,#0b0d12 100%),linear-gradient(transparent 55%,#0b0d12)}
+/* 배경 사진은 오른쪽 아래 구석에만 두어 가운데 두 사람과 겹치지 않게 */
+.backdrop{inset:auto 0 0 auto;width:min(600px,38vw);aspect-ratio:1140/990;height:auto;transform:none;background-position:50% 50%;background-size:cover;filter:grayscale(.7) contrast(1.15) brightness(.78);
+ -webkit-mask-image:radial-gradient(115% 115% at 100% 100%,#000 45%,transparent 80%);mask-image:radial-gradient(115% 115% at 100% 100%,#000 45%,transparent 80%)}
+.backdrop::after{background:none}
+@media (max-width:900px){.backdrop{width:70vw;opacity:.55}}
