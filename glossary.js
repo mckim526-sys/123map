@@ -45,7 +45,7 @@ const GLOSSARY = [
     if (!root || !root.isConnected) return;
     const done = new Set([...root.querySelectorAll('.term')].map(el => el.dataset.term));
     const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {acceptNode: n =>
-      !n.nodeValue.trim() || n.parentElement.closest('.term,button,a,select,option,h2,input,.term-tip,.eyebrow,.relation-kicker') ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT});
+      !n.nodeValue.trim() || n.parentElement.closest('.term,button,a,select,option,h2,input,.term-tip,.eyebrow,.relation-kicker,.relation-table') ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT});
     const nodes = []; while (walker.nextNode()) nodes.push(walker.currentNode);
     for (let node of nodes) {
       for (const [key, re] of GLOSSARY) {
