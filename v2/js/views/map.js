@@ -226,6 +226,7 @@ const MapView = (() => {
   const clamp01 = v => Math.min(1, Math.max(0, v));
 
   function animate(before, dots, W, H, key, oldEdges = [], [gsx, gsy] = [1, 1]) {
+    measureBox(); // 움직이기 전, 최종 자리 기준으로 '전체가 보이는' 범위를 기록
     cancelAnimationFrame(anim);
     const changed = key !== lastKey;
     lastKey = key;
@@ -564,9 +565,30 @@ const MapView = (() => {
     clampView(); applyView();
   }
   // 기본 보기: 중심 인물(관계도 50%, 47%)을 영역 가운데로
+  // 인물·사건 뱃지의 최종 자리(%)로 만든 범위. 데스크톱 기본 보기는 이 범위가 영역 안에 다 들어오게 맞춤
+  let box = null;
+  function measureBox() {
+    const els = [...nodeLayer.children, ...groupLayer.children].filter(el => el.style.left && el.style.top);
+    if (!els.length) { box = null; return; }
+    const xs = els.map(el => parseFloat(el.style.left)), ys = els.map(el => parseFloat(el.style.top));
+    box = { x0: Math.min(...xs), x1: Math.max(...xs), y0: Math.min(...ys), y1: Math.max(...ys) };
+  }
+  function fitDesktop() {
+    view.s = 1; view.x = graph.offsetLeft; view.y = graph.offsetTop;
+    if (!box) return;
+    const gw = graph.offsetWidth, gh = graph.offsetHeight;
+    const PAD = { l: 48, r: 72, t: 40, b: 60 }; // 인물 원·이름표 크기 + 오른쪽 확대 버튼 자리
+    const bx0 = box.x0 / 100 * gw - PAD.l, bx1 = box.x1 / 100 * gw + PAD.r, by0 = box.y0 / 100 * gh - PAD.t, by1 = box.y1 / 100 * gh + PAD.b;
+    const vw = pane.clientWidth, vh = pane.clientHeight - graph.offsetTop; // 관계도에 쓸 수 있는 영역
+    const bw = bx1 - bx0, bh = by1 - by0;
+    if (bx0 >= 0 && by0 >= 0 && bx1 <= vw - graph.offsetLeft && by1 <= vh) return; // 이미 다 보임
+    view.s = Math.max(.5, Math.min(1, vw / bw, vh / bh));
+    view.x = (vw - bw * view.s) / 2 - bx0 * view.s;
+    view.y = graph.offsetTop + (vh - bh * view.s) / 2 - by0 * view.s;
+  }
   function resetView(fit = false) {
     moved = false;
-    if (!isMobile()) { view.s = 1; view.x = graph.offsetLeft; view.y = graph.offsetTop; applyView(); return; }
+    if (!isMobile()) { fitDesktop(); applyView(); return; }
     view.s = fit ? Math.min(fitS(), 1) : Math.max(DEFAULT_S, fitS());
     view.x = pane.clientWidth / 2 - graph.offsetWidth * .5 * view.s;
     view.y = pane.clientHeight / 2 - graph.offsetHeight * .47 * view.s;
