@@ -95,7 +95,7 @@ body.picked .cue{display:none}
 
 /* 배경 사진 + 옆으로 펼치는 배치 */
 body{background:var(--bg)}
-.backdrop{position:fixed;inset:0;z-index:-2;background:url(assets/clock-heli.jpg) 50% 35%/cover no-repeat;filter:grayscale(.85) contrast(1.1) brightness(.42);transform:scale(1.05)}
+.backdrop{position:fixed;inset:0;z-index:-2;background:url(assets/clock-window.jpg) 55% 30%/cover no-repeat;filter:grayscale(.85) contrast(1.1) brightness(.42);transform:scale(1.05)}
 .backdrop::after{content:'';position:absolute;inset:0;background:radial-gradient(110% 80% at 50% 30%,#0b0d1255 0,#0b0d12d9 60%,#0b0d12 100%),linear-gradient(transparent 55%,#0b0d12)}
 body::before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.06;background-image:repeating-linear-gradient(0deg,#fff 0 1px,transparent 1px 3px)}
 .hero{min-height:auto;padding:110px 16px 0}
@@ -124,3 +124,5 @@ body.picked .cue{display:none}
  .bg-credit{position:static;text-align:center;padding:0 16px 16px}}
 body.picked .arena .cases{background:#0b0d12c4;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border:1px solid #ffffff14;border-radius:10px;padding:18px 18px 8px}
 @media (max-width:900px){body.picked .arena .cases{padding:14px 10px 4px}}
+.backdrop{filter:grayscale(.8) contrast(1.15) brightness(.6)}
+.backdrop::after{background:radial-gradient(110% 80% at 50% 30%,#0b0d1233 0,#0b0d12c4 62%,#0b0d12 100%),linear-gradient(transparent 55%,#0b0d12)}
