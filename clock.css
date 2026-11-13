@@ -235,3 +235,9 @@ body.picked .backdrop2{opacity:.5}
 @media (max-width:900px){.backdrop2{width:100vw;opacity:.55}}
 .backdrop2{aspect-ratio:1080/440;filter:grayscale(.5) contrast(1.25) brightness(1.35);-webkit-mask-image:radial-gradient(85% 120% at 45% 20%,#000 40%,transparent 80%);mask-image:radial-gradient(85% 120% at 45% 20%,#000 40%,transparent 80%)}
 .backdrop2{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 30%),linear-gradient(#000 55%,transparent 100%);-webkit-mask-composite:source-in;mask-image:linear-gradient(90deg,transparent 0,#000 30%),linear-gradient(#000 55%,transparent 100%);mask-composite:intersect}
+/* 당시 상황 사진은 배경으로만: 대각선 두 구석에 작고 은은하게 */
+.backdrop2{width:min(520px,34vw);opacity:.75;filter:grayscale(.7) contrast(1.2) brightness(1.15)}
+.backdrop{inset:auto auto 0 0;width:min(440px,30vw);opacity:.7;filter:grayscale(.85) contrast(1.15) brightness(.75);
+ -webkit-mask-image:radial-gradient(120% 120% at 0% 100%,#000 35%,transparent 75%);mask-image:radial-gradient(120% 120% at 0% 100%,#000 35%,transparent 75%)}
+body.picked .backdrop{opacity:.25}
+@media (max-width:900px){.backdrop2{width:70vw;opacity:.45}.backdrop{width:60vw;opacity:.4}}
