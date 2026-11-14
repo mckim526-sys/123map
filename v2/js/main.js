@@ -5,7 +5,9 @@
 //   #map                   전체 관계도
 //   #person/<id>[/<case>]  인물 재판 상세
 (() => {
-  const S = { view: 'map', agency: 'all', query: '', selected: Model.ROOT_ID, caseId: '', detailOpen: false, intro: true, sheet: 'half' };
+  const S = { view: 'map', agency: 'all', query: '', selected: Model.ROOT_ID, caseId: '', detailOpen: false, intro: true, sheet: 'half', mobileMode: 'ego' };
+  // mobileMode: 모바일 관계도 — 'ego'(목록형, 기본) / 'graph'
+  const egoOn = () => S.view === 'map' && isMobile() && S.mobileMode === 'ego';
   // sheet: 모바일 상세 시트 높이 — 'half'(관계도가 위에 보임) / 'full'
   let graphSize = '';
 
@@ -17,10 +19,17 @@
   // ── 렌더링 ──
   function render() {
     const home = S.agency === 'all' && !S.detailOpen && !S.query;
+    const ego = egoOn();
+    document.body.classList.toggle('is-ego', ego);
+    $('#mapPane').hidden = S.view !== 'map' || ego;
+    $('#egoPane').hidden = !ego;
+    const modeBtn = $('#mapModeBtn');
+    modeBtn.hidden = !(S.view === 'map' && isMobile());
+    modeBtn.textContent = ego ? '그래프로 보기' : '목록형으로 보기';
     // 관계도 높이를 바꾸는 범례·아래 영역 표시를 먼저 정함 → 그린 뒤 크기가 바뀌어 한 번 더 그리는 일이 없게
     $('#mapLegend').hidden = S.intro && home; // 오프닝에는 같은 재판 선이 없음
     // 모바일 오프닝은 범례가 숨겨지고 안내문도 모바일에서 숨겨 빈 띠가 남으므로 아래 영역 전체를 숨김
-    $('#mapFoot').hidden = S.view !== 'map' || (S.intro && home && isMobile());
+    $('#mapFoot').hidden = S.view !== 'map' || ego || (S.intro && home && isMobile());
     $('#mapFocus').hidden = !(S.detailOpen && S.view === 'map'); // '○○ 중심' 줄도 관계도 높이에 영향
     // 이번에 그릴 때의 관계도 크기를 기록 → 같은 크기로 크기 감시가 또 그리지 않게
     const gEl = $('#graph'); // 모바일 확대·축소(transform)와 무관한 실제 크기
@@ -28,14 +37,14 @@
     if (home) S.selected = Model.ROOT_ID;
     const list = Model.filterPeople(S.agency, S.query);
     $('#resultCount').textContent = `${list.length}명`; // 타임라인이면 아래에서 일정 건수로 바꿈
-    if (S.intro && home) MapView.renderIntro(); else MapView.render(S, list);
+    if (ego) EgoView.render(S, list); else if (S.intro && home) MapView.renderIntro(); else MapView.render(S, list);
     const sel = S.detailOpen ? { id: S.selected, caseId: S.caseId } : null;
     ListView.render(list, S.agency, sel);
     TimelineView.render(list, S.agency, sel);
     if (S.view === 'timeline') $('#resultCount').textContent = `${TimelineView.count()}건`;
     NightView.render();
     if (S.view === 'night') $('#resultCount').textContent = `장소 ${NightView.count()}곳`;
-    if (S.view === 'map') $('#resultCount').textContent = `${$$('#nodeLayer .node').length}명`; // 관계도: 실제로 그려진 인원
+    if (S.view === 'map' && !ego) $('#resultCount').textContent = `${$$('#nodeLayer .node').length}명`; // 관계도: 실제로 그려진 인원
     // 목록·타임라인에서는 관계도 안내 대신 보기별 설명을 표시
     if (S.view === 'list') $('#mapContext').textContent = '인물마다 대표 사건의 최근 판단과 진행 단계를 보여 줍니다 · 누르면 재판 상세가 열립니다';
     if (S.view === 'timeline') $('#mapContext').textContent = '선고·확정·결심·예정 일정을 달력으로 · 날짜를 누르면 그날 일정을 모아 봅니다 · 함께 선고된 피고인은 한 항목';
@@ -224,6 +233,27 @@
   // ── 클릭 위임 ──
   document.addEventListener('click', e => {
     const t = e.target;
+    // 모바일 목록형 관계도
+    const egoTab = t.closest('[data-ego-tab]');
+    if (egoTab) { EgoView.setTab(egoTab.dataset.egoTab); return render(); }
+    const egoMore = t.closest('[data-ego-more]');
+    if (egoMore) { EgoView.expand(egoMore.dataset.egoMore); return render(); }
+    const egoBack = t.closest('[data-ego-back]');
+    if (egoBack) { EgoView.back(+egoBack.dataset.egoBack); return S.detailOpen ? open(EgoView.center()) : render(); }
+    const egoReset = t.closest('[data-ego-reset]');
+    if (egoReset) { EgoView.reset(egoReset.dataset.egoReset); return render(); }
+    const egoTo = t.closest('[data-ego]');
+    if (egoTo) {
+      // 상세가 열려 있으면 상세도 따라감(왼쪽이 바뀌면 오른쪽이 따라감), 아니면 중심만 옮김
+      if (S.query) { S.query = ''; $('#searchInput').value = ''; }
+      EgoView.go(egoTo.dataset.ego);
+      return S.detailOpen ? open(egoTo.dataset.ego) : render();
+    }
+    if (t.closest('#mapModeBtn')) {
+      S.mobileMode = S.mobileMode === 'ego' ? 'graph' : 'ego';
+      render();
+      return MapView.centerOnMobile(S.agency);
+    }
     if (t.closest('[data-intro-skip]')) { history.pushState(null, '', '#map'); return applyRoute(); }
     if (t.closest('[data-close-detail]') || t.closest('#sheetBackdrop')) return closeDetail();
     const edge = t.closest('[data-edge]');
@@ -271,7 +301,7 @@
     S.view = VIEWS.includes(view) ? view : 'map';
     document.body.dataset.view = S.view; // 그날 밤은 특검 필터·카드 머리 없이 지도를 크게 (app.css)
     $$('[data-view]').forEach(v => { const on = v.dataset.view === S.view; v.classList.toggle('is-active', on); v.setAttribute('aria-pressed', on); });
-    $('#mapPane').hidden = S.view !== 'map';
+    $('#mapPane').hidden = S.view !== 'map' || egoOn();
     $('#listPane').hidden = S.view !== 'list';
     $('#timelinePane').hidden = S.view !== 'timeline';
     $('#nightPane').hidden = S.view !== 'night';
@@ -303,6 +333,9 @@
       if (g.offsetWidth && g.offsetHeight && key !== graphSize) render();
     }, 80);
   }).observe($('#graph'));
+
+  // 모바일 ↔ 데스크톱 폭이 바뀌면 관계도 방식(목록형/그래프)이 바뀌므로 다시 그림
+  matchMedia('(max-width:760px)').addEventListener('change', () => { render(); MapView.centerOnMobile(S.agency); });
 
   Dialogs.init();
   applyRoute();

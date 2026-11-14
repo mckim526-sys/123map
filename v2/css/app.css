@@ -1040,3 +1040,97 @@ body[data-view="night"] .toolbar, body[data-view="night"] .content-card__head { 
 .graph.has-case .solo-stem, .graph.is-spotlight .solo-stem { opacity: .35; }
 .graph .solo-stem.is-active { opacity: 1; stroke: var(--gray-900); stroke-width: 1.5; }
 @media (prefers-reduced-motion: reduce) { .solo-stem { animation: none; } }
+
+/* 모바일 관계도(목록형, 2026-11-14 모바일 시안 반영): 인물 중심 · 사건 중심
+   그래프 대신 사건 카드. 같은 카드 안에 있다 = 연결. 선택 표시는 검정 채움, 파랑은 '선택됨'에만 */
+.map-mode { display: none; }
+.ego-pane { overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; background: var(--bg-subtle); }
+.ego-seg { position: sticky; top: 0; z-index: var(--z-sticky); display: flex; margin: 0; border-radius: 0; padding: var(--sp-2) var(--sp-4); background: var(--bg-subtle); height: auto; }
+.ego-seg button { flex: 1; height: var(--h-sm); }
+.ego-body { display: flex; flex-direction: column; gap: var(--sp-3); padding: 0 var(--sp-4) var(--sp-6); }
+.ego-hint { margin: 0; font-size: var(--fs-caption); line-height: var(--lh-caption); color: var(--text-tertiary); }
+
+/* 지나온 인물 · 출발 인물 */
+.ego-trail { display: flex; align-items: center; gap: var(--sp-1); overflow-x: auto; scrollbar-width: none; margin-inline: calc(-1 * var(--sp-4)); padding-inline: var(--sp-4); }
+.ego-trail::-webkit-scrollbar { display: none; }
+.ego-trail i { flex: none; font-style: normal; color: var(--text-tertiary); }
+.ego-trail button {
+  flex: none; height: var(--h-sm); padding: 0 var(--sp-3); border: 1px solid var(--border-default); border-radius: var(--r-pill);
+  background: var(--bg-page); font-size: var(--fs-label); color: var(--text-secondary);
+}
+.ego-trail button[aria-current="true"] { background: var(--gray-900); border-color: var(--gray-900); color: var(--text-inverse); font-weight: var(--fw-bold); }
+.ego-trail--start span { flex: none; margin-right: var(--sp-1); font-size: var(--fs-caption); font-weight: var(--fw-medium); color: var(--text-tertiary); }
+
+/* 중심 인물 */
+.ego-center { display: flex; align-items: center; gap: var(--sp-3); padding: var(--sp-3); border: 1px solid var(--border-default); border-radius: var(--r-md); background: var(--bg-page); }
+.ego-center__ava { --s: 56px; }
+.ego-center__txt { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.ego-center__txt b { font-size: var(--fs-title); line-height: var(--lh-title); font-weight: var(--fw-heavy); }
+.ego-center .btn { flex: none; }
+
+/* 사건 카드 */
+.ego-card { border: 1px solid var(--border-default); border-radius: var(--r-md); background: var(--bg-page); overflow: clip; }
+.ego-card.is-active { background: var(--bg-accent); }
+.ego-card.is-active .ego-card__head b { color: var(--text-accent); }
+.ego-card__head {
+  display: flex; align-items: center; gap: var(--sp-2); width: 100%; min-height: var(--h-lg); padding: var(--sp-3) var(--sp-3) var(--sp-2);
+  border: 0; background: none; text-align: left;
+}
+.ego-card__head > span:first-child { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.ego-card__head b { font-size: var(--fs-subtitle); line-height: var(--lh-subtitle); }
+.ego-card__head .caption { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ego-card__head > i { font-style: normal; font-size: var(--fs-title); color: var(--text-tertiary); }
+.ego-card__n { flex: none; font-size: var(--fs-caption); font-weight: var(--fw-bold); color: var(--text-secondary); }
+.ego-solo { margin: 0; padding: 0 var(--sp-3) var(--sp-3); font-size: var(--fs-caption); color: var(--text-tertiary); }
+
+/* 사람 타일: 4칸 격자 */
+.ego-tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--sp-2) var(--sp-1); padding: var(--sp-1) var(--sp-2) var(--sp-3); }
+.ego-tile {
+  display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 0; padding: var(--sp-1) 2px;
+  border: 0; border-radius: var(--r-sm); background: none; text-align: center;
+}
+.ego-tile:active { background: var(--bg-muted); }
+.ego-tile__ava { --s: 48px; margin-bottom: 2px; }
+.ego-tile b { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--fs-label); line-height: var(--lh-label); }
+.ego-tile > span:last-child {
+  max-width: 100%; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  font-size: var(--fs-caption); line-height: var(--lh-caption); color: var(--text-tertiary); word-break: keep-all;
+}
+.ego-tile.is-selected b { color: var(--text-accent); }
+.ego-tile--more .ego-tile__ava { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%; background: var(--bg-muted); font-size: var(--fs-label); font-weight: var(--fw-bold); color: var(--text-secondary); }
+
+/* 사건 중심 */
+.ego-agency { display: flex; align-items: baseline; gap: var(--sp-2); margin: var(--sp-2) 0 0; font-size: var(--fs-label); font-weight: var(--fw-bold); }
+.ego-agency span { font-size: var(--fs-caption); font-weight: var(--fw-regular); color: var(--text-tertiary); }
+.ego-case { border: 1px solid var(--border-default); border-radius: var(--r-md); background: var(--bg-page); overflow: clip; }
+.ego-case summary { display: flex; align-items: center; gap: var(--sp-3); min-height: var(--h-lg); padding: var(--sp-2) var(--sp-3); list-style: none; cursor: pointer; }
+.ego-case summary::-webkit-details-marker { display: none; }
+.ego-case summary > i { font-style: normal; font-size: var(--fs-title); color: var(--text-tertiary); transition: transform var(--motion); }
+.ego-case[open] summary > i { transform: rotate(90deg); }
+.ego-case__stack { flex: none; display: flex; width: 60px; }
+.ego-case__stack .ava { box-shadow: 0 0 0 2px var(--bg-page); }
+.ego-case__stack .ava + .ava { margin-left: -12px; }
+.ego-case__txt { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.ego-case__txt b { font-size: var(--fs-body); line-height: var(--lh-label); }
+.ego-case__rows { border-top: 1px solid var(--border-default); }
+.ego-row {
+  display: flex; align-items: center; gap: var(--sp-3); width: 100%; min-height: 56px; padding: var(--sp-2) var(--sp-3);
+  border: 0; border-bottom: 1px solid var(--border-default); background: none; text-align: left;
+}
+.ego-row:last-child { border-bottom: 0; }
+.ego-row.is-selected { background: var(--bg-accent); }
+.ego-row.is-selected b { color: var(--text-accent); }
+.ego-row__who { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.ego-row__who b { font-size: var(--fs-label); }
+.ego-row__who .caption { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ego-row__v { flex: none; max-width: 45%; display: flex; flex-direction: column; align-items: flex-end; gap: 2px; font-size: var(--fs-caption); font-weight: var(--fw-bold); text-align: right; }
+.ego-row__v.is-pending { font-weight: var(--fw-medium); color: var(--text-tertiary); }
+
+@media (max-width: 760px) {
+  .map-mode { display: inline-flex; align-items: center; }
+  .content-card__head { flex-direction: row; align-items: flex-start; }
+  .content-card__head > div { flex: 1; min-width: 0; }
+  .content-card__head .map-mode { flex: none; align-self: flex-start; }
+  /* 목록형에서는 상세 시트가 열려도 위쪽 목록이 보이고 스크롤됨 */
+  body.has-detail.is-ego #egoPane { display: block; }
+}

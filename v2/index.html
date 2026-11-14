@@ -17,8 +17,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@700;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/tokens.css?v=108">
-  <link rel="stylesheet" href="css/app.css?v=108">
+  <link rel="stylesheet" href="css/tokens.css?v=109">
+  <link rel="stylesheet" href="css/app.css?v=109">
 </head>
 <body>
   <button class="sheet-backdrop" id="sheetBackdrop" aria-label="재판 상세 닫기" hidden></button>
@@ -62,6 +62,8 @@
               <h2 class="content-card__title"><span id="viewTitle">인물·사건 연결 지도</span><span class="badge badge--neutral" id="resultCount">–</span></h2>
               <p class="content-card__meta" id="mapContext"></p>
             </div>
+            <!-- 모바일 관계도: 목록형(기본) ↔ 그래프 전환 -->
+            <button class="btn btn--sm btn--secondary map-mode" id="mapModeBtn" hidden></button>
           </div>
 
           <div class="pane" id="mapPane">
@@ -79,6 +81,8 @@
               <button data-zoom="fit" aria-label="관계도 전체 보기">전체</button>
             </div>
           </div>
+          <!-- 모바일 관계도(목록형): 인물 중심 · 사건 중심 -->
+          <div class="pane ego-pane" id="egoPane" hidden></div>
           <div class="pane list-pane" id="listPane" hidden></div>
           <div class="pane timeline-pane" id="timelinePane" hidden></div>
           <div class="pane night-pane" id="nightPane" hidden></div>
@@ -136,8 +140,8 @@
   <!-- 짧은 안내 (예: 선택한 인물에게 해당 특검 사건이 없을 때) -->
   <p class="toast" id="toast" role="status" aria-live="polite" hidden></p>
 
-  <script src="js/config.js?v=108"></script>
-  <script src="js/loader.js?v=108"></script>
+  <script src="js/config.js?v=109"></script>
+  <script src="js/loader.js?v=109"></script>
   <script src="../elapsed-bar.js?v=3" defer></script>
 </body>
 </html>

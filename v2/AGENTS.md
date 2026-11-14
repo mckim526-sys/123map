@@ -24,6 +24,7 @@
 | `js/views/detail.js` | 오른쪽 상세 패널(모바일은 아래 시트), 혐의별 나란히 보기 |
 | `js/views/list.js` · `timeline.js` | 재판 목록 · 재판 타임라인 |
 | `js/views/relation.js` | 선·연결 인물을 누를 때 뜨는 연결 팝업 |
+| `js/views/ego.js` | 모바일 관계도 목록형(인물 중심 · 사건 중심). 760px 이하 기본, 그래프와 전환 |
 | `js/views/dialogs.js` | 출처·보도 대화상자 |
 | `js/main.js` | 앱 상태(`S`), 주소(#start / #map / #person/…), 클릭 처리, 연동 규칙 |
 | `css/tokens.css` | 디자인 토큰 — **값은 여기서만** 정의 |

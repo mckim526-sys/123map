@@ -1,6 +1,7 @@
 // Reader-facing record of what changed on the site. Add one plain-language line per published change
 // (newest first). The "recently checked trials" list below it is built automatically from lastChecked.
 const SITE_CHANGES = [
+  ['2026-11-14', '휴대폰에서 관계도를 목록형(인물 중심·사건 중심)으로 볼 수 있게 했습니다. 기본은 목록형이고 그래프로 바꿔 볼 수 있습니다.'],
   ['2026-11-14', '사이트의 업데이트 기록 버튼과 창을 없앴습니다. 이 목록은 내부 기록으로만 남깁니다.'],
   ['2026-11-14', '처음 화면에 "다가오는 선고"를 넣었습니다. 앞으로 7일 안의 선고 일정(없으면 가장 가까운 3건)을 보여 주고, 누르면 그 재판의 관계도가 열립니다.'],
   ['2026-11-14', '관계도에서 혼자 재판받는 사건 이름표를 그 사람 가까이에 두고 점선으로 이어, 누구의 사건인지 바로 보이게 했습니다. 내용이 긴 사건 설명은 화면 안에 들어오도록 옆에 띄웁니다.'],

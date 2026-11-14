@@ -50,7 +50,8 @@
     const t0 = performance.now(); let last = '', same = 0;
     while (performance.now() - t0 < limit) {
       await new Promise(r => requestAnimationFrame(r));
-      const d = frame.contentDocument, el = d && d.querySelector(`.node[data-id="${CSS.escape(id)}"] .node__dot`);
+      const d = frame.contentDocument, el = d && (d.querySelector(`.node[data-id="${CSS.escape(id)}"] .node__dot`)
+        || (d.body.classList.contains('is-ego') && d.querySelector('.ego-center .ego-center__ava'))); // 휴대폰 목록형: 가운데 인물 사진
       if (!el) continue;
       const r = el.getBoundingClientRect(), k = [r.left, r.top, r.width].map(Math.round).join();
       if (r.width && k === last) { if (++same >= 4) return r; } else { last = k; same = 0; }
