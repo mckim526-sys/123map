@@ -1,6 +1,7 @@
 // Reader-facing record of what changed on the site. Add one plain-language line per published change
 // (newest first). The "recently checked trials" list below it is built automatically from lastChecked.
 const SITE_CHANGES = [
+  ['2026-11-14', '관계도에서 사건 이름표(내란 본류, 수사 외압 등)에 마우스를 올리면 어떤 사건인지, 왜 이 사람들이 함께 묶였는지, 특검이 기소한 혐의와 지금 단계를 말풍선으로 보여 줍니다.'],
   ['2026-11-14', '처음 화면에서 관계도로 넘어갈 때 버벅이던 문제를 줄였습니다. 관계도를 미리 불러 두고, 인물을 고르면 미리 그려 둡니다.'],
   ['2026-11-14', '윤석열·김건희 사진을 처음 화면과 같은 사진으로 관계도·재판 목록·상세에서도 보여 줍니다.'],
   ['2026-11-14', '처음 화면에서 사건을 누르면 인물 사진이 관계도의 그 사람 자리로 날아가며 관계도가 펼쳐지는 전환을 넣었습니다.'],

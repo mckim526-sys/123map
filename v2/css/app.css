@@ -1000,3 +1000,32 @@ body[data-view="night"] .toolbar, body[data-view="night"] .content-card__head { 
   .map-zoom button { width: 32px; height: 28px; font-size: var(--fs-body); }
   .map-zoom button[data-zoom="fit"] { width: 40px; }
 }
+
+/* 사건 뱃지 말풍선 (map.js bindCaseTip): 흰 카드 + 꼬리. 기소 혐의는 '특검이 기소한 혐의'로 구분 */
+.case-tip {
+  position: fixed; z-index: var(--z-popover); width: 320px; max-width: calc(100vw - 16px); padding: var(--sp-4);
+  border: 1px solid var(--border-default); border-radius: var(--r-md); background: var(--bg-page); box-shadow: var(--shadow-3);
+  pointer-events: none; opacity: 0; transform: translateY(4px); transition: opacity .16s ease, transform .16s ease;
+}
+.case-tip.is-above { transform: translateY(-4px); }
+.case-tip.is-in { opacity: 1; transform: none; }
+.case-tip::before { /* 꼬리 */
+  content: ''; position: absolute; top: -6px; left: calc(var(--ax, 50%) - 6px); width: 12px; height: 12px; rotate: 45deg;
+  background: var(--bg-page); border-left: 1px solid var(--border-default); border-top: 1px solid var(--border-default);
+}
+.case-tip.is-above::before { top: auto; bottom: -6px; rotate: 225deg; }
+.case-tip p { margin: 0; }
+.case-tip__eyebrow { font-size: var(--fs-caption); line-height: var(--lh-caption); font-weight: var(--fw-bold); color: var(--text-accent); }
+.case-tip__title { margin-top: var(--sp-1) !important; font-size: var(--fs-subtitle); line-height: var(--lh-subtitle); font-weight: var(--fw-heavy); color: var(--text-primary); }
+.case-tip__why { margin-top: var(--sp-2) !important; font-size: var(--fs-label); line-height: var(--lh-label); color: var(--text-secondary); }
+.case-tip__label { margin-top: var(--sp-3) !important; padding-top: var(--sp-3); border-top: 1px solid var(--border-default);
+  font-size: var(--fs-caption); line-height: var(--lh-caption); font-weight: var(--fw-bold); color: var(--text-tertiary); }
+.case-tip__charges { list-style: none; margin: var(--sp-1) 0 0; padding: 0; display: grid; gap: var(--sp-2); }
+.case-tip__charges b { display: block; font-size: var(--fs-label); line-height: var(--lh-label); font-weight: var(--fw-bold); color: var(--text-primary); }
+.case-tip__charges span { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  font-size: var(--fs-caption); line-height: var(--lh-caption); color: var(--text-secondary); }
+.case-tip__more { margin-top: var(--sp-1) !important; font-size: var(--fs-caption); color: var(--text-tertiary); }
+.case-tip__status { margin-top: var(--sp-3) !important; display: flex; gap: var(--sp-2); font-size: var(--fs-caption); line-height: var(--lh-caption); color: var(--text-primary); }
+.case-tip__status span { flex: none; font-weight: var(--fw-bold); color: var(--text-tertiary); }
+.case-tip__hint { margin-top: var(--sp-3) !important; font-size: var(--fs-caption); color: var(--text-tertiary); }
+@media (prefers-reduced-motion: reduce) { .case-tip { transition: none; transform: none; } }

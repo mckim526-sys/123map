@@ -542,6 +542,83 @@ const MapView = (() => {
   }
   bindHover();
 
+  // ── 사건 뱃지 말풍선 ─────────────────────────
+  // 마우스를 올리거나(키보드로 고르면) 그 사건이 무엇인지·왜 이 사람들이 한 무리인지·특검이 기소한 혐의·지금 단계를 짧게.
+  // 기소 내용은 '특검이 기소한 혐의'로 밝혀 법원 판단과 섞이지 않게 함. 터치 화면은 누르면 바로 상세가 열리므로 띄우지 않음
+  function bindCaseTip() {
+    if (!canHover()) return;
+    const tip = document.createElement('div');
+    tip.className = 'case-tip'; tip.setAttribute('role', 'tooltip'); tip.id = 'caseTip'; tip.hidden = true;
+    document.body.appendChild(tip);
+    let timer = 0, shownFor = null;
+    const names = ids => ids.map(id => Model.get(id).name);
+    const wa = name => { const c = String(name).charCodeAt(String(name).length - 1) - 0xac00; return c >= 0 && c <= 11171 && c % 28 ? '과' : '와'; }; // 받침 있으면 '과'
+    const listNames = (ids, n = 4) => { const a = names(ids); return a.slice(0, n).join('·') + (a.length > n ? ` 외 ${a.length - n}명` : ''); };
+    function content(b) {
+      const c = last.center;
+      if (b.other) return `
+        <p class="case-tip__eyebrow">그 밖의 관계 · ${b.ids.length}명</p>
+        <p class="case-tip__title">같은 재판은 아닌 사람들</p>
+        <p class="case-tip__why">${esc(c.name)}${wa(c.name)} 다른 사건으로 기소됐거나, 가족·별도 관계로 이어진 사람들입니다. 함께 재판받지 않습니다.</p>
+        <p class="case-tip__hint">누르면 이 사람들만 강조</p>`;
+      const r = c.records.find(v => v.id === b.id);
+      if (!r) return '';
+      const mates = b.ids.filter(id => id !== c.id);
+      const why = b.solo || !mates.length
+        ? `${esc(c.name)} 혼자 피고인인 재판입니다.`
+        : `${esc(c.name)}${wa(c.name)} 같은 사건으로 함께 기소돼 재판받는 사람들입니다 — ${esc(listNames(mates))}.`;
+      const charges = (r.charges || []).slice(0, 3).map(ch => `<li><b>${esc(ch.name)}</b>${ch.act ? `<span>${esc(ch.act)}</span>` : ''}</li>`).join('');
+      const more = (r.charges || []).length > 3 ? `<p class="case-tip__more">외 ${r.charges.length - 3}개 혐의</p>` : '';
+      return `
+        <p class="case-tip__eyebrow">${esc(r.agency)}${mates.length && !b.solo ? ` · ${esc(c.name)} 외 ${mates.length}명` : ' · 단독 재판'}</p>
+        <p class="case-tip__title">${esc(r.title || r.label)}</p>
+        <p class="case-tip__why">${why}</p>
+        ${charges ? `<p class="case-tip__label">특검이 기소한 혐의</p><ul class="case-tip__charges">${charges}</ul>${more}` : ''}
+        ${r.status ? `<p class="case-tip__status"><span>지금</span>${esc(r.status)}</p>` : ''}
+        <p class="case-tip__hint">누르면 재판 상세</p>`;
+    }
+    function place(tag) {
+      const t = tag.getBoundingClientRect(), w = tip.offsetWidth, h = tip.offsetHeight, gap = 10, pad = 8;
+      const below = t.bottom + gap + h <= innerHeight - pad || t.top - gap - h < pad;
+      const left = Math.min(Math.max(pad, t.left + t.width / 2 - w / 2), innerWidth - w - pad);
+      tip.style.left = left + 'px';
+      tip.style.top = (below ? t.bottom + gap : t.top - gap - h) + 'px';
+      tip.style.setProperty('--ax', (t.left + t.width / 2 - left) + 'px'); // 말풍선 꼬리: 뱃지 가운데를 가리킴
+      tip.classList.toggle('is-above', !below);
+    }
+    function show(tag) {
+      const b = last?.badges[+tag.dataset.group];
+      if (!b || !last.egoMode) return hide();
+      if (shownFor === tag) return;
+      const html = content(b);
+      if (!html) return hide();
+      shownFor = tag; tip.innerHTML = html; tip.hidden = false; tip.classList.remove('is-in');
+      tag.setAttribute('aria-describedby', 'caseTip');
+      place(tag);
+      requestAnimationFrame(() => tip.classList.add('is-in'));
+    }
+    function hide() {
+      clearTimeout(timer);
+      if (shownFor) shownFor.removeAttribute('aria-describedby');
+      shownFor = null; tip.hidden = true; tip.classList.remove('is-in');
+    }
+    groupLayer.addEventListener('mouseover', e => {
+      const tag = e.target.closest('.group-tag'); if (!tag) return;
+      clearTimeout(timer); timer = setTimeout(() => show(tag), shownFor ? 0 : 160);
+    });
+    groupLayer.addEventListener('mouseout', e => {
+      const tag = e.target.closest('.group-tag'); if (!tag || tag.contains(e.relatedTarget)) return;
+      clearTimeout(timer); timer = setTimeout(hide, 80);
+    });
+    groupLayer.addEventListener('focusin', e => { const tag = e.target.closest('.group-tag'); if (tag && tag.matches(':focus-visible')) show(tag); });
+    groupLayer.addEventListener('focusout', hide);
+    // 누르거나, 관계도가 다시 그려지거나 움직이면 닫음
+    ['click', 'wheel', 'pointerdown'].forEach(ev => graph.addEventListener(ev, hide, { passive: true }));
+    addEventListener('keydown', e => { if (e.key === 'Escape') hide(); });
+    new MutationObserver(() => { if (shownFor && !shownFor.isConnected) hide(); }).observe(groupLayer, { childList: true });
+  }
+  bindCaseTip();
+
   // ── 관계도 이동·확대 (데스크톱·모바일 공통) ─────────────────
   // 모바일: 관계도를 넉넉한 크기(680×620)로 그리고 한 손가락 끌기 = 이동, 두 손가락 = 확대·축소. 기본 0.9배
   // 데스크톱: 영역에 꼭 맞게 그린 1배가 기본, + − 버튼과 마우스 끌기로 이동·확대
