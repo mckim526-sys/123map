@@ -6,7 +6,7 @@
   const tools = document.querySelector('.appbar__tools');
   const more = document.querySelector('.appbar__more'); // 좁은 화면: 출처·업데이트 기록을 ⋯ 메뉴로
   const isApp = h => /^#(map|list|timeline|night)$/.test(h) || /^#person\//.test(h);
-  let frameHash = '';
+  let frameHash = '', wasApp = false;
 
   function setMenu(on) { document.body.classList.toggle('tools-open', on); more.setAttribute('aria-expanded', String(on)); }
   function sync() {
@@ -14,12 +14,21 @@
     document.body.classList.toggle('in-app', app);
     frame.hidden = !app; tools.hidden = !app; more.hidden = !app; if (!app) setMenu(false);
     // 인물 주소일 때는 지도 안에서 지금 보는 보기를 표시 (처음엔 관계도)
+    const entering = app && !wasApp; wasApp = app;
+    // 바깥에서 인물 주소로 들어오면 지도 안이 관계도로 바뀌므로 탭도 관계도 (지도 안에서 고른 인물이면 보던 보기)
+    const routed = app && frame.src && (h !== frameHash || entering);
     const inner = frame.contentDocument && frame.contentDocument.querySelector('[data-view].is-active');
-    const view = /^#person\//.test(h) ? (inner ? inner.dataset.view : 'map') : h.slice(1);
+    const view = /^#person\//.test(h) ? (routed || !inner ? 'map' : inner.dataset.view) : h.slice(1);
     document.querySelectorAll('[data-go]').forEach(a => a.setAttribute('aria-current', a.dataset.go === view ? 'page' : 'false'));
     if (!app) return;
     if (!frame.src) { frame.src = 'v2/' + h; frameHash = h; return; }
-    if (h !== frameHash) { frameHash = h; frame.contentWindow.location.hash = h; }
+    // 바깥에서 들어온 주소: 인물 주소는 지도 안에서 관계도로 엶(ROUTE_FROM_PARENT). 처음 화면에서 같은 주소로 다시 들어와도 다시 적용
+    if (h !== frameHash || entering) {
+      frameHash = h; const w = frame.contentWindow; w.ROUTE_FROM_PARENT = true;
+      // 주소를 바로 바꾸고 즉시 적용(비동기 hashchange를 기다리면 탭 표시가 옛 보기로 남음)
+      if (w.location.hash !== h) w.history.replaceState(null, '', h);
+      w.dispatchEvent(new HashChangeEvent('hashchange'));
+    }
   }
   // 재판 지도 안에서 보기·인물을 바꾸면 이 페이지 주소도 같이 (뒤로 가기 기록은 남기지 않음)
   frame.addEventListener('load', () => {

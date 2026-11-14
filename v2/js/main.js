@@ -112,7 +112,9 @@
   // 현재 주소를 화면 상태로 반영
   function applyRoute() {
     const person = personRoute(location.hash);
-    if (person) return select(person.id, person.caseId);
+    // 바깥(clock.html의 링크·주소)에서 인물 주소로 들어오면 늘 관계도에서 엶. 지도 안에서 고른 인물은 보던 보기 그대로(go()는 hashchange 없음)
+    const fromParent = window.ROUTE_FROM_PARENT; window.ROUTE_FROM_PARENT = false;
+    if (person) { if (fromParent && S.view !== 'map') setView('map'); return select(person.id, person.caseId); }
     const view = location.hash.slice(1) || 'map';
     if (VIEWS.includes(view) && view !== S.view) setView(view);
     if (!location.hash || location.hash === '#start') { // 처음 화면은 clock (안에 들어가 있으면 관계도)
