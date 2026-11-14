@@ -63,7 +63,7 @@
   // (관계도 자체의 선 애니메이션은 이번 한 번 생략 → 원형으로 드러나는 동안 지도는 멈춰 있음)
   async function enterMap(href, row) {
     const id = decodeURIComponent(href.split('/')[1] || '');
-    const src = document.querySelector('.fig.on .fig-img');
+    const src = row.matches('.case-head') ? document.querySelector('.fig.on .fig-img') : null; // 다가오는 선고 줄은 사진 없이 원형으로만
     const wrap = document.querySelector('.wrap');
     let ghost = null, gr = null;
     if (src) {
@@ -114,16 +114,18 @@
     await reveal.finished.catch(() => {});
   }
   // 사진을 골라 사건 목록이 펼쳐지면, 숨겨 둔 관계도에 그 사람을 미리 그려 둠 → 사건을 누를 땐 사건만 바뀌어 가벼움
-  function prewarm() {
+  function prewarm(href) {
     if (isApp(location.hash) || !frame.dataset.ready) return;
     const a = document.querySelector('a.case-head'), w = frame.contentWindow;
-    if (!a || !w.document.querySelector('#nodeLayer .node')) return; // 지도가 아직 준비 전이면 다음 기회에
-    const h = a.getAttribute('href');
+    const h = typeof href === 'string' ? href : a && a.getAttribute('href');
+    if (!h || !w.document.querySelector('#nodeLayer .node')) return; // 지도가 아직 준비 전이면 다음 기회에
     if (h === frameHash) return;
     frameHash = h; w.ROUTE_FROM_PARENT = true; w.MAP_SKIP_ANIM = true;
     w.history.replaceState(null, '', h); w.dispatchEvent(new HashChangeEvent('hashchange'));
   }
   document.getElementById('stage').addEventListener('click', () => setTimeout(prewarm, 450)); // 사건 목록 등장 움직임이 끝난 뒤
+  // 다가오는 선고 줄에 마우스를 올리면 그 재판을 미리 그려 둠
+  document.addEventListener('pointerover', e => { const a = e.target.closest('a[data-enter]'); if (a) prewarm(a.getAttribute('href')); });
   frame.addEventListener('load', () => setTimeout(prewarm, 1200));
   // 처음 화면이 자리 잡은 뒤 한가할 때 관계도를 미리 불러 둠 → 첫 전환에서 불러오기로 멈추지 않게
   const preload = () => { if (!frame.src) { frame.src = 'v2/#map'; frameHash = '#map'; } };
@@ -131,7 +133,7 @@
   frame.addEventListener('load', () => { frame.dataset.ready = '1'; });
   let entering = false;
   document.addEventListener('click', e => {
-    const a = e.target.closest('a.case-head');
+    const a = e.target.closest('a.case-head, a[data-enter]');
     if (!a || reduce || entering || isApp(location.hash) || e.metaKey || e.ctrlKey || e.shiftKey || e.button) return;
     e.preventDefault();
     entering = true;

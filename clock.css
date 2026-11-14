@@ -62,6 +62,29 @@ body.picked .backdrop { opacity: .14; }
 
 .lead { margin: var(--sp-8) 0 0; padding-top: var(--sp-5); border-top: 1px solid var(--border-default); max-width: 24em;
   font-family: var(--font-serif); font-size: var(--fs-headline); line-height: var(--lh-headline); font-weight: var(--fw-bold); }
+/* 다가오는 선고: 상자·색 배경 없이 가는 선과 글자만 (어두운 바탕 토큰을 .hero에서 물려받음) */
+.week { max-width: 460px; margin-top: var(--sp-10); }
+.week[hidden] { display: none; }
+.week__head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--sp-3); padding-bottom: var(--sp-2); border-bottom: 1px solid var(--border-default); }
+.week__head h2 { margin: 0; font-size: var(--fs-label); line-height: var(--lh-label); font-weight: var(--fw-bold); letter-spacing: .02em; color: var(--text-secondary); }
+.week__head h2 small { margin-left: var(--sp-2); font-size: var(--fs-caption); font-weight: var(--fw-regular); color: var(--text-tertiary); }
+.week__head a, .week__more a { font-size: var(--fs-caption); color: var(--text-tertiary); text-decoration: none; transition: color var(--motion); }
+.week__head a:hover, .week__more a:hover { color: var(--text-primary); }
+.week ol { list-style: none; margin: 0; padding: 0; }
+.week li { border-bottom: 1px solid var(--border-default); }
+.week__row { display: grid; grid-template-columns: 48px minmax(0, 1fr) auto; align-items: center; gap: var(--sp-4); padding: var(--sp-3) 0; color: inherit; text-decoration: none; }
+.week__row:focus-visible { outline: none; box-shadow: var(--focus-ring); border-radius: var(--r-xs); }
+.week__date { display: flex; flex-direction: column; line-height: 1.2; }
+.week__date b { font-family: var(--font-serif); font-size: var(--fs-title); font-weight: var(--fw-bold); font-variant-numeric: tabular-nums; color: var(--text-primary); }
+.week__date small { font-size: var(--fs-caption); color: var(--text-tertiary); }
+.week__what { min-width: 0; }
+.week__what b { display: block; font-size: var(--fs-subtitle); line-height: var(--lh-subtitle); font-weight: var(--fw-bold); color: var(--text-primary); text-underline-offset: 4px; }
+.week__what em { font-style: normal; font-weight: var(--fw-regular); color: var(--text-secondary); }
+.week__what small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--fs-caption); line-height: var(--lh-caption); color: var(--text-tertiary); }
+.week__row:hover .week__what b { text-decoration: underline; text-decoration-thickness: 1px; }
+.week__dday { font-size: var(--fs-caption); font-weight: var(--fw-bold); font-variant-numeric: tabular-nums; color: var(--text-secondary); transition: color var(--motion); }
+.week__row:hover .week__dday { color: var(--text-primary); }
+.week__more { margin: var(--sp-2) 0 0; font-size: var(--fs-caption); color: var(--text-tertiary); }
 .sub { margin: var(--sp-2) 0 0; font-size: var(--fs-subtitle); line-height: var(--lh-subtitle); color: var(--text-secondary); }
 
 /* 두 사람: 흰 카드 + 사진, 고르면 파랑 테두리(선택됨) */
@@ -141,7 +164,8 @@ body.picked .cases { display: block; background: var(--bg-page); border: 1px sol
 .foot { position: relative; z-index: 1; max-width: var(--container); margin: var(--sp-2) auto 0; padding: var(--sp-4) var(--gutter) var(--sp-8); font-size: var(--fs-caption); color: var(--text-tertiary); }
 
 /* 등장 */
-.since, .elapsed, .lead, .sub, .fig { animation: enter .8s cubic-bezier(.16, .84, .24, 1) both; }
+.since, .elapsed, .lead, .sub, .week, .fig { animation: enter .8s cubic-bezier(.16, .84, .24, 1) both; }
+.week { animation-delay: .34s; }
 .elapsed { animation-delay: .08s; } .lead { animation-delay: .2s; } .sub { animation-delay: .28s; }
 .fig:nth-child(1) { animation-delay: .32s; } .fig:nth-child(2) { animation-delay: .44s; }
 @keyframes enter { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }

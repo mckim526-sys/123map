@@ -96,4 +96,37 @@
   const [h1] = location.hash.slice(1).split('/').map(decodeURIComponent);
   if (byId.has(h1) && FIGS.some(p => p.id === h1)) current = h1;
   renderCases();
+
+  // ── 다가오는 선고 ── 앞으로 7일 안의 '선고 예정'(없으면 가장 가까운 3건). 같은 날 같은 사건의 피고인은 한 줄로
+  (function renderWeek() {
+    const box = document.getElementById('week'); if (!box) return;
+    const kst = new Date(Date.now() + 9 * 3600e3), ymd = d => d.toISOString().slice(0, 10).replace(/-/g, '.');
+    const today = ymd(kst), limit = ymd(new Date(kst.getTime() + 6 * 86400e3));
+    const groups = new Map();
+    persons.forEach(p => p.records.forEach(r => (r.stages || []).forEach((s, i) => {
+      const d = ((s[2] || '').match(/\d{4}\.\d{2}\.\d{2}/) || [])[0];
+      if (!d || d < today || !/선고 예정/.test(s[0] || '')) return;
+      const key = [d, r.family || r.id, i].join('|');
+      const g = groups.get(key) || { d, i, r, time: ((s[2] || '').match(/\b\d{1,2}:\d{2}\b/) || [''])[0], court: s[1] || '', people: [] };
+      g.people.push({ p, r }); groups.set(key, g);
+    })));
+    const all = [...groups.values()].sort((a, b) => a.d.localeCompare(b.d) || (a.time || '99').localeCompare(b.time || '99'));
+    if (!all.length) return;
+    const near = all.filter(g => g.d <= limit);
+    const list = (near.length ? near : all).slice(0, 3), rest = (near.length ? near.length : 0) - list.length;
+    const WD = '일월화수목금토';
+    const dday = d => { const n = Math.round((Date.parse(d.replace(/\./g, '-')) - Date.parse(today.replace(/\./g, '-'))) / 86400e3); return n === 0 ? '오늘' : n === 1 ? '내일' : `D-${n}`; };
+    box.innerHTML = `
+      <header class="week__head"><h2>다가오는 선고${near.length ? '<small>앞으로 7일</small>' : ''}</h2><a href="#timeline">일정 전체 <i aria-hidden="true">→</i></a></header>
+      <ol>${list.map(g => {
+        const lead = g.people.find(v => v.p.id === 'yoon') || g.people[0], n = g.people.length - 1;
+        const [, m, dd] = g.d.split('.'), wd = WD[new Date(Date.UTC(+g.d.slice(0, 4), +m - 1, +dd)).getUTCDay()]; // 날짜만으로 요일 (시간대 영향 없음)
+        return `<li><a class="week__row" data-enter href="#person/${encodeURIComponent(lead.p.id)}/${encodeURIComponent(lead.r.id)}">
+          <span class="week__date"><b>${+m}.${dd}</b><small>${wd}</small></span>
+          <span class="week__what"><b>${esc(lead.p.name)}${n ? ` <em>외 ${n}명</em>` : ''}</b><small>${esc(g.r.label)} · ${stageName(g.i)}${g.time ? ` ${esc(g.time)}` : ''}</small></span>
+          <span class="week__dday">${dday(g.d)}</span></a></li>`;
+      }).join('')}</ol>
+      ${rest > 0 ? `<p class="week__more">이번 주 ${rest}건 더 · <a href="#timeline">일정에서 보기</a></p>` : ''}`;
+    box.hidden = false;
+  })();
 })();
