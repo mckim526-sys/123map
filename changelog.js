@@ -1,6 +1,7 @@
 // Reader-facing record of what changed on the site. Add one plain-language line per published change
 // (newest first). The "recently checked trials" list below it is built automatically from lastChecked.
 const SITE_CHANGES = [
+  ['2026-11-14', '처음 화면에서 사건을 누르면 인물 사진이 관계도의 그 사람 자리로 날아가며 관계도가 펼쳐지는 전환을 넣었습니다.'],
   ['2026-11-14', '처음 화면에서 사건을 누르면 곧바로 관계도와 그 재판 상세가 열리도록 한 단계를 줄였습니다. 피고인별 1심·2심·대법원 표는 관계도 상세에서 봅니다.'],
   ['2026-11-14', '처음 화면이나 공유받은 주소에서 인물·재판 링크를 누르면, 직전에 보던 화면과 상관없이 늘 관계도에서 재판 상세가 열리도록 했습니다.'],
   ['2026-11-14', '처음 화면을 새로 다듬었습니다. 대표 주소로 들어와도 처음 화면이 열리고, 머리글에 사이트 이름을 늘 보여 줍니다. 심급 이름은 모든 화면에서 1심·2심·대법원으로, 아직 이르지 않은 심급은 "진행 전"으로 통일했습니다. 달력은 칸에 이름만 두고 결과는 아래 목록에서 보도록 바꿨습니다.'],
