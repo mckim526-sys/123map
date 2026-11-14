@@ -47,7 +47,7 @@ const MapView = (() => {
     });
     const badges = clusters.map(c => {
       const a = (ang(c.from) + ang(c.to)) / 2, empty = !c.place.length;
-      const r = empty ? 30 : 24; // 단독 사건 뱃지는 사람 자리 쪽으로
+      const r = empty ? 19 : 24; // 단독 사건 뱃지는 중심 인물 가까이(가는 점선으로 이어 줌)
       return { ...c, solo: !c.other && !c.ids.length, x: 50 + r * Math.cos(a), y: 47 + (r + 4) * Math.sin(a) };
     });
     return { out, coIds, badges };
@@ -161,6 +161,7 @@ const MapView = (() => {
         }
         const [cx, cy] = best || [Math.min(Math.max(cx0, w / 2), g.width - w / 2), Math.min(Math.max(cy0, h / 2), g.height - h / 2)];
         tag.style.left = cx / g.width * 100 + '%'; tag.style.top = cy / g.height * 100 + '%';
+        b.px = { x: cx, y: cy, w, h }; // 단독 사건 점선 끝점
         taken.push(rectAt(cx, cy));
       });
     }
@@ -184,6 +185,16 @@ const MapView = (() => {
         aria-label="${esc(a.p.name + ' · ' + b.p.name + ' : ' + label)}" data-edge data-from="${esc(a.p.id)}" data-to="${esc(b.p.id)}">
         <path class="edge__hit" d="${d}"/><path class="edge__line" d="${d}"${co ? ' pathLength="1"' : ''}/><title>${esc(label)}</title></g>`;
     }).join('');
+    // 단독 사건 뱃지: 함께 재판받는 사람이 없어 선이 없으므로, 중심 인물에서 뱃지까지 가는 점선으로 '이 사람의 사건'임을 보여 줌
+    if (egoMode) edgeLayer.insertAdjacentHTML('afterbegin', badges.filter(b => b.solo && b.px).map(b => {
+      const A = at(out[0]), dx = b.px.x - A.x, dy = b.px.y - A.y, len = Math.hypot(dx, dy) || 1;
+      // 뱃지 쪽 끝은 뱃지 테두리에서 멈춤(가로·세로 중 먼저 닿는 쪽)
+      const stop = Math.min(Math.abs(b.px.w / 2 / (dx / len || 1e-6)), Math.abs(b.px.h / 2 / (dy / len || 1e-6))) + 3;
+      if (len - stop <= A.r + 6) return '';
+      const x1 = (A.x + dx / len * (A.r + 3)) * 900 / W, y1 = (A.y + dy / len * (A.r + 3)) * 620 / H;
+      const x2 = (b.px.x - dx / len * stop) * 900 / W, y2 = (b.px.y - dy / len * stop) * 620 / H;
+      return `<path class="solo-stem" data-case="${esc(b.id)}" d="M ${x1} ${y1} L ${x2} ${y2}"/>`;
+    }).join(''));
 
     // 안내 문구
     const caseN = badges.filter(b => !b.other).length, coN = coIds.size, otherN = out.length - 1 - coN;
@@ -481,6 +492,7 @@ const MapView = (() => {
   function markActiveCase() {
     const active = last?.egoMode && last.activeCase ? last.badges.find(b => b.id === last.activeCase.id) : null;
     $$('.group-tag', groupLayer).forEach((t, i) => t.classList.toggle('is-active', !!active && last.badges[i] === active));
+    $$('.solo-stem', edgeLayer).forEach(p => p.classList.toggle('is-active', !!active && p.dataset.case === active.id)); // 지금 보는 단독 사건이면 점선도 진하게
     const ids = new Set(active?.ids || []);
     graph.classList.toggle('has-case', !!active && ids.size > 0);
     graph.classList.toggle('has-solo', !!active && ids.size === 0); // 단독 사건: 다른 사람과 잇는 선은 모두 흐리게
@@ -581,12 +593,23 @@ const MapView = (() => {
     }
     function place(tag) {
       const t = tag.getBoundingClientRect(), w = tip.offsetWidth, h = tip.offsetHeight, gap = 10, pad = 8;
-      const below = t.bottom + gap + h <= innerHeight - pad || t.top - gap - h < pad;
-      const left = Math.min(Math.max(pad, t.left + t.width / 2 - w / 2), innerWidth - w - pad);
-      tip.style.left = left + 'px';
-      tip.style.top = (below ? t.bottom + gap : t.top - gap - h) + 'px';
-      tip.style.setProperty('--ax', (t.left + t.width / 2 - left) + 'px'); // 말풍선 꼬리: 뱃지 가운데를 가리킴
-      tip.classList.toggle('is-above', !below);
+      const fitsBelow = t.bottom + gap + h <= innerHeight - pad, fitsAbove = t.top - gap - h >= pad;
+      tip.classList.remove('is-above', 'is-side');
+      if (fitsBelow || fitsAbove) { // 위·아래: 꼬리가 뱃지 가운데를 가리킴
+        const left = Math.min(Math.max(pad, t.left + t.width / 2 - w / 2), innerWidth - w - pad);
+        tip.style.left = left + 'px';
+        tip.style.top = (fitsBelow ? t.bottom + gap : t.top - gap - h) + 'px';
+        tip.style.setProperty('--ax', (t.left + t.width / 2 - left) + 'px');
+        tip.classList.toggle('is-above', !fitsBelow);
+        return;
+      }
+      // 위·아래 어디에도 다 들어가지 않는 긴 말풍선: 뱃지 옆(넓은 쪽)에 두고 화면 안으로 세로 위치를 맞춤
+      const right = innerWidth - t.right >= t.left;
+      const left = right ? Math.min(t.right + gap, innerWidth - w - pad) : Math.max(pad, t.left - gap - w);
+      const top = Math.min(Math.max(pad, t.top + t.height / 2 - h / 2), Math.max(pad, innerHeight - h - pad));
+      tip.style.left = left + 'px'; tip.style.top = top + 'px';
+      tip.style.setProperty('--ay', (t.top + t.height / 2 - top) + 'px');
+      tip.classList.add('is-side'); tip.classList.toggle('is-left', !right);
     }
     function show(tag) {
       const b = last?.badges[+tag.dataset.group];
