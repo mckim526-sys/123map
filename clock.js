@@ -31,17 +31,10 @@
     ids.delete(p.id);
     return [p.id, ...ids];
   }
-  function recordFor(q, p, r) {
-    if (q.id === p.id) return r;
-    return q.records.find(x => (r.family && x.family === r.family) || (x.members || []).includes(p.id)) || q.records.find(x => x.label === r.label) || null;
-  }
   const decided = s => s && s[0] && !/미확인|미도달|판단 전|대기|진행 중|확인 중|없음/.test(s[0]);
   const planned = s => s && /예정/.test((s[0] || '') + (s[2] || ''));
   const tone = t => /예정/.test(t) ? 'next' : /확정/.test(t) ? 'final' : /무죄|공소기각/.test(t) ? 'acquit' : /징역|무기|벌금|사형|유죄|자격정지/.test(t) ? 'guilty' : 'muted';
   const stageName = i => (i === 2 ? '대법원' : i + 1 + '심');
-  // 아직 이르지 않은 심급(날짜 없음)의 '미확인·미도달·판단 전'은 '진행 전' 하나로 (v2/js/util.js의 stageText와 같은 규칙)
-  const NOT_YET = /^(미확인|미도달(\s*확인 당시)?|판단 전)$/;
-  const stageText = s => (!s || !s[0] ? '—' : NOT_YET.test(s[0].trim()) && !/\d{4}\.\d{2}\.\d{2}/.test(s[2] || '') ? '진행 전' : s[0]);
   const shortDate = s => ((s && s[2] || '').match(/\d{4}\.\d{2}\.\d{2}/) || [''])[0];
   function headline(r) {
     const st = r.stages || [];
@@ -74,52 +67,33 @@
       stage.style.setProperty('--px', (x * 10).toFixed(1) + 'px'); stage.style.setProperty('--py', (y * 8).toFixed(1) + 'px');
     });
   }
-  let current = null, openCase = null;
-  function trialHtml(p, r) {
-    const ids = trialIds(p, r);
-    return `<div class="trial">
-      ${(r.charges || []).length ? `<p class="charges">${r.charges.map(c => `<span>${esc(c.name)}</span>`).join('')}</p>` : ''}
-      <ol class="defendants">${ids.map(id => { const q = byId.get(id), rec = recordFor(q, p, r); if (!rec) return ''; const st = rec.stages || []; return `
-        <li><a class="who" href="#person/${encodeURIComponent(q.id)}/${encodeURIComponent(rec.id)}">${face(q, 'who-img')}<span><b>${esc(q.name)}</b><small>${esc(q.role || '')}</small></span></a>
-          <ol class="steps">${[0, 1, 2].map(i => { const s = st[i] || []; const t = planned(s) ? 'next' : decided(s) ? tone(s[0]) : 'muted'; return `<li class="${t}"><i>${stageName(i)}</i><b>${esc(stageText(s))}</b>${shortDate(s) ? `<small>${esc(shortDate(s))}</small>` : ''}</li>`; }).join('')}</ol></li>`; }).join('')}</ol>
-      <p class="trial-foot"><span>${ids.length > 1 ? `함께 재판받는 ${ids.length}명` : '단독 재판'} · 이름을 누르면 그 사람의 재판 상세로</span>
-        <a class="to-map" href="#person/${encodeURIComponent(p.id)}/${encodeURIComponent(r.id)}">혐의·판결 자세히 보기 →</a></p>
-    </div>`;
-  }
+  let current = null;
+  // 사건 줄을 누르면 곧장 관계도 + 그 재판 상세 (피고인별 심급 표는 관계도 상세에서). 처음 화면에선 한 단계만 거침
   function renderCases() {
     stage.querySelectorAll('.fig').forEach(b => { const on = b.dataset.fig === current; b.classList.toggle('on', on); b.classList.toggle('off', !!current && !on); b.setAttribute('aria-pressed', String(on)); });
     document.body.classList.toggle('picked', !!current);
     if (!current) { list.innerHTML = ''; return; }
     const p = byId.get(current);
-    list.innerHTML = `<h2 class="cases-title">${esc(p.name)}의 사건 <span class="badge">${p.records.length}건</span></h2>
-      <ol>${sorted(p).map((r, i) => { const h = headline(r), n = trialIds(p, r).length, open = openCase === r.id; return `
-        <li class="case ${open ? 'open' : ''}" style="--i:${i}">
-          <button class="case-head" data-case="${esc(r.id)}" aria-expanded="${open}">
+    list.innerHTML = `<h2 class="cases-title">${esc(p.name)}의 사건 <span class="badge">${p.records.length}건</span><small>사건을 누르면 관계도에서 재판 상세가 열립니다</small></h2>
+      <ol>${sorted(p).map((r, i) => { const h = headline(r), n = trialIds(p, r).length; return `
+        <li class="case" style="--i:${i}">
+          <a class="case-head" href="#person/${encodeURIComponent(p.id)}/${encodeURIComponent(r.id)}">
             <span class="case-no">${pad(i + 1)}</span>
             <span class="case-main"><b>${esc(r.label)}</b><small>${esc(r.agency)}${n > 1 ? ` · 피고인 ${n}명` : ''}</small></span>
             <span class="case-now ${h.tone}">${esc(h.text)}${h.date ? `<small>${esc(h.date)}</small>` : ''}</span>
-            <span class="chev" aria-hidden="true">＋</span>
-          </button>
-          ${open ? trialHtml(p, r) : ''}
+            <span class="chev" aria-hidden="true">→</span>
+          </a>
         </li>`; }).join('')}</ol>`;
-    try { history.replaceState(null, '', '#' + [current, openCase].filter(Boolean).join('/')); } catch {}
+    try { history.replaceState(null, '', '#' + current); } catch {}
   }
   stage.addEventListener('click', e => {
     const b = e.target.closest('.fig'); if (!b) return;
-    current = current === b.dataset.fig ? null : b.dataset.fig; openCase = null; renderCases();
+    current = current === b.dataset.fig ? null : b.dataset.fig; renderCases();
     if (current && matchMedia('(max-width: 900px)').matches) setTimeout(() => list.scrollIntoView({block: 'start', behavior: 'smooth'}), 120);
     else if (current) document.getElementById('arena').scrollIntoView({block: 'nearest', behavior: 'smooth'});
   });
-  list.addEventListener('click', e => {
-    const b = e.target.closest('[data-case]'); if (!b) return;
-    openCase = openCase === b.dataset.case ? null : b.dataset.case;
-    const keepTop = b.getBoundingClientRect().top;
-    list.classList.add('no-stagger'); renderCases();
-    const nb = list.querySelector(`[data-case="${CSS.escape(b.dataset.case)}"]`);
-    if (nb) window.scrollBy(0, nb.getBoundingClientRect().top - keepTop);
-  });
-  // #yoon/yoon-main 으로 시작 상태 복원
-  const [h1, h2] = location.hash.slice(1).split('/').map(decodeURIComponent);
-  if (byId.has(h1) && FIGS.some(p => p.id === h1)) { current = h1; if (byId.get(h1).records.some(r => r.id === h2)) openCase = h2; }
+  // #yoon 으로 시작 상태 복원 (예전 주소 #yoon/<사건>도 사건 목록까지)
+  const [h1] = location.hash.slice(1).split('/').map(decodeURIComponent);
+  if (byId.has(h1) && FIGS.some(p => p.id === h1)) current = h1;
   renderCases();
 })();

@@ -111,24 +111,24 @@ body.picked .cases { display: block; background: var(--bg-page); border: 1px sol
 
 .cases-title { margin: 0; padding: var(--sp-5) var(--sp-6) var(--sp-4); border-bottom: 1px solid var(--border-default); display: flex; align-items: center; gap: var(--sp-2);
   font-size: var(--fs-title); line-height: var(--lh-title); font-weight: var(--fw-bold); }
+.cases-title small { margin-left: auto; font-size: var(--fs-caption); font-weight: var(--fw-regular); color: var(--text-tertiary); }
 .cases-title .badge { height: 24px; display: inline-flex; align-items: center; padding: 0 var(--sp-2); border-radius: var(--r-xs); background: var(--bg-muted); font-size: var(--fs-caption); font-weight: var(--fw-medium); color: var(--text-secondary); }
 .cases ol { list-style: none; margin: 0; padding: 0; }
 .case { border-bottom: 1px solid var(--border-default); opacity: 0; transform: translateX(-8px); animation: drop .4s cubic-bezier(.2, .8, .2, 1) forwards; animation-delay: calc(var(--i) * 40ms); }
 .case:last-child { border-bottom: 0; }
-.cases.no-stagger .case { animation: none; opacity: 1; transform: none; }
 @keyframes drop { to { opacity: 1; transform: none; } }
 .case-head { width: 100%; display: grid; grid-template-columns: 32px minmax(0, 1fr) auto 24px; align-items: center; gap: var(--sp-4); padding: var(--sp-4) var(--sp-6);
-  background: none; border: 0; text-align: left; cursor: pointer; transition: background var(--motion); }
+  color: inherit; text-decoration: none; cursor: pointer; transition: background var(--motion); }
 .case-head:hover { background: var(--bg-subtle); }
+.case-head:hover .case-main b { color: var(--text-accent); }
 .case-head:focus-visible { outline: none; box-shadow: inset var(--focus-ring); }
-.case.open .case-head { background: var(--bg-accent); }
 .case-no { font-size: var(--fs-label); font-weight: var(--fw-bold); color: var(--text-tertiary); font-variant-numeric: tabular-nums; }
 .case-main b { display: block; font-size: var(--fs-subtitle); line-height: var(--lh-subtitle); font-weight: var(--fw-bold); }
 .case-main small { display: block; font-size: var(--fs-caption); line-height: var(--lh-caption); color: var(--text-tertiary); }
 .case-now { text-align: right; font-size: var(--fs-label); line-height: var(--lh-label); font-weight: var(--fw-bold); }
 .case-now small { display: block; font-size: var(--fs-caption); font-weight: var(--fw-regular); color: var(--text-tertiary); }
-.chev { color: var(--text-tertiary); text-align: center; transition: transform var(--motion); }
-.case.open .chev { transform: rotate(45deg); color: var(--text-primary); }
+.chev { color: var(--text-tertiary); text-align: center; transition: transform var(--motion), color var(--motion); }
+.case-head:hover .chev { transform: translateX(3px); color: var(--text-primary); }
 
 /* 의미 색은 글자색에만: 유죄 기본 · 무죄 teal · 확정 navy · 예정 파랑 */
 .guilty { color: var(--text-primary); }
@@ -136,24 +136,6 @@ body.picked .cases { display: block; background: var(--bg-page); border: 1px sol
 .final { color: var(--navy-800); }
 .next { color: var(--text-accent); }
 .muted { color: var(--text-tertiary); font-weight: var(--fw-regular); }
-
-.trial { padding: var(--sp-2) var(--sp-6) var(--sp-5) calc(var(--sp-6) + 32px + var(--sp-4)); background: var(--bg-subtle); border-top: 1px solid var(--border-default); }
-.charges { display: flex; flex-wrap: wrap; gap: var(--sp-1); margin: var(--sp-3) 0; }
-.charges span { height: 24px; display: inline-flex; align-items: center; padding: 0 var(--sp-2); border-radius: var(--r-xs); background: var(--gray-200); font-size: var(--fs-caption); font-weight: var(--fw-medium); color: var(--text-secondary); }
-.defendants { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--sp-2); }
-.defendants > li { display: grid; grid-template-columns: minmax(150px, 200px) minmax(0, 1fr); gap: var(--sp-4); align-items: center; padding: var(--sp-3); background: var(--bg-page); border: 1px solid var(--border-default); border-radius: var(--r-md); }
-.who { display: flex; align-items: center; gap: var(--sp-3); text-decoration: none; min-width: 0; }
-.who-img { width: 36px; height: 36px; flex: none; border-radius: var(--r-pill); object-fit: cover; background: var(--bg-muted); display: grid; place-items: center; font-size: var(--fs-caption); font-weight: var(--fw-bold); color: var(--text-secondary); }
-.who b { display: block; font-size: var(--fs-subtitle); line-height: var(--lh-subtitle); font-weight: var(--fw-bold); }
-.who small { display: block; font-size: var(--fs-caption); line-height: var(--lh-caption); color: var(--text-tertiary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.who:hover b { color: var(--text-accent); }
-.steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--sp-2); }
-.steps li { min-width: 0; padding: var(--sp-2) var(--sp-3); background: var(--bg-subtle); border-radius: var(--r-sm); }
-.steps i { display: block; font-style: normal; font-size: var(--fs-caption); font-weight: var(--fw-bold); color: var(--text-tertiary); }
-.steps b { display: block; font-size: var(--fs-label); line-height: var(--lh-label); font-weight: var(--fw-bold); overflow-wrap: anywhere; }
-.steps .muted b { font-weight: var(--fw-regular); }
-.steps small { display: block; font-size: var(--fs-caption); color: var(--text-tertiary); }
-.trial-foot { margin: var(--sp-3) 0 0; font-size: var(--fs-caption); color: var(--text-tertiary); }
 
 .bg-credit { position: relative; z-index: 1; max-width: var(--container); margin: 0 auto; padding: 0 var(--gutter); font-size: var(--fs-caption); color: var(--text-tertiary); }
 .foot { position: relative; z-index: 1; max-width: var(--container); margin: var(--sp-2) auto 0; padding: var(--sp-4) var(--gutter) var(--sp-8); font-size: var(--fs-caption); color: var(--text-tertiary); }
@@ -177,13 +159,12 @@ body.picked .cases { display: block; background: var(--bg-page); border: 1px sol
   .backdrop { width: 100vw; opacity: .3; -webkit-mask-image: linear-gradient(180deg, #000 0, transparent 70%); mask-image: linear-gradient(180deg, #000 0, transparent 70%); }
 }
 @media (max-width: 760px) {
-  .appbar__brand span { display: none; }
+  .appbar__brand > span { display: none; }
   .case-head { grid-template-columns: 24px minmax(0, 1fr) 20px; gap: var(--sp-3); padding: var(--sp-4); }
   .case-now { grid-column: 2; grid-row: 2; text-align: left; }
   .chev { grid-column: 3; grid-row: 1; }
-  .trial { padding: var(--sp-2) var(--sp-4) var(--sp-4); }
-  .defendants > li { grid-template-columns: 1fr; gap: var(--sp-3); }
   .cases-title { padding: var(--sp-4); }
+  .cases-title small { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
   .case, .since, .elapsed, .lead, .sub, .fig, .since .pulse { animation: none; opacity: 1; transform: none; }
@@ -245,14 +226,6 @@ body.hero-visible:not(.in-app):not(.picked) .appbar__clock .brand-time { display
 body.picked .since, body.picked .elapsed { display: none; }
 body.picked .wrap { grid-template-areas: "stage cases"; }
 body.picked .hero { display: none; }
-
-/* 사건 패널에서 관계도로 바로 */
-.to-map { display: inline-flex; align-items: center; height: var(--h-sm); padding: 0 var(--sp-3); border-radius: var(--r-pill); background: var(--gray-900); color: var(--text-inverse);
-  font-size: var(--fs-label); font-weight: var(--fw-bold); text-decoration: none; white-space: nowrap; transition: background var(--motion); }
-.to-map:hover { background: var(--accent); }
-.cases-title .to-map { margin-left: auto; }
-.trial-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--sp-2); }
-.trial-foot .to-map { height: 28px; font-size: var(--fs-caption); }
 
 /* 재판 지도를 숨길 때 크기를 유지(display:none이면 관계도가 크기 0으로 다시 배치돼 깨짐) */
 .app-frame[hidden] { display: block; visibility: hidden; pointer-events: none; }

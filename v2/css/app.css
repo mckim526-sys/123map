@@ -666,7 +666,7 @@ body.has-detail .detail {
 
   .workspace, body.has-detail .workspace { grid-template-columns: minmax(0, 1fr); padding-block: var(--sp-3); } /* 모바일 상세는 아래 시트라 칸을 나누지 않음 */
   .appbar__inner { height: 48px; gap: var(--sp-3); }
-  .appbar__brand span, .appbar__stat { display: none; }
+  .appbar__brand > span, .appbar__stat { display: none; }
   .appbar__brand b { font-size: var(--fs-subtitle); }
   .appbar__btn { margin-left: auto; }
   .toolbar { gap: var(--sp-2); }
