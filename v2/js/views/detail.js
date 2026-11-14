@@ -56,8 +56,8 @@ const DetailView = (() => {
         <li class="verdict__item is-${state} ${link}"${n === prog.stage ? ' aria-current="step"' : ''}>
           <span class="verdict__mark" aria-hidden="true">${state === 'done' ? '✓' : n}</span>
           <div class="verdict__text">
-            <p class="verdict__stage">${n}심${when.date ? ` <time>${esc(when.date)}</time>` : ''}${tag ? `<span class="verdict__tag">${tag}</span>` : ''}</p>
-            <b class="verdict__result">${esc(s[0] || '기록 없음')}</b>
+            <p class="verdict__stage">${stageName(n)}${when.date ? ` <time>${esc(when.date)}</time>` : ''}${tag ? `<span class="verdict__tag">${tag}</span>` : ''}</p>
+            <b class="verdict__result">${esc(stageText(s) || '기록 없음')}</b>
             ${court ? `<span class="verdict__court">${esc(court)}</span>` : ''}
           </div>
         </li>`;
@@ -72,11 +72,11 @@ const DetailView = (() => {
       <details class="charge"${k === 0 ? ' open' : ''}>
         <summary class="charge__head">
           <span class="charge__name">${esc(c.name)}</span>
-          <span class="charge__latest charge__latest--${last ? rulingKind(last.text) : 'none'}">${last ? `${last.stage}심 ${esc(last.text)}` : '판단 전'}</span>
+          <span class="charge__latest charge__latest--${last ? rulingKind(last.text) : 'none'}">${last ? `${stageName(last.stage)} ${esc(last.text)}` : '판단 전'}</span>
         </summary>
         <div class="charge__body">
           <div class="charge__act"><span class="field-label">기소 내용</span><p>${esc(c.act)}</p></div>
-          <dl class="charge__rulings">${c.judgments.map((j, i) => `<div class="ruling"><dt>${i + 1}심</dt><dd>${esc(j)}</dd></div>`).join('')}</dl>
+          <dl class="charge__rulings">${c.judgments.map((j, i) => `<div class="ruling"><dt>${stageName(i + 1)}</dt><dd>${esc(j)}</dd></div>`).join('')}</dl>
         </div>
       </details>`;
     }).join('');
@@ -137,7 +137,7 @@ const DetailView = (() => {
           ${record.lastChecked ? `<span class="caption">정보 확인 ${esc(record.lastChecked)}</span>` : ''}
         </div>
         ${verdictTimeline(record)}
-        <button class="btn btn--secondary btn--block" data-compare>혐의별 1·2·3심 판단 나란히 보기</button>
+        <button class="btn btn--secondary btn--block" data-compare>혐의별 1심·2심·대법원 판단 나란히 보기</button>
       </section>
       ${section('혐의별 판단', `${record.charges.length}건 · 눌러서 펼치기`, 'charges')}
       <div class="stack">${chargeList(record)}</div>
@@ -187,7 +187,7 @@ const DetailView = (() => {
   // 나란히 비교: 혐의(행) × 심급(열) 표
   function compare(person, record) {
     const stages = [0, 1, 2].map(i => record.stages[i] || ['', '', '']);
-    const head = stages.map((s, i) => { const w = splitWhen(s[2]); return `<th scope="col"><span>${i + 1}심${w.date ? ` · ${esc(w.date)}` : ''}</span><b>${esc(s[0] || '기록 없음')}</b></th>`; }).join('');
+    const head = stages.map((s, i) => { const w = splitWhen(s[2]); return `<th scope="col"><span>${stageName(i + 1)}${w.date ? ` · ${esc(w.date)}` : ''}</span><b>${esc(stageText(s) || '기록 없음')}</b></th>`; }).join('');
     const rows = record.charges.map(c => `
       <tr>
         <th scope="row"><b>${esc(c.name)}</b><span>${esc(c.act)}</span></th>
@@ -197,7 +197,7 @@ const DetailView = (() => {
           return `<td class="${pending ? 'is-pending' : 'is-' + rulingKind(j)}">${esc(j || '—')}</td>`;
         }).join('')}
       </tr>`).join('');
-    $('#compareEyebrow').textContent = `${person.name} · ${record.agency} · 혐의별 1·2·3심 판단`;
+    $('#compareEyebrow').textContent = `${person.name} · ${record.agency} · 혐의별 1심·2심·대법원 판단`;
     $('#compareTitle').textContent = record.title;
     $('#compareBody').innerHTML = `
       <div class="compare-wrap">

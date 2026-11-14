@@ -70,7 +70,8 @@
   --dot-rel: var(--gray-400);
 
   /* ── 타이포그래피 ── */
-  --font: 'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  --font: 'Pretendard Variable', Pretendard, -apple-system, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+  --font-serif: 'Noto Serif KR', 'AppleMyungjo', 'Batang', serif; /* 큰 숫자·처음 화면 제목에만 (기록물 같은 무게) */
   /* 크기 / 행간 — 7단계 */
   --fs-display: 32px;  --lh-display: 1.25;  /* 페이지 제목 1개 */
   --fs-headline: 24px; --lh-headline: 1.3;  /* 상세 인물명, 대화상자 제목 */

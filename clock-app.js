@@ -4,13 +4,15 @@
 (function () {
   const frame = document.getElementById('appFrame');
   const tools = document.querySelector('.appbar__tools');
+  const more = document.querySelector('.appbar__more'); // 좁은 화면: 출처·업데이트 기록을 ⋯ 메뉴로
   const isApp = h => /^#(map|list|timeline|night)$/.test(h) || /^#person\//.test(h);
   let frameHash = '';
 
+  function setMenu(on) { document.body.classList.toggle('tools-open', on); more.setAttribute('aria-expanded', String(on)); }
   function sync() {
     const h = location.hash, app = isApp(h);
     document.body.classList.toggle('in-app', app);
-    frame.hidden = !app; tools.hidden = !app;
+    frame.hidden = !app; tools.hidden = !app; more.hidden = !app; if (!app) setMenu(false);
     // 인물 주소일 때는 지도 안에서 지금 보는 보기를 표시 (처음엔 관계도)
     const inner = frame.contentDocument && frame.contentDocument.querySelector('[data-view].is-active');
     const view = /^#person\//.test(h) ? (inner ? inner.dataset.view : 'map') : h.slice(1);
@@ -35,8 +37,10 @@
     const go = e.target.closest('[data-go]');
     const innerTab = go && isApp(location.hash) && frame.contentDocument && frame.contentDocument.querySelector(`[data-view="${go.dataset.go}"]`);
     if (innerTab) { e.preventDefault(); innerTab.click(); sync(); return; }
+    if (e.target.closest('.appbar__more')) { setMenu(!document.body.classList.contains('tools-open')); return; }
+    if (!e.target.closest('.appbar__tools')) setMenu(false);
     const b = e.target.closest('[data-app-btn]');
-    if (b) { const t = frame.contentDocument && frame.contentDocument.getElementById(b.dataset.appBtn); if (t) t.click(); }
+    if (b) { setMenu(false); const t = frame.contentDocument && frame.contentDocument.getElementById(b.dataset.appBtn); if (t) t.click(); }
   });
   // 큰 흐른 시간이 보이는 동안은 머리글 시간을 숨김 (clock.css)
   const big = document.getElementById('elapsed');

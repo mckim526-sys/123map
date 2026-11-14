@@ -24,11 +24,11 @@ const Progress = (() => {
       const named = status.match(/([123])심[^·]*확정/);
       const lastFinal = stages.reduce((acc, t, i) => isFinal(t) ? i + 1 : acc, 0);
       const stage = named ? +named[1] : (/대법원/.test(status) ? 3 : lastFinal || Math.max(...reached, 0));
-      return { stage: stage || null, phase: 'final', label: stage ? `${stage}심 확정` : '확정 · 최종 심급 확인 중' };
+      return { stage: stage || null, phase: 'final', label: stage ? `${stageName(stage)} 확정` : '확정 · 최종 심급 확인 중' };
     }
 
     const sure = status.split('·').filter(s => !/상고 여부|항소 여부|확정 여부|경과 대조/.test(s)).join(' · ');
-    if (/상고심|대법원.*(?:심리|배당)|상고(?!\s*(?:없음|없이|여부))/.test(sure)) return { stage: 3, phase: 'ongoing', label: '3심 · 상고심 단계' };
+    if (/상고심|대법원.*(?:심리|배당)|상고(?!\s*(?:없음|없이|여부))/.test(sure)) return { stage: 3, phase: 'ongoing', label: '대법원 · 상고심 단계' };
     if (/항소심|항소(?!\s*(?:없음|없이|취하|여부))/.test(sure)) return { stage: 2, phase: 'ongoing', label: '2심 · 항소심 단계' };
 
     const mentioned = [...status.matchAll(/([123])심/g)].map(m => +m[1]);
@@ -38,17 +38,17 @@ const Progress = (() => {
     const phase = /공판|결심|구형|변론 종결|선고 예정|심리|재판 중단/.test(ctx) ? 'ongoing' : 'decided';
     return {
       stage, phase,
-      label: `${stage}심 · ${phase === 'ongoing' ? '진행 경과 확인' : '판단 확인'}${UNCERTAIN.test(status) ? ' / 후속 경과 확인 중' : ''}`,
+      label: `${stageName(stage)} · ${phase === 'ongoing' ? '진행 경과 확인' : '판단 확인'}${UNCERTAIN.test(status) ? ' / 후속 경과 확인 중' : ''}`,
     };
   }
 
-  // 1·2·3심 진행 막대
+  // 1심·2심·대법원 진행 막대
   function html(record) {
     const p = of(record);
     const steps = [1, 2, 3].map(n => {
       const state = p.stage === null ? 'unknown' : n < p.stage ? 'done' : n === p.stage ? (p.phase === 'final' ? 'final' : 'current') : 'todo';
       const tag = { done: '✓', current: '현재', final: '확정' }[state] || '';
-      return `<li class="step step--${state}"${n === p.stage ? ' aria-current="step"' : ''}><span>${n}심</span>${tag ? `<small>${tag}</small>` : ''}</li>`;
+      return `<li class="step step--${state}"${n === p.stage ? ' aria-current="step"' : ''}><span>${stageName(n)}</span>${tag ? `<small>${tag}</small>` : ''}</li>`;
     }).join('');
     return `<section class="stepper" aria-label="재판 진행 단계"><ol>${steps}</ol><p>${esc(p.label)}</p></section>`;
   }

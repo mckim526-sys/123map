@@ -21,7 +21,7 @@ const ListView = (() => {
       return `<i class="${st}"></i>`;
     }).join('');
     const label = prog.stage === null ? '확인 중'
-      : `${prog.stage}심 ${{ final: '확정', ongoing: '진행 중', decided: '선고' }[prog.phase] || ''}`;
+      : `${stageName(prog.stage)} ${{ final: '확정', ongoing: '진행 중', decided: '선고' }[prog.phase] || ''}`;
     return `<span class="row__stage"><span class="mini-steps" aria-hidden="true">${bars}</span><span class="caption">${esc(label)}</span></span>`;
   }
 
@@ -34,7 +34,7 @@ const ListView = (() => {
       <button class="row ${on ? 'is-selected' : ''}" data-id="${esc(p.id)}" data-case-link="${esc(rec.id)}"${on ? ' aria-current="true"' : ''}>
         <span class="row__who">${avatar(p, 'ava--md')}<span class="row__name"><b>${esc(p.name)}</b><span class="caption">${esc(p.role)}</span></span></span>
         <span class="row__case"><b>${esc(rec.label)}${count > 1 ? ` <span class="caption">외 ${count - 1}건</span>` : ''}</b><span class="caption">${esc(rec.agency)}</span></span>
-        <span class="row__verdict ${latest ? '' : 'is-pending'}"><b>${latest ? `${latest.n}심 ${esc(latest.s[0])}` : '선고 전'}</b><span class="caption">${esc(when || '일정 확인 중')}</span></span>
+        <span class="row__verdict ${latest ? '' : 'is-pending'}"><b>${latest ? `${stageName(latest.n)} ${esc(latest.s[0])}` : '선고 전'}</b><span class="caption">${esc(when || '일정 확인 중')}</span></span>
         ${stageCell(prog)}
         <span class="row__go" aria-hidden="true">›</span>
       </button>`;
@@ -43,7 +43,7 @@ const ListView = (() => {
   // sel: 선택한 인물 { id, caseId } 또는 null → 해당 행을 강조
   function render(list, agency = 'all', sel = null) {
     // 표 머리는 위에 고정
-    const head = list.length ? `<div class="list-head" aria-hidden="true"><span>인물</span><span>대표 사건</span><span>최근 판단</span><span>진행</span><span></span></div>` : '';
+    const head = list.length ? `<div class="list-head" aria-hidden="true"><span>인물</span><span>대표 사건</span><span>최근 판단</span><span>진행 <small>1심·2심·대법원</small></span><span></span></div>` : '';
     $('#listPane').innerHTML = head
       + (list.length ? list.map(p => row(p, agency, sel)).join('') : '<p class="empty">검색 결과가 없습니다.</p>');
   }

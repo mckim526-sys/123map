@@ -1,6 +1,8 @@
-/* 시험 페이지(clock.html) — v2 디자인 시스템(v2/css/tokens.css)의 토큰만 씁니다.
-   라이트 모드만 · 글자 7단계(최소 12px) · 간격 4의 배수 · 선택 표시는 검정 채움, 파랑은 '선택됨'에만.
-   예외 하나: 흐른 시간 숫자는 이 페이지의 주제라 토큰 크기보다 크게 씁니다(--clock-*). */
+/* 처음 화면(clock.html) — v2 디자인 시스템(v2/css/tokens.css)의 토큰만 씁니다.
+   글자 7단계(최소 12px) · 간격 4의 배수 · 선택 표시는 검정 채움, 파랑은 '선택됨'에만.
+   예외 둘: ① 흐른 시간 숫자는 이 페이지의 주제라 토큰 크기보다 크게 씁니다(--clock-*).
+            ② 처음 화면은 머리글과 이어지는 어두운 바탕(--bg-hero) 위에 놓입니다. 어두운 영역(.hero·.cue·.bg-credit·.foot)은
+               아래 '어두운 바탕' 블록에서 의미 토큰을 덮어쓰고, 사건 패널(.cases)은 원래의 흰 카드 그대로입니다. */
 :root {
   --clock-days: clamp(88px, 11vw, 160px);
   --clock-hms: clamp(28px, 3.4vw, 44px);
@@ -10,7 +12,7 @@
 html { scroll-behavior: smooth; }
 body {
   margin: 0; min-height: 100svh;
-  background: var(--bg-page); color: var(--text-primary);
+  background: var(--bg-hero); color: var(--text-primary);
   font-family: var(--font); font-size: var(--fs-body); line-height: var(--lh-body);
   -webkit-font-smoothing: antialiased;
 }
@@ -27,13 +29,18 @@ a { color: inherit; }
 .appbar__btn { margin-left: auto; height: var(--h-sm); display: inline-flex; align-items: center; padding: 0 var(--sp-3); border: 1px solid var(--on-dark-border); border-radius: var(--r-pill); font-size: var(--fs-label); font-weight: var(--fw-medium); text-decoration: none; transition: background var(--motion), border-color var(--motion); }
 .appbar__btn:hover { background: var(--on-dark-hover); border-color: var(--on-dark-border-hover); }
 
-/* 당시 상황 사진: 대각선 두 구석, 흑백으로 은은하게 (콘텐츠 뒤) */
-.backdrop, .backdrop2 { position: fixed; z-index: 0; pointer-events: none; background-size: cover; background-repeat: no-repeat; filter: grayscale(1) contrast(1.05); opacity: .22; transition: opacity .4s; }
-.backdrop2 { top: 56px; right: 0; width: min(520px, 34vw); aspect-ratio: 1080 / 440; background-image: url(assets/clock-landing.jpg); background-position: 50% 50%;
-  -webkit-mask-image: radial-gradient(120% 130% at 100% 0%, #000 35%, transparent 75%); mask-image: radial-gradient(120% 130% at 100% 0%, #000 35%, transparent 75%); }
-.backdrop { bottom: 0; left: 0; width: min(440px, 30vw); aspect-ratio: 1140 / 990; background-image: url(assets/clock-window.jpg); background-position: 50% 50%;
-  -webkit-mask-image: radial-gradient(120% 120% at 0% 100%, #000 35%, transparent 75%); mask-image: radial-gradient(120% 120% at 0% 100%, #000 35%, transparent 75%); }
-body.picked .backdrop, body.picked .backdrop2 { opacity: .1; }
+/* 당시 상황 사진 한 장: 오른쪽 절반을 흑백으로 선명하게 채우고 왼쪽(글자 쪽)으로 어둠에 녹아듦 (콘텐츠 뒤) */
+.backdrop { position: fixed; z-index: 0; top: 56px; right: 0; bottom: 0; width: min(62vw, 980px); pointer-events: none;
+  background: url(assets/clock-window.jpg) 50% 40% / cover no-repeat; filter: grayscale(1) contrast(1.08) brightness(.8); opacity: .5; transition: opacity .4s;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 45%); mask-image: linear-gradient(90deg, transparent 0, #000 45%); }
+body.picked .backdrop { opacity: .14; }
+
+/* 어두운 바탕: 이 영역 안에서만 의미 토큰을 어두운 바탕용으로 덮어씀 */
+.hero, .cue, .bg-credit, .foot {
+  --text-primary: var(--text-inverse); --text-secondary: var(--gray-300); --text-tertiary: var(--gray-400);
+  --border-default: var(--on-dark-border); --bg-muted: var(--on-dark-hover);
+  color: var(--text-primary);
+}
 
 /* 본문: 왼쪽 시간, 오른쪽 두 사람 */
 .wrap { position: relative; z-index: 1; max-width: var(--container); margin: 0 auto; padding: var(--sp-12) var(--gutter) var(--sp-8);
@@ -45,7 +52,7 @@ body.picked .backdrop, body.picked .backdrop2 { opacity: .1; }
 
 .elapsed { margin: var(--sp-4) 0 0; font-variant-numeric: tabular-nums; line-height: 1; }
 .elapsed .days { display: flex; align-items: baseline; gap: var(--sp-2); }
-.elapsed .days b { font-size: var(--clock-days); font-weight: var(--fw-heavy); letter-spacing: -.04em; color: var(--text-primary); }
+.elapsed .days b { font-family: var(--font-serif); font-size: var(--clock-days); font-weight: 900; letter-spacing: -.03em; color: var(--text-primary); }
 .elapsed .days i { font-style: normal; font-size: var(--fs-headline); font-weight: var(--fw-bold); color: var(--text-secondary); }
 .elapsed .hms { display: block; margin-top: var(--sp-3); font-size: var(--clock-hms); font-weight: var(--fw-medium); color: var(--text-secondary); }
 .elapsed .hms em { font-style: normal; color: var(--text-tertiary); margin: 0 .06em; }
@@ -54,22 +61,23 @@ body.picked .backdrop, body.picked .backdrop2 { opacity: .1; }
 .elapsed .minute span { display: block; height: 100%; background: var(--text-primary); border-radius: inherit; transition: width 1s linear; }
 
 .lead { margin: var(--sp-8) 0 0; padding-top: var(--sp-5); border-top: 1px solid var(--border-default); max-width: 24em;
-  font-size: var(--fs-headline); line-height: var(--lh-headline); font-weight: var(--fw-heavy); }
+  font-family: var(--font-serif); font-size: var(--fs-headline); line-height: var(--lh-headline); font-weight: var(--fw-bold); }
 .sub { margin: var(--sp-2) 0 0; font-size: var(--fs-subtitle); line-height: var(--lh-subtitle); color: var(--text-secondary); }
 
 /* 두 사람: 흰 카드 + 사진, 고르면 파랑 테두리(선택됨) */
 .stage { grid-area: stage; display: flex; justify-content: flex-end; align-items: flex-start; gap: var(--sp-6); --px: 0px; --py: 0px; }
-.fig { position: relative; width: var(--clock-fig-w); padding: 0; border: 1px solid var(--border-default); border-radius: var(--r-md); background: var(--bg-page);
+.fig { position: relative; width: var(--clock-fig-w); padding: 0; border: 0; border-radius: var(--r-md); background: var(--bg-page);
   box-shadow: var(--shadow-1); cursor: pointer; text-align: left; overflow: hidden; translate: var(--px) var(--py);
   transition: transform .5s cubic-bezier(.2, .8, .2, 1), box-shadow var(--motion), border-color var(--motion), opacity .4s, width .5s, translate .6s ease-out; }
-.fig:nth-child(2) { margin-top: var(--sp-12); translate: calc(var(--px) * -1.4) calc(var(--py) * -1.4); }
+.fig:nth-child(2) { translate: calc(var(--px) * -1.4) calc(var(--py) * -1.4); }
 .fig:hover { transform: translateY(-4px); box-shadow: var(--shadow-2); }
 .fig:focus-visible { outline: none; box-shadow: var(--focus-ring); }
-.fig.on { border-color: var(--border-accent); box-shadow: 0 0 0 1px var(--border-accent), var(--shadow-2); }
+.fig.on { box-shadow: 0 0 0 3px var(--border-accent), var(--shadow-2); }
 .fig.off { opacity: .45; }
 .fig-photo { position: relative; display: block; aspect-ratio: 3 / 4; background: var(--bg-muted); overflow: hidden; }
-.fig-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform .8s cubic-bezier(.2, .8, .2, 1); }
-.fig:hover .fig-img, .fig.on .fig-img { transform: scale(1.03); }
+/* 두 사람 사진은 같은 흑백·같은 대비로 (사진마다 다른 색감을 지움). 올리거나 고르면 원래 색 */
+.fig-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) contrast(1.06); transition: transform .8s cubic-bezier(.2, .8, .2, 1), filter .5s; }
+.fig:hover .fig-img, .fig.on .fig-img { transform: scale(1.03); filter: none; }
 .fig-no { position: absolute; top: var(--sp-2); left: var(--sp-2); padding: 0 var(--sp-2); border-radius: var(--r-xs); background: var(--surface-glass); font-size: var(--fs-caption); font-weight: var(--fw-bold); color: var(--text-secondary); font-variant-numeric: tabular-nums; }
 .fig-label { display: block; padding: var(--sp-3) var(--sp-4) var(--sp-4); }
 .fig-label small { display: block; font-size: var(--fs-caption); line-height: var(--lh-caption); color: var(--text-tertiary); }
@@ -160,14 +168,13 @@ body.picked .cases { display: block; background: var(--bg-page); border: 1px sol
   .wrap { grid-template-columns: 1fr; grid-template-areas: "copy" "stage"; gap: var(--sp-8); min-height: 0; padding-top: var(--sp-8); }
   .stage { justify-content: center; }
   .fig { width: 42vw; }
-  .fig:nth-child(2) { margin-top: var(--sp-8); }
   .cue { text-align: center; }
   body.picked .wrap { grid-template-columns: 1fr; grid-template-areas: "copy" "stage" "cases"; }
   body.picked .stage { position: static; flex-direction: row; justify-content: center; align-items: flex-end; }
   body.picked .fig { width: clamp(110px, 30vw, 170px); }
   body.picked .fig.off { width: clamp(84px, 22vw, 120px); }
   body.picked .elapsed { flex-wrap: wrap; gap: var(--sp-1) var(--sp-3); }
-  .backdrop2 { width: 70vw; } .backdrop { width: 60vw; }
+  .backdrop { width: 100vw; opacity: .3; -webkit-mask-image: linear-gradient(180deg, #000 0, transparent 70%); mask-image: linear-gradient(180deg, #000 0, transparent 70%); }
 }
 @media (max-width: 760px) {
   .appbar__brand span { display: none; }
@@ -184,16 +191,16 @@ body.picked .cases { display: block; background: var(--bg-page); border: 1px sol
 }
 
 /* 머리글: 왼쪽 흐른 시간(처음 화면) · 오른쪽 재판 지도 보기 바로가기 (v2와 같은 모양) */
-.appbar__clock { flex-direction: column; align-items: flex-start; gap: 0; line-height: 1.15; }
-.appbar__clock small { font-size: var(--fs-caption); color: var(--gray-400); font-weight: var(--fw-medium); }
-.appbar__clock b { font-size: var(--fs-subtitle); font-weight: var(--fw-heavy); font-variant-numeric: tabular-nums; white-space: nowrap; }
-.appbar__clock b i { font-style: normal; font-weight: var(--fw-medium); margin-left: 1px; color: var(--gray-300); }
-.appbar__clock b .t { font-style: normal; font-weight: var(--fw-medium); color: var(--gray-300); }
-.appbar__clock:hover small { color: var(--text-inverse); }
+.appbar__clock { flex-direction: column; align-items: flex-start; gap: 0; line-height: 1.2; }
+.appbar__clock .brand-name { font-size: var(--fs-subtitle); font-weight: var(--fw-heavy); letter-spacing: -.01em; white-space: nowrap; color: var(--text-inverse); }
+.appbar__clock .brand-time { font-size: var(--fs-caption); font-weight: var(--fw-medium); color: var(--gray-400); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.appbar__clock .brand-time strong { font-weight: var(--fw-bold); color: var(--gray-200); }
+.appbar__clock .brand-time em { font-style: normal; }
+.appbar__clock .brand-rest { font: inherit; color: inherit; overflow: visible; }
+.appbar__clock:hover .brand-time { color: var(--gray-300); }
 .appbar__nav { margin-left: auto; display: flex; gap: var(--sp-1); }
 .appbar__nav a { height: var(--h-sm); display: inline-flex; align-items: center; padding: 0 var(--sp-3); border-radius: var(--r-pill); font-size: var(--fs-label); font-weight: var(--fw-medium); color: var(--gray-300); text-decoration: none; transition: background var(--motion), color var(--motion); }
 .appbar__nav a:hover { background: var(--on-dark-hover); color: var(--text-inverse); }
-.appbar__nav a[href$="#night"] { border: 1px solid var(--on-dark-border); color: var(--text-inverse); }
 @media (max-width: 760px) {
   .appbar__nav { gap: 0; overflow-x: auto; scrollbar-width: none; }
   .appbar__nav a { padding: 0 var(--sp-2); font-size: var(--fs-caption); white-space: nowrap; }
@@ -202,28 +209,39 @@ body.picked .cases { display: block; background: var(--bg-page); border: 1px sol
 /* 같은 페이지 안의 재판 지도(v2): 머리글 아래 화면 전체 */
 .app-frame { position: fixed; z-index: 2; top: 56px; left: 0; width: 100%; height: calc(100dvh - 56px); border: 0; background: var(--bg-page); }
 body.in-app { overflow: hidden; }
-body.in-app .wrap, body.in-app .cue, body.in-app .bg-credit, body.in-app .foot, body.in-app .backdrop, body.in-app .backdrop2 { display: none; }
+body.in-app .wrap, body.in-app .cue, body.in-app .bg-credit, body.in-app .foot, body.in-app .backdrop { display: none; }
 .appbar__nav a[aria-current="page"] { background: var(--text-inverse); color: var(--gray-900); font-weight: var(--fw-bold); }
-.appbar__nav a[href$="#night"][aria-current="page"] { background: #e5484d; border-color: #e5484d; color: #fff; }
 /* 재판 지도를 열어도 보기 탭은 남색 머리글에 (지도 안의 탭은 숨김). 오른쪽 끝에 출처·업데이트 기록 */
 .appbar__tools { display: flex; gap: var(--sp-2); margin-left: var(--sp-3); padding-left: var(--sp-3); border-left: 1px solid var(--on-dark-border); }
 body.in-app .appbar__nav { margin-left: var(--sp-6); margin-right: auto; }
 body.in-app .appbar__nav a { height: var(--h-md); padding: 0 var(--sp-4); font-size: var(--fs-body); }
 .appbar__tools[hidden] { display: none; }
+.appbar__more { display: none; }
 .appbar__tools button { height: var(--h-sm); padding: 0 var(--sp-3); border: 1px solid var(--on-dark-border); border-radius: var(--r-pill); background: none; font-size: var(--fs-label); font-weight: var(--fw-medium); color: var(--text-inverse); cursor: pointer; white-space: nowrap; }
 .appbar__tools button:hover { background: var(--on-dark-hover); }
 @media (max-width: 760px) {
   .appbar__inner { gap: var(--sp-2); }
   .app-frame { top: 56px; }
-  .appbar__tools { display: none !important; } /* 좁은 화면: 보기 탭만 */
+  /* 좁은 화면: 출처·업데이트 기록은 ⋯ 메뉴 안에 */
+  .appbar__more:not([hidden]) { flex: none; display: inline-grid; place-items: center; width: var(--h-sm); height: var(--h-sm); padding: 0; border: 1px solid var(--on-dark-border); border-radius: var(--r-pill);
+    background: none; color: var(--text-inverse); font-size: var(--fs-subtitle); font-weight: var(--fw-bold); line-height: 1; cursor: pointer; }
+  body.tools-open .appbar__more { background: var(--text-inverse); color: var(--gray-900); }
+  .appbar__tools { position: absolute; top: 56px; right: var(--gutter); flex-direction: column; align-items: stretch; margin: 0; padding: var(--sp-2); border: 0; border-radius: var(--r-md);
+    background: var(--bg-hero); box-shadow: var(--shadow-3); }
+  body:not(.tools-open) .appbar__tools { display: none; }
+  .appbar__tools button { height: var(--h-md); font-size: var(--fs-label); text-align: left; }
   body.in-app .appbar__nav { margin-left: auto; margin-right: 0; }
   body.in-app .appbar__nav a { height: var(--h-sm); padding: 0 var(--sp-2); font-size: var(--fs-caption); }
 }
 
 /* 흐른 시간은 한 곳에만: 큰 숫자가 화면에 보이는 동안 머리글 시간은 숨기고,
    사진을 눌러 사건을 펼치면 본문 시간 줄을 접고 머리글 시간만 남김 */
-.appbar__clock { transition: opacity var(--motion); }
-body.hero-visible:not(.in-app):not(.picked) .appbar__clock { opacity: 0; pointer-events: none; }
+body.hero-visible:not(.in-app):not(.picked) .appbar__clock .brand-time { display: none; }
+/* 좁은 화면에서 재판 지도를 열면 보기 탭 4개 + ⋯ 자리를 위해 머리글 왼쪽은 '12·3'만 */
+@media (max-width: 760px) {
+  body.in-app .appbar__clock .brand-rest, body.in-app .appbar__clock .brand-time { display: none; }
+  body.in-app .appbar__clock .brand-name { font-family: var(--font-serif); font-size: var(--fs-title); font-weight: 900; }
+}
 body.picked .since, body.picked .elapsed { display: none; }
 body.picked .wrap { grid-template-areas: "stage cases"; }
 body.picked .hero { display: none; }

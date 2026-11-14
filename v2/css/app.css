@@ -75,10 +75,11 @@ p { margin: 0; }
 /* 아바타: 사진 또는 이름 글자. 크기는 부모에서 물려받는 --s (기본 32) */
 .ava {
   position: relative; flex: none; display: inline-grid; place-items: center;
-  width: var(--s, 32px); height: var(--s, 32px); border-radius: 50%; overflow: hidden; background: var(--gray-200);
+  width: var(--s, 32px); height: var(--s, 32px); border-radius: 50%; overflow: hidden;
+  background: radial-gradient(circle at 50% 118%, var(--gray-400) 0 42%, transparent 43%), var(--gray-300); /* 사진 없는 자리: 어깨 실루엣 위에 이름 */
 }
 .ava img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.ava__ini { font-size: clamp(12px, calc(var(--s, 32px) * .32), 22px); line-height: 1; font-weight: var(--fw-bold); letter-spacing: -.04em; color: var(--text-secondary); white-space: nowrap; }
+.ava__ini { position: relative; top: -8%; font-size: clamp(12px, calc(var(--s, 32px) * .3), 20px); line-height: 1; font-weight: var(--fw-bold); letter-spacing: -.04em; color: var(--gray-700); white-space: nowrap; }
 .ava--sm { --s: 24px; }
 .ava--md { --s: 36px; }
 
@@ -287,7 +288,7 @@ body.has-detail .workspace { grid-template-columns: minmax(0, 1fr) var(--panel-w
 .graph.is-spotlight .node:not(.is-spot) { opacity: .18; }
 .graph.is-spotlight .edge:not(.is-spot) .edge__line { opacity: .08; }
 .graph.is-spotlight .group-tag:not(.is-active) { opacity: .15; } /* 강조 중에도 지금 사건의 뱃지는 그대로 */
-.graph.is-spotlight .edge.is-spot .edge__line { stroke: var(--accent); stroke-width: 3; opacity: 1; }
+.graph.is-spotlight .edge.is-spot .edge__line { stroke: var(--accent); stroke-width: 2.5; opacity: 1; }
 .node.is-spot { z-index: var(--z-map-menu); }
 .node.is-spot .node__dot { animation: spot-pop .6s cubic-bezier(.3, 1.5, .5, 1) both; animation-delay: calc(var(--i, 0) * 70ms); }
 .node.is-spot::before {
@@ -300,9 +301,9 @@ body.has-detail .workspace { grid-template-columns: minmax(0, 1fr) var(--panel-w
 .edge { cursor: pointer; outline: none; }
 .edge__hit { fill: none; stroke: transparent; stroke-width: 12; }
 .edge__line { fill: none; stroke: var(--edge-rel); stroke-width: 1.2; stroke-dasharray: 4 4; vector-effect: non-scaling-stroke; transition: opacity var(--motion), stroke-width var(--motion); }
-.edge.is-co .edge__line { stroke: var(--edge-co); stroke-width: 2.5; stroke-dasharray: none; stroke-linecap: round; }
+.edge.is-co .edge__line { stroke: var(--edge-co); stroke-width: 1.5; stroke-dasharray: none; stroke-linecap: round; opacity: .7; }
 .edge.is-rel .edge__line { opacity: .55; }
-.edge:hover .edge__line, .edge:focus-visible .edge__line, .edge.is-previewing .edge__line { stroke: var(--blue-700); stroke-width: 3.5; opacity: 1; }
+.edge:hover .edge__line, .edge:focus-visible .edge__line, .edge.is-previewing .edge__line { stroke: var(--blue-700); stroke-width: 2.5; opacity: 1; }
 
 /* 노드: 아바타 크기 4단계 (중심 64 / 선택 56 / 함께 재판 40 / 기타 28) · 이름표 3단계 (title / label / caption)
    --s 하나로 크기를 정하고, 이름표는 아바타 바로 아래에 붙음 */
@@ -379,12 +380,12 @@ body.has-detail .workspace { grid-template-columns: minmax(0, 1fr) var(--panel-w
 
 /* 지금 사건 강조(지속): 모든 선은 그대로 두고, 그 사건 선만 진하게·나머지는 흐리게 */
 .graph.has-case .edge:not(.is-case) .edge__line { opacity: .22; }
-.graph.has-case .edge.is-case .edge__line { stroke: var(--accent); stroke-width: 3.5; opacity: 1; }
+.graph.has-case .edge.is-case .edge__line { stroke: var(--accent); stroke-width: 2.5; opacity: 1; }
 .edge__line { transition: opacity .25s ease, stroke-width .25s ease; }
 
 /* 마우스 오버 강조 */
 .graph.is-hovering .edge .edge__line { opacity: .15; }
-.graph.is-hovering .edge.is-lit.is-co .edge__line { opacity: 1; stroke: var(--blue-600); stroke-width: 3; }
+.graph.is-hovering .edge.is-lit.is-co .edge__line { opacity: 1; stroke: var(--blue-600); stroke-width: 2.5; }
 .graph.is-hovering .edge.is-lit.is-rel .edge__line { opacity: .8; }
 .graph.is-hovering.is-pointing .node:not(.is-hover):not(.is-peer):not(.is-peer-weak) { opacity: .25; }
 .graph .node.is-hover, .graph .node.is-peer { opacity: 1; z-index: var(--z-map-menu); }
@@ -395,7 +396,7 @@ body.has-detail .workspace { grid-template-columns: minmax(0, 1fr) var(--panel-w
 .legend { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-2) var(--sp-5); margin-bottom: var(--sp-2); }
 .legend__item { display: inline-flex; align-items: center; gap: var(--sp-2); font-size: var(--fs-caption); font-weight: var(--fw-medium); color: var(--gray-700); }
 .legend__item i { display: inline-block; width: 24px; }
-.legend__co { height: 3px; border-radius: var(--r-xs); background: var(--edge-co); }
+.legend__co { height: 2px; border-radius: var(--r-xs); background: var(--edge-co); }
 .legend__rel { border-top: 2px dashed var(--edge-rel); }
 .legend__note { margin-top: 2px; }
 
@@ -423,6 +424,7 @@ body.has-detail .workspace { grid-template-columns: minmax(0, 1fr) var(--panel-w
 .row__go { font-size: var(--fs-title); color: var(--text-tertiary); text-align: right; }
 .row:hover .row__go { color: var(--text-accent); }
 /* 1·2·3심 미니 진행 막대 */
+.list-head small { margin-left: var(--sp-1); font-size: var(--fs-caption); font-weight: var(--fw-regular); }
 .mini-steps { display: flex; gap: 3px; margin-bottom: 2px; }
 .mini-steps i { width: 20px; height: 4px; border-radius: var(--r-xs); background: var(--gray-200); }
 .mini-steps i.is-done { background: var(--blue-300); }
@@ -821,14 +823,17 @@ body.has-detail .detail {
 .cal-cell.is-sun .cal-d { color: var(--text-tertiary); }
 .cal-cell.is-today .cal-d { background: var(--gray-900); color: var(--text-inverse); }
 .cal-evs { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-.cal-ev { display: block; padding: 0 var(--sp-1); border-radius: var(--r-xs); background: var(--bg-muted); font-size: var(--fs-caption); line-height: 20px;
+.cal-ev { display: flex; align-items: center; gap: 6px; padding: 0 var(--sp-1); border-radius: var(--r-xs); font-size: var(--fs-caption); line-height: 20px;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-secondary); }
-.cal-ev b { font-weight: var(--fw-bold); }
-.cal-ev--guilty b { color: var(--gray-900); }
-.cal-ev--acquit b { color: var(--teal-600); }
-.cal-ev--final b { color: var(--navy-800); }
-.cal-ev--upcoming b { color: var(--text-accent); }
-.cal-ev.is-mine { background: var(--bg-page); }
+.cal-ev > b { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.cal-ev__t { display: none; } /* 결과 글은 칸 아래 그날 목록에서 (칸 안에서 잘리지 않게) */
+.cal-dot { flex: none; width: 6px; height: 6px; border-radius: var(--r-pill); background: var(--gray-900); }
+.cal-dot--acquit { background: var(--teal-600); }
+.cal-dot--final { background: var(--navy-800); }
+.cal-dot--upcoming { background: var(--accent); }
+.cal-dot--other { background: var(--gray-400); }
+.cal-ev b { font-weight: var(--fw-bold); color: var(--text-primary); }
+.cal-ev.is-mine b { color: var(--text-accent); }
 .cal-more { padding: 0 var(--sp-1); font-size: var(--fs-caption); color: var(--text-tertiary); }
 .cal-dots { display: none; }
 .cal-legend { display: flex; flex-wrap: wrap; gap: var(--sp-2); margin: var(--sp-3) 0 0; }
@@ -840,22 +845,18 @@ body.has-detail .detail {
   .cal-d { align-self: center; }
   .cal-evs { display: none; }
   .cal-dots { display: flex; gap: 2px; justify-content: center; }
-  .cal-dot { width: 6px; height: 6px; border-radius: var(--r-pill); background: var(--gray-900); }
-  .cal-dot--acquit { background: var(--teal-600); }
-  .cal-dot--final { background: var(--navy-800); }
-  .cal-dot--upcoming { background: var(--accent); }
-  .cal-dot--other { background: var(--gray-400); }
   .cal-nav__title { min-width: 96px; font-size: var(--fs-subtitle); }
 }
 
 /* 머리글 왼쪽: 12·3 이후 흐른 시간 (누르면 처음 화면 clock.html) */
-.appbar__clock { flex-direction: column; align-items: flex-start; gap: 0; line-height: 1.15; }
-.appbar__clock small { font-size: var(--fs-caption); color: var(--gray-400); font-weight: var(--fw-medium); }
-.appbar__clock b { font-size: var(--fs-subtitle); font-weight: var(--fw-heavy); font-variant-numeric: tabular-nums; white-space: nowrap; }
-.appbar__clock b i { font-style: normal; font-weight: var(--fw-medium); margin-left: 1px; color: var(--gray-300); }
-.appbar__clock b .t { font-style: normal; font-weight: var(--fw-medium); color: var(--gray-300); }
+.appbar__clock { flex-direction: column; align-items: flex-start; gap: 0; line-height: 1.2; }
+.appbar__clock .brand-name { font-size: var(--fs-subtitle); font-weight: var(--fw-heavy); letter-spacing: -.01em; white-space: nowrap; color: var(--text-inverse); }
+.appbar__clock .brand-time { font-size: var(--fs-caption); font-weight: var(--fw-medium); color: var(--gray-400); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.appbar__clock .brand-time strong { font-weight: var(--fw-bold); color: var(--gray-200); }
+.appbar__clock .brand-time em { font-style: normal; }
+.appbar__clock .brand-rest { font: inherit; color: inherit; overflow: visible; }
+.appbar__clock:hover .brand-time { color: var(--gray-300); }
 .appbar__clock:hover b { text-decoration: none; }
-.appbar__clock:hover small { color: var(--text-inverse); }
 
 /* clock.html 안에 들어간 경우: 머리글은 clock.html이 맡음 */
 .is-embedded .appbar { display: none; }

@@ -3,6 +3,11 @@ const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
 
 const ESC_MAP = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+// 심급 이름은 모든 화면에서 같게: 1심 · 2심 · 대법원 (3심이라고 쓰지 않음)
+const stageName = n => (+n === 3 ? '대법원' : n + '심');
+// 아직 이르지 않은 심급(날짜 없음)의 '미확인·미도달·판단 전'은 화면에서 '진행 전' 하나로 (데이터는 그대로)
+const NOT_YET = /^(미확인|미도달(\s*확인 당시)?|판단 전)$/;
+const stageText = s => (!s || !s[0] ? '' : NOT_YET.test(s[0].trim()) && !/\d{4}\.\d{2}\.\d{2}/.test(s[2] || '') ? '진행 전' : s[0]);
 const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ESC_MAP[c]);
 
 const isMobile = () => matchMedia('(max-width:760px)').matches;

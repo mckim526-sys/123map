@@ -1,6 +1,7 @@
 // Reader-facing record of what changed on the site. Add one plain-language line per published change
 // (newest first). The "recently checked trials" list below it is built automatically from lastChecked.
 const SITE_CHANGES = [
+  ['2026-11-14', '처음 화면을 새로 다듬었습니다. 대표 주소로 들어와도 처음 화면이 열리고, 머리글에 사이트 이름을 늘 보여 줍니다. 심급 이름은 모든 화면에서 1심·2심·대법원으로, 아직 이르지 않은 심급은 "진행 전"으로 통일했습니다. 달력은 칸에 이름만 두고 결과는 아래 목록에서 보도록 바꿨습니다.'],
   ['2026-11-13', '윤석열·신원식의 계엄 정당화 사건 첫 공판과 한덕수 조건부 보석 의견서 제출을 반영했습니다. 공판 중 주장·의견서 제출은 판결이나 보석 결정과 구분했습니다.'],
   ['2026-11-13', '타임라인을 달력으로도 볼 수 있게 했습니다. 일정이 있는 달로 바로 이동하고, 날짜를 누르면 그날의 선고를 모아 봅니다.'],
   ['2026-11-13', '같은 재판 연결 창을 이름·받은 형·지금 단계(확정, 2심 선고일 등)만 보이는 짧은 표로 바꿨습니다.'],

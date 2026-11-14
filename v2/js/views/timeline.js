@@ -111,12 +111,13 @@ const TimelineView = (() => {
       const ymd = `${cal.month}.${String(d).padStart(2, '0')}`;
       const list = (byDay.get(ymd) || []).sort((a, b) => mine(b) - mine(a) || b.people.length - a.people.length);
       const wd = (lead + d - 1) % 7;
-      const evs = list.slice(0, 2).map(e => { const k = kind(e.text, e.upcoming);
-        return `<span class="cal-ev cal-ev--${k} ${mine(e) ? 'is-mine' : ''}"><b>${esc(e.people[0].p.name)}${e.people.length > 1 ? ` 외 ${e.people.length - 1}` : ''}</b> ${esc(e.text)}</span>`; }).join('');
+      const evs = list.slice(0, 3).map(e => { const k = kind(e.text, e.upcoming);
+        const who = `${e.people[0].p.name}${e.people.length > 1 ? ` 외 ${e.people.length - 1}` : ''}`;
+        return `<span class="cal-ev cal-ev--${k} ${mine(e) ? 'is-mine' : ''}" title="${esc(who + ' · ' + e.text)}"><i class="cal-dot cal-dot--${k}"></i><b>${esc(who)}</b><span class="cal-ev__t"> ${esc(e.text)}</span></span>`; }).join('');
       const dots = list.slice(0, 4).map(e => `<i class="cal-dot cal-dot--${kind(e.text, e.upcoming)}"></i>`).join('');
       cells.push(`<button class="cal-cell ${list.length ? 'has-ev' : ''} ${list.some(mine) ? 'is-mine' : ''} ${ymd === today ? 'is-today' : ''} ${ymd === cal.day ? 'is-active' : ''} ${wd === 0 ? 'is-sun' : ''}"
         data-tl-day="${ymd}" ${list.length ? '' : 'disabled'} aria-pressed="${ymd === cal.day}" aria-label="${m}월 ${d}일 ${list.length ? `재판 일정 ${list.length}건` : '일정 없음'}">
-        <span class="cal-d">${d}</span><span class="cal-evs">${evs}${list.length > 2 ? `<span class="cal-more">+${list.length - 2}건</span>` : ''}</span><span class="cal-dots" aria-hidden="true">${dots}</span></button>`);
+        <span class="cal-d">${d}</span><span class="cal-evs">${evs}${list.length > 3 ? `<span class="cal-more">+${list.length - 3}건</span>` : ''}</span><span class="cal-dots" aria-hidden="true">${dots}</span></button>`);
     }
     const i = months.indexOf(cal.month);
     const prev = i > 0 ? months[i - 1] : months.filter(x => x < cal.month).pop();
