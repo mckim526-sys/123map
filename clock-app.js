@@ -4,15 +4,13 @@
 (function () {
   const frame = document.getElementById('appFrame');
   const tools = document.querySelector('.appbar__tools');
-  const more = document.querySelector('.appbar__more'); // 좁은 화면: 출처·업데이트 기록을 ⋯ 메뉴로
   const isApp = h => /^#(map|list|timeline|night)$/.test(h) || /^#person\//.test(h);
   let frameHash = '', wasApp = false;
 
-  function setMenu(on) { document.body.classList.toggle('tools-open', on); more.setAttribute('aria-expanded', String(on)); }
   function sync() {
     const h = location.hash, app = isApp(h);
     document.body.classList.toggle('in-app', app);
-    frame.hidden = !app; tools.hidden = !app; more.hidden = !app; if (!app) setMenu(false);
+    frame.hidden = !app; tools.hidden = !app;
     // 인물 주소일 때는 지도 안에서 지금 보는 보기를 표시 (처음엔 관계도)
     const entering = app && !wasApp; if (!app && wasApp) setTimeout(prewarm, 600); wasApp = app; // 처음 화면으로 돌아오면 다시 미리 그려 둠
     // 바깥에서 인물 주소로 들어오면 지도 안이 관계도로 바뀌므로 탭도 관계도 (지도 안에서 고른 인물이면 보던 보기)
@@ -147,10 +145,8 @@
     const go = e.target.closest('[data-go]');
     const innerTab = go && isApp(location.hash) && frame.contentDocument && frame.contentDocument.querySelector(`[data-view="${go.dataset.go}"]`);
     if (innerTab) { e.preventDefault(); innerTab.click(); sync(); return; }
-    if (e.target.closest('.appbar__more')) { setMenu(!document.body.classList.contains('tools-open')); return; }
-    if (!e.target.closest('.appbar__tools')) setMenu(false);
     const b = e.target.closest('[data-app-btn]');
-    if (b) { setMenu(false); const t = frame.contentDocument && frame.contentDocument.getElementById(b.dataset.appBtn); if (t) t.click(); }
+    if (b) { const t = frame.contentDocument && frame.contentDocument.getElementById(b.dataset.appBtn); if (t) t.click(); }
   });
   // 큰 흐른 시간이 보이는 동안은 머리글 시간을 숨김 (clock.css)
   const big = document.getElementById('elapsed');

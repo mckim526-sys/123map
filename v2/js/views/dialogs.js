@@ -16,9 +16,6 @@ const Dialogs = {
         <time>${esc(s.date || '날짜 미상')}</time><span>${esc(s.title)} ↗</span>
       </a>`).join('');
     $('#sourcesBtn').addEventListener('click', () => $('#sourcesDialog').showModal());
-    $('#changesBtn').addEventListener('click', () => $('#changesDialog').showModal());
-    // 업데이트 기록: 본 사이트와 같은 SITE_CHANGES(../changelog.js)
-    if (typeof SITE_CHANGES !== 'undefined') $('#changeList').innerHTML = SITE_CHANGES.map(([d, t]) => `<li><b>${esc(d)}</b> ${esc(t)}</li>`).join('');
     $$('[data-close]').forEach(b => b.addEventListener('click', () => b.closest('dialog').close()));
     // 바깥(배경) 클릭으로 닫기
     $$('dialog.modal').forEach(d => d.addEventListener('click', e => { if (e.target === d) d.close(); }));

@@ -221,20 +221,15 @@ body.in-app .wrap, body.in-app .cue, body.in-app .bg-credit, body.in-app .foot, 
 body.in-app .appbar__nav { margin-left: var(--sp-6); margin-right: auto; }
 body.in-app .appbar__nav a { height: var(--h-md); padding: 0 var(--sp-4); font-size: var(--fs-body); }
 .appbar__tools[hidden] { display: none; }
-.appbar__more { display: none; }
 .appbar__tools button { height: var(--h-sm); padding: 0 var(--sp-3); border: 1px solid var(--on-dark-border); border-radius: var(--r-pill); background: none; font-size: var(--fs-label); font-weight: var(--fw-medium); color: var(--text-inverse); cursor: pointer; white-space: nowrap; }
 .appbar__tools button:hover { background: var(--on-dark-hover); }
 @media (max-width: 760px) {
   .appbar__inner { gap: var(--sp-2); }
   .app-frame { top: 56px; }
-  /* 좁은 화면: 출처·업데이트 기록은 ⋯ 메뉴 안에 */
-  .appbar__more:not([hidden]) { flex: none; display: inline-grid; place-items: center; width: var(--h-sm); height: var(--h-sm); padding: 0; border: 1px solid var(--on-dark-border); border-radius: var(--r-pill);
-    background: none; color: var(--text-inverse); font-size: var(--fs-subtitle); font-weight: var(--fw-bold); line-height: 1; cursor: pointer; }
-  body.tools-open .appbar__more { background: var(--text-inverse); color: var(--gray-900); }
-  .appbar__tools { position: absolute; top: 56px; right: var(--gutter); flex-direction: column; align-items: stretch; margin: 0; padding: var(--sp-2); border: 0; border-radius: var(--r-md);
-    background: var(--bg-hero); box-shadow: var(--shadow-3); }
-  body:not(.tools-open) .appbar__tools { display: none; }
-  .appbar__tools button { height: var(--h-md); font-size: var(--fs-label); text-align: left; }
+  /* 좁은 화면: 출처 버튼만 짧게 ('출처·보도 ↗' → '출처') */
+  .appbar__tools { flex: none; margin-left: 0; padding-left: 0; border-left: 0; }
+  .appbar__tools button { padding: 0 var(--sp-2); font-size: var(--fs-caption); }
+  .appbar__tools .long { display: none; }
   body.in-app .appbar__nav { margin-left: auto; margin-right: 0; }
   body.in-app .appbar__nav a { height: var(--h-sm); padding: 0 var(--sp-2); font-size: var(--fs-caption); }
 }

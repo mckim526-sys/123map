@@ -1,6 +1,7 @@
 // Reader-facing record of what changed on the site. Add one plain-language line per published change
 // (newest first). The "recently checked trials" list below it is built automatically from lastChecked.
 const SITE_CHANGES = [
+  ['2026-11-14', '사이트의 업데이트 기록 버튼과 창을 없앴습니다. 이 목록은 내부 기록으로만 남깁니다.'],
   ['2026-11-14', '처음 화면에 "다가오는 선고"를 넣었습니다. 앞으로 7일 안의 선고 일정(없으면 가장 가까운 3건)을 보여 주고, 누르면 그 재판의 관계도가 열립니다.'],
   ['2026-11-14', '관계도에서 혼자 재판받는 사건 이름표를 그 사람 가까이에 두고 점선으로 이어, 누구의 사건인지 바로 보이게 했습니다. 내용이 긴 사건 설명은 화면 안에 들어오도록 옆에 띄웁니다.'],
   ['2026-11-14', '관계도에서 사건 이름표(내란 본류, 수사 외압 등)에 마우스를 올리면 어떤 사건인지, 왜 이 사람들이 함께 묶였는지, 특검이 기소한 혐의와 지금 단계를 말풍선으로 보여 줍니다.'],
