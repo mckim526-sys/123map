@@ -1,6 +1,7 @@
 // Reader-facing record of what changed on the site. Add one plain-language line per published change
 // (newest first). The "recently checked trials" list below it is built automatically from lastChecked.
 const SITE_CHANGES = [
+  ['2026-11-14', '윤석열·김건희 사진을 처음 화면과 같은 사진으로 관계도·재판 목록·상세에서도 보여 줍니다.'],
   ['2026-11-14', '처음 화면에서 사건을 누르면 인물 사진이 관계도의 그 사람 자리로 날아가며 관계도가 펼쳐지는 전환을 넣었습니다.'],
   ['2026-11-14', '처음 화면에서 사건을 누르면 곧바로 관계도와 그 재판 상세가 열리도록 한 단계를 줄였습니다. 피고인별 1심·2심·대법원 표는 관계도 상세에서 봅니다.'],
   ['2026-11-14', '처음 화면이나 공유받은 주소에서 인물·재판 링크를 누르면, 직전에 보던 화면과 상관없이 늘 관계도에서 재판 상세가 열리도록 했습니다.'],

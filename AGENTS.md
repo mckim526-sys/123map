@@ -29,6 +29,6 @@
 - v2 안을 고칠 때는 `v2/AGENTS.md`, `v2/DESIGN-SYSTEM.md`를 따르고, `v2/js/loader.js`의 `VERSION`과 `v2/index.html`의 `?v=`를 올립니다.
 - 머리글 왼쪽의 '12·3 이후 흐른 시간'은 루트 `elapsed-bar.js`(clock.html · v2 공용)가 그립니다. 누르면 처음 화면 `clock.html`로 갑니다.
 - v2 보기는 주소로 열 수 있습니다: `v2/#map` `#list` `#timeline` `#night` (clock.html 머리글 바로가기가 이 주소를 씀). '그날 밤' 탭만 어두운 바탕(`.night-pane` 안에서 토큰을 덮어씀)입니다.
-- 대표 주소 `index.html`과 옛 시험판 `first.html`은 `clock.html`(주소의 `#…`를 그대로)로 넘기는 안내 페이지입니다. 예전 화면은 `v1.html`에 보관합니다(검색 제외). 공유 미리보기 이미지는 `assets/og-image.jpg`(1200×630)입니다.
+- 대표 주소 `index.html`과 옛 시험판 `first.html`은 `clock.html`(주소의 `#…`를 그대로)로 넘기는 안내 페이지입니다. 예전 화면은 `v1.html`에 보관합니다(검색 제외). 공유 미리보기 이미지는 `assets/og-image.jpg`(1200×630)입니다. 윤석열·김건희는 처음 화면 사진(`clock-*.jpg`)에서 얼굴을 정사각형으로 자른 `clock-*-face.jpg`를 v2 전체(관계도·목록·상세)에서 씁니다(`v2/js/config.js`의 `PHOTO_FILES`).
 - 처음 화면은 머리글과 이어지는 어두운 바탕입니다. 글꼴은 Pretendard(본문), Noto Serif KR(큰 숫자·처음 화면 문장)이며 `v2/css/tokens.css`의 `--font`, `--font-serif`로 씁니다.
 - `clock.html`이 처음 화면이자 재판 지도를 담는 페이지입니다. 처음 화면 흐름은 사진 → 사건 목록 → (사건을 누르면) 관계도 + 재판 상세 두 단계입니다(피고인별 심급 표는 처음 화면에 두지 않고 관계도 상세에서 봄). 사건 줄을 누르면 전환 효과(`clock-app.js`의 `enterMap`: 처음 화면이 가라앉고 → 고른 사람 사진이 관계도의 그 사람 원으로 날아가며 → 그 원에서 관계도가 원형으로 드러남)를 거치며, 움직임 줄이기 설정이면 바로 넘어갑니다. 머리글 보기 바로가기나 사건 줄을 누르면 같은 페이지 안(iframe, `clock-app.js`)에서 v2를 엽니다. 주소: `clock.html` · `#map` `#list` `#timeline` `#night` · `#person/<id>/<caseId>`. v2는 안에 들어가면 자체 머리글을 숨기고(`.is-embedded`), 따로 열었을 때 첫 주소면 clock.html로 보냅니다.

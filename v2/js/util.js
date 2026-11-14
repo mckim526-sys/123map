@@ -17,9 +17,10 @@ const reducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').match
 // 인물 사진 또는 이름 자리표시
 function portrait(person, cls = 'avatar') {
   if (person.photo) {
-    const file = person.photoFile || person.id + '.jpg';
+    const own = (APP_CONFIG.PHOTO_FILES || {})[person.id];
+    const file = own || person.photoFile || person.id + '.jpg';
     return `<img class="${cls}" src="${esc(APP_CONFIG.ASSET_BASE + file)}" alt="${esc(person.name)}"
-      style="object-position:${esc(person.photoPosition || '50% 30%')}" loading="lazy">`;
+      style="object-position:${esc(own ? '50% 50%' : person.photoPosition || '50% 30%')}" loading="lazy">`;
   }
   return `<span class="${cls} ${cls}--empty" aria-label="사진 미확보">${esc(person.name)}<small>사진 준비 중</small></span>`;
 }
@@ -29,9 +30,10 @@ function avatar(person, cls = '') {
   const name = String(person.name || '');
   const given = name.length > 2 ? name.slice(-2) : name;
   const ini = /ava--sm/.test(cls) ? given.slice(0, 1) : given;
+  const own = (APP_CONFIG.PHOTO_FILES || {})[person.id]; // 처음 화면과 같은 사진
   const img = person.photo
-    ? `<img src="${esc(APP_CONFIG.ASSET_BASE + (person.photoFile || person.id + '.jpg'))}" alt="" loading="lazy" decoding="async"
-        style="object-position:${esc(person.photoPosition || '50% 25%')}" onerror="this.remove()">`
+    ? `<img src="${esc(APP_CONFIG.ASSET_BASE + (own || person.photoFile || person.id + '.jpg'))}" alt="" loading="lazy" decoding="async"
+        style="object-position:${esc(own ? '50% 50%' : person.photoPosition || '50% 25%')}" onerror="this.remove()">`
     : '';
   return `<span class="ava ${cls}" aria-hidden="true"><span class="ava__ini">${esc(ini)}</span>${img}</span>`;
 }
