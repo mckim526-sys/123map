@@ -554,13 +554,15 @@ const MapView = (() => {
     const names = ids => ids.map(id => Model.get(id).name);
     const wa = name => { const c = String(name).charCodeAt(String(name).length - 1) - 0xac00; return c >= 0 && c <= 11171 && c % 28 ? '과' : '와'; }; // 받침 있으면 '과'
     const listNames = (ids, n = 4) => { const a = names(ids); return a.slice(0, n).join('·') + (a.length > n ? ` 외 ${a.length - n}명` : ''); };
-    function content(b) {
+    function content(b, tag) {
       const c = last.center;
+      const on = tag.classList.contains('is-active'); // 지금 오른쪽 상세에서 보는 사건
+      const where = isMobile() ? '아래' : '오른쪽'; // 좁은 창은 상세가 아래 시트
       if (b.other) return `
         <p class="case-tip__eyebrow">그 밖의 관계 · ${b.ids.length}명</p>
         <p class="case-tip__title">같은 재판은 아닌 사람들</p>
         <p class="case-tip__why">${esc(c.name)}${wa(c.name)} 다른 사건으로 기소됐거나, 가족·별도 관계로 이어진 사람들입니다. 함께 재판받지 않습니다.</p>
-        <p class="case-tip__hint">누르면 이 사람들만 강조</p>`;
+        <p class="case-tip__hint">이름표를 누르면 이 사람들만 강조합니다</p>`;
       const r = c.records.find(v => v.id === b.id);
       if (!r) return '';
       const mates = b.ids.filter(id => id !== c.id);
@@ -575,7 +577,7 @@ const MapView = (() => {
         <p class="case-tip__why">${why}</p>
         ${charges ? `<p class="case-tip__label">특검이 기소한 혐의</p><ul class="case-tip__charges">${charges}</ul>${more}` : ''}
         ${r.status ? `<p class="case-tip__status"><span>지금</span>${esc(r.status)}</p>` : ''}
-        <p class="case-tip__hint">누르면 재판 상세</p>`;
+        <p class="case-tip__hint">${on ? `지금 ${where}에서 보고 있는 재판입니다 · 이름표를 다시 누르면 강조를 풉니다` : `이름표를 누르면 ${where}에 이 재판의 상세가 열립니다`}</p>`;
     }
     function place(tag) {
       const t = tag.getBoundingClientRect(), w = tip.offsetWidth, h = tip.offsetHeight, gap = 10, pad = 8;
@@ -590,7 +592,7 @@ const MapView = (() => {
       const b = last?.badges[+tag.dataset.group];
       if (!b || !last.egoMode) return hide();
       if (shownFor === tag) return;
-      const html = content(b);
+      const html = content(b, tag);
       if (!html) return hide();
       shownFor = tag; tip.innerHTML = html; tip.hidden = false; tip.classList.remove('is-in');
       tag.setAttribute('aria-describedby', 'caseTip');
