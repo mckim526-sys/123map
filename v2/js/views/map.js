@@ -239,7 +239,9 @@ const MapView = (() => {
       edges.forEach(e => { e.line.style.strokeDasharray = ''; e.line.style.strokeDashoffset = ''; e.g.style.opacity = ''; });
       els.forEach(el => el.classList.remove('is-popping'));
     };
-    if (reducedMotion()) { finish(); return 0; }
+    // 처음 화면(clock.html)의 전환이 대신 움직임을 맡을 때(MAP_SKIP_ANIM, 한 번만)는 바로 결과 배치
+    const skip = window.MAP_SKIP_ANIM; window.MAP_SKIP_ANIM = false;
+    if (reducedMotion() || skip) { finish(); return 0; }
 
     // ── ② 인물: 이동 대상과 새로 등장할 인물 구분
     const nodes = els.map(el => {

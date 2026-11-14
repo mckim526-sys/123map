@@ -238,5 +238,5 @@ body.picked .fig.on { order: -1; }
 }
 
 /* 처음 화면 → 관계도 전환 (clock-app.js enterMap): 떠오른 사진 · 지도는 원형으로 드러날 때까지 가림 */
-.fx-ghost { position: fixed; z-index: calc(var(--z-sheet) - 1); margin: 0; object-fit: cover; border-radius: var(--r-md); pointer-events: none; will-change: transform, width, height; }
+.fx-ghost { position: fixed; z-index: calc(var(--z-sheet) - 1); margin: 0; object-fit: cover; border-radius: var(--r-md); pointer-events: none; transform-origin: 50% 50%; will-change: transform, opacity; }
 body.fx-entering .app-frame { clip-path: circle(0 at 50% 50%); }
