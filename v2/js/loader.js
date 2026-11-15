@@ -6,7 +6,7 @@
     'js/views/relation.js', 'js/views/ego.js', 'js/views/dialogs.js', 'js/main.js'];
 
   // 파일을 고치면 VERSION을 올려 브라우저 캐시를 무효화
-  const VERSION = '110';
+  const VERSION = '111';
   const load = src => new Promise((resolve, reject) => {
     const s = document.createElement('script');
     s.src = src; s.async = false;
@@ -16,7 +16,7 @@
 
   // (머리글 배경 사진은 쓰지 않음 — 화면 고정 레이아웃)
 
-  load(cfg.DATA_URL)
+  load(cfg.DATA_URL + '?v=' + VERSION) // 데이터도 캐시 무효화 (사진·재판 기록을 고쳤을 때 옛 데이터가 남지 않게)
     .then(() => Promise.all(modules.map(m => load(`${m}?v=${VERSION}`))))
     .catch(err => {
       console.error(err);
