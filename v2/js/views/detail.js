@@ -147,7 +147,7 @@ const DetailView = (() => {
       ${news.length ? `<div class="stack">${newsCards(record)}</div>` : '<p class="caption">연결할 보도를 확인하고 있습니다.</p>'}
       <div class="detail__fineprint">
         <p class="caption">‘미확인’은 무죄나 재판 미진행을 뜻하지 않습니다. 사건별 확인 시점이 다르며, 형량을 다른 사건과 합산하지 않습니다.</p>
-        ${person.photoSource ? `<p class="caption photo-credit">사진: <a href="${esc(person.photoSource)}" target="_blank" rel="noopener noreferrer">MBC 보도 사진</a></p>` : ''}
+        ${person.photoSource ? `<p class="caption photo-credit">사진: <a href="${esc(person.photoSource)}" target="_blank" rel="noopener noreferrer">${esc(person.photoCredit || "MBC 보도 사진")}</a></p>` : ''}
       </div>`;
   }
 
