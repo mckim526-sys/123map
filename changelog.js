@@ -1,6 +1,7 @@
 // Reader-facing record of what changed on the site. Add one plain-language line per published change
 // (newest first). The "recently checked trials" list below it is built automatically from lastChecked.
 const SITE_CHANGES = [
+  ['2026-11-15', 'MBC 관련 보도 링크를 크게 늘렸습니다(고유 기사 113건 → 419건). 같은 재판 피고인은 같은 기사를 함께 보여 주고, 기록마다 최신순 최대 10건입니다.'],
   ['2026-11-15', '김대기·신원식·심우정·최상목·황교안·권성동·나경원·이종섭의 사진을 넣었습니다(위키미디어 공용, 출처는 재판 상세 아래).'],
   ['2026-11-14', '휴대폰에서 관계도를 목록형(인물 중심·사건 중심)으로 볼 수 있게 했습니다. 기본은 목록형이고 그래프로 바꿔 볼 수 있습니다.'],
   ['2026-11-14', '사이트의 업데이트 기록 버튼과 창을 없앴습니다. 이 목록은 내부 기록으로만 남깁니다.'],
