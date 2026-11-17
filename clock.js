@@ -89,8 +89,14 @@
   stage.addEventListener('click', e => {
     const b = e.target.closest('.fig'); if (!b) return;
     current = current === b.dataset.fig ? null : b.dataset.fig; renderCases();
-    if (current && matchMedia('(max-width: 900px)').matches) setTimeout(() => list.scrollIntoView({block: 'start', behavior: 'smooth'}), 120);
-    else if (current) document.getElementById('arena').scrollIntoView({block: 'nearest', behavior: 'smooth'});
+    // 사진을 고르면 큰 시간·문장이 접혀 화면 구성이 바뀜 → 스크롤 위치를 새로 맞춰야 사건 목록 위쪽이 머리글(56px)에 가리지 않음
+    //  · 넓은 화면: 맨 위로(사진과 사건 목록이 처음부터 보임)
+    //  · 좁은 화면: 고른 사진 줄을 머리글 바로 아래로 — 사진 카드가 줄어드는 움직임(0.5초)이 끝난 뒤 실제 위치로 계산
+    const smooth = matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+    if (current && matchMedia('(max-width: 900px)').matches) {
+      window.scrollTo({top: 0, behavior: 'auto'});
+      setTimeout(() => window.scrollTo({top: Math.max(0, stage.getBoundingClientRect().top + scrollY - 56 - 12), behavior: smooth}), 560);
+    } else window.scrollTo({top: 0, behavior: smooth});
   });
   // #yoon 으로 시작 상태 복원 (예전 주소 #yoon/<사건>도 사건 목록까지)
   const [h1] = location.hash.slice(1).split('/').map(decodeURIComponent);
