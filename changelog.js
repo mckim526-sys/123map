@@ -1,6 +1,7 @@
 // Reader-facing record of what changed on the site. Add one plain-language line per published change
 // (newest first). The "recently checked trials" list below it is built automatically from lastChecked.
 const SITE_CHANGES = [
+  ['2026-11-18', '추경호 1심 무죄와 조태용 대법원 확정·혐의별 판단, 이은우 두 사건의 누락 경과와 선고 일정, 한덕수·김건희 선고 중계 안내를 반영했습니다.'],
   ['2026-11-17', '김화동 1심 무죄, 홍창식 구형·선고 일정, 한덕수·김건희·윤석열 위증 대법원 선고 일정과 군 지휘관 7명 항소심 첫 공판을 반영했습니다.'],
   ['2026-11-17', '처음 화면에서 사진을 누르면 사건 목록 위쪽이 머리글에 가리던 문제를 고쳤습니다.'],
   ['2026-11-15', 'MBC 관련 보도 링크를 크게 늘렸습니다(고유 기사 113건 → 419건). 같은 재판 피고인은 같은 기사를 함께 보여 주고, 기록마다 최신순 최대 10건입니다.'],
