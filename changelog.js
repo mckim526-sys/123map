@@ -1,6 +1,7 @@
 // Reader-facing record of what changed on the site. Add one plain-language line per published change
 // (newest first). The "recently checked trials" list below it is built automatically from lastChecked.
 const SITE_CHANGES = [
+  ['2026-11-19', '한덕수 일부 무죄 취지 파기환송·구속 유지, 김건희 3대 의혹 징역 4년 확정, 합참 지휘부 4명 구형·선고 일정과 이상민 상고심 진행 상태를 반영했습니다.'],
   ['2026-11-18', '추경호 1심 무죄와 조태용 대법원 확정·혐의별 판단, 이은우 두 사건의 누락 경과와 선고 일정, 한덕수·김건희 선고 중계 안내를 반영했습니다.'],
   ['2026-11-17', '김화동 1심 무죄, 홍창식 구형·선고 일정, 한덕수·김건희·윤석열 위증 대법원 선고 일정과 군 지휘관 7명 항소심 첫 공판을 반영했습니다.'],
   ['2026-11-17', '처음 화면에서 사진을 누르면 사건 목록 위쪽이 머리글에 가리던 문제를 고쳤습니다.'],
