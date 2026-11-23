@@ -1,6 +1,7 @@
 // Reader-facing record of what changed on the site. Add one plain-language line per published change
 // (newest first). The "recently checked trials" list below it is built automatically from lastChecked.
 const SITE_CHANGES = [
+  ['2026-11-23', '날짜가 지났는데 결과가 아직 반영되지 않은 선고·공판은 "예정" 대신 "결과 확인 중"으로 보이게 했습니다. 매일 밤 반영이 빠진 재판을 자동 점검합니다.'],
   ['2026-11-20', '관저 공사 김오진·황승호·김태영 1심 판단, 임성근 재판소원 청구, 김건희·유병호·이진우 공판 경과와 누락된 윤석열 디올백 미신고 재판을 반영했습니다.'],
   ['2026-11-19', '한덕수 일부 무죄 취지 파기환송·구속 유지, 김건희 3대 의혹 징역 4년 확정, 합참 지휘부 4명 구형·선고 일정과 이상민 상고심 진행 상태를 반영했습니다.'],
   ['2026-11-18', '추경호 1심 무죄와 조태용 대법원 확정·혐의별 판단, 이은우 두 사건의 누락 경과와 선고 일정, 한덕수·김건희 선고 중계 안내를 반영했습니다.'],

@@ -1,0 +1,45 @@
+# 매일 밤 자동 점검 (AI 없음) — 평일 22시 ChatGPT 정기 갱신 뒤에 돌림
+#  1) 회귀 검사  2) scripts/daily-check.js로 아직 반영되지 않은 재판 목록
+#  → 있으면 이슈 '[자동 점검] 확인이 필요한 재판' 하나에 본문 갱신 + 댓글(알림), 없으면 그 이슈를 닫음
+name: daily-check
+on:
+  schedule:
+    - cron: '30 14 * * *'   # 한국 시간 매일 23:30
+  workflow_dispatch:
+permissions:
+  contents: read
+  issues: write
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: 회귀 검사
+        id: tests
+        continue-on-error: true
+        run: node --test tests/navigation.test.cjs tests/public-sources.test.cjs
+      - name: 확인 목록
+        run: |
+          FLAG=""
+          if [ "${{ steps.tests.outcome }}" != "success" ]; then FLAG="--tests-failed"; fi
+          node scripts/daily-check.js $FLAG > report.md
+          echo "--- report ---"; cat report.md
+      - name: 이슈 갱신
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TITLE: '[자동 점검] 확인이 필요한 재판'
+        run: |
+          NUM=$(gh issue list --state open --search "\"$TITLE\" in:title" --json number,title --jq ".[] | select(.title==\"$TITLE\") | .number" | head -1)
+          if [ -s report.md ]; then
+            if [ -n "$NUM" ]; then
+              gh issue edit "$NUM" --body-file report.md
+              gh issue comment "$NUM" --body "$(date -u -d '+9 hours' '+%Y-%m-%d') 점검: 아직 확인이 필요한 재판이 있습니다. 본문을 갱신했습니다."
+            else
+              gh issue create --title "$TITLE" --body-file report.md
+            fi
+          elif [ -n "$NUM" ]; then
+            gh issue close "$NUM" --comment "$(date -u -d '+9 hours' '+%Y-%m-%d') 점검: 확인이 필요한 재판이 모두 반영되어 닫습니다."
+          fi
