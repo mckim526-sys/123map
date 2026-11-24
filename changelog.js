@@ -1,6 +1,7 @@
 // Reader-facing record of what changed on the site. Add one plain-language line per published change
 // (newest first). The "recently checked trials" list below it is built automatically from lastChecked.
 const SITE_CHANGES = [
+  ['2026-11-24', '송호종·이관형 국회 위증 사건 1심 선고, 한덕수 환송심 첫 공판 일정, 군 지휘관 5명 항소심과 종합특검 공판 경과를 반영했습니다.'],
   ['2026-11-23', '한덕수 환송심 배당, 관저 특혜 첫 공판·예산 전용 선고 시간, 양평고속도로 7명 구형, 통일교 항소심과 해병 관련 공판 일정을 반영했습니다.'],
   ['2026-11-23', '날짜가 지났는데 결과가 아직 반영되지 않은 선고·공판은 "예정" 대신 "결과 확인 중"으로 보이게 했습니다. 매일 밤 반영이 빠진 재판을 자동 점검합니다.'],
   ['2026-11-20', '관저 공사 김오진·황승호·김태영 1심 판단, 임성근 재판소원 청구, 김건희·유병호·이진우 공판 경과와 누락된 윤석열 디올백 미신고 재판을 반영했습니다.'],
