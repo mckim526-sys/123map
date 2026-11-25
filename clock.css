@@ -251,6 +251,11 @@ body.picked .since, body.picked .elapsed { display: none; }
   .appbar__clock .brand-rest, .appbar__clock .brand-time { display: none; }
   .appbar__clock .brand-name { font-family: var(--font-serif); font-size: var(--fs-title); font-weight: 900; }
 }
+/* 320px 기기: 재판 지도를 열면 '출처' 버튼까지 들어가도록 머리글 사이 간격과 버튼 여백을 한 단계 더 줄임 */
+@media (max-width: 340px) {
+  .appbar__inner { gap: var(--sp-1); }
+  .appbar__tools button { padding: 0 var(--sp-1); }
+}
 body.picked .wrap { grid-template-areas: "stage cases"; }
 body.picked .hero { display: none; }
 
