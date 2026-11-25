@@ -243,6 +243,14 @@ body.hero-visible:not(.in-app):not(.picked) .appbar__clock .brand-time { display
   body.in-app .appbar__clock .brand-name { font-family: var(--font-serif); font-size: var(--fs-title); font-weight: 900; }
 }
 body.picked .since, body.picked .elapsed { display: none; }
+/* 아주 좁은 화면: '처음' 탭까지 5개가 가로로 넘치지 않게 탭 안쪽 여백을 줄임 */
+@media (max-width: 420px) {
+  .appbar__nav a, body.in-app .appbar__nav a { padding: 0 var(--sp-1); }
+  .appbar__nav a[aria-current="page"] { padding: 0 var(--sp-2); }
+  /* 머리글 왼쪽은 어디서나 '12·3'만 (흐른 시간은 처음 화면 큰 숫자로) */
+  .appbar__clock .brand-rest, .appbar__clock .brand-time { display: none; }
+  .appbar__clock .brand-name { font-family: var(--font-serif); font-size: var(--fs-title); font-weight: 900; }
+}
 body.picked .wrap { grid-template-areas: "stage cases"; }
 body.picked .hero { display: none; }
 

@@ -98,6 +98,8 @@
       setTimeout(() => window.scrollTo({top: Math.max(0, stage.getBoundingClientRect().top + scrollY - 56 - 12), behavior: smooth}), 560);
     } else window.scrollTo({top: 0, behavior: smooth});
   });
+  // 머리글 '12·3 재판 지도'·'처음'을 누르면 언제나 같은 처음 화면(사진 선택 해제)으로 (clock-app.js가 보냄)
+  addEventListener('clock:home', () => { current = null; renderCases(); });
   // #yoon 으로 시작 상태 복원 (예전 주소 #yoon/<사건>도 사건 목록까지)
   const [h1] = location.hash.slice(1).split('/').map(decodeURIComponent);
   if (byId.has(h1) && FIGS.some(p => p.id === h1)) current = h1;

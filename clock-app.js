@@ -16,7 +16,7 @@
     // 바깥에서 인물 주소로 들어오면 지도 안이 관계도로 바뀌므로 탭도 관계도 (지도 안에서 고른 인물이면 보던 보기)
     const routed = app && frame.src && (h !== frameHash || entering);
     const inner = frame.contentDocument && frame.contentDocument.querySelector('[data-view].is-active');
-    const view = /^#person\//.test(h) ? (routed || !inner ? 'map' : inner.dataset.view) : h.slice(1);
+    const view = !app ? 'home' : /^#person\//.test(h) ? (routed || !inner ? 'map' : inner.dataset.view) : h.slice(1);
     document.querySelectorAll('[data-go]').forEach(a => a.setAttribute('aria-current', a.dataset.go === view ? 'page' : 'false'));
     if (!app) return;
     if (!frame.src) { frame.src = 'v2/' + h; frameHash = h; return; }
@@ -141,7 +141,7 @@
   }, true);
 
   document.addEventListener('click', e => {
-    if (e.target.closest('[data-home]')) { e.preventDefault(); history.pushState(null, '', location.pathname); sync(); scrollTo(0, 0); return; }
+    if (e.target.closest('[data-home]')) { e.preventDefault(); if (location.hash) history.pushState(null, '', location.pathname); sync(); dispatchEvent(new Event('clock:home')); scrollTo(0, 0); return; }
     // 지도가 이미 열려 있으면 머리글 탭은 지도 안의 보기만 바꿈 (고른 인물·상세는 그대로)
     const go = e.target.closest('[data-go]');
     const innerTab = go && isApp(location.hash) && frame.contentDocument && frame.contentDocument.querySelector(`[data-view="${go.dataset.go}"]`);

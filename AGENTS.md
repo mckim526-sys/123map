@@ -31,7 +31,7 @@
 ## v2/ (새 화면 시험판)
 - `v2/`는 새 디자인 시험판입니다. 데이터·사진은 루트의 `reader-data.js`, `assets/`를 그대로 씁니다(`v2/js/config.js`). 머리글 오른쪽에는 '출처·보도'만 둡니다(좁은 화면은 '출처').
 - v2 안을 고칠 때는 `v2/AGENTS.md`, `v2/DESIGN-SYSTEM.md`를 따르고, `v2/js/loader.js`의 `VERSION`과 `v2/index.html`의 `?v=`를 올립니다.
-- 머리글 왼쪽의 '12·3 이후 흐른 시간'은 루트 `elapsed-bar.js`(clock.html · v2 공용)가 그립니다. 누르면 처음 화면 `clock.html`로 갑니다.
+- 머리글 왼쪽의 '12·3 이후 흐른 시간'은 루트 `elapsed-bar.js`(clock.html · v2 공용)가 그립니다. 누르면 처음 화면 `clock.html`로 갑니다. 머리글 보기 탭 맨 앞 '처음'도 같은 동작이며, 둘 다 사진 선택을 풀어 언제나 같은 첫 화면을 보여 줍니다(`clock-app.js`가 `clock:home` 이벤트를 보내고 `clock.js`가 받음).
 - v2 보기는 주소로 열 수 있습니다: `v2/#map` `#list` `#timeline` `#night` (clock.html 머리글 바로가기가 이 주소를 씀). '그날 밤' 탭만 어두운 바탕(`.night-pane` 안에서 토큰을 덮어씀)입니다.
 - 대표 주소 `index.html`과 옛 시험판 `first.html`은 `clock.html`(주소의 `#…`를 그대로)로 넘기는 안내 페이지입니다. 예전 화면은 `v1.html`에 보관합니다(검색 제외). 공유 미리보기 이미지는 `assets/og-image.jpg`(1200×630)입니다. 윤석열·김건희는 처음 화면 사진(`clock-*.jpg`)에서 얼굴을 정사각형으로 자른 `clock-*-face.jpg`를 v2 전체(관계도·목록·상세)에서 씁니다(`v2/js/config.js`의 `PHOTO_FILES`).
 - 처음 화면 왼쪽 문장 아래 '다가오는 선고'(`clock.js` renderWeek): `reader-data.js`의 심급 칸 중 결과가 '선고 예정'이고 날짜가 오늘(한국 시간) 이후인 것을 모아, 앞으로 7일 안의 것(없으면 가장 가까운 3건)을 최대 3줄로 보여 줍니다. 같은 날·같은 사건(family)의 피고인은 한 줄('○○ 외 N명'). 선고 일정은 데이터의 날짜·'예정' 표기만으로 나오므로, 일정을 고칠 때 심급 칸의 날짜와 '선고 예정'을 정확히 적습니다.
