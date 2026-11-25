@@ -1,55 +1,51 @@
-// 그날 밤: 2024.12.3 밤 사건을 장소별로. 위치는 관계를 보여 주는 개략도이고, 시각·내용은 각 항목의 출처(보도·공소장 인용 보도)를 따릅니다.
+// 그날 밤: 2024.12.3 밤 사건을 장소별로. 위치는 관계를 보여 주는 개략도이고, 시각·내용은 1심 판결문(범죄사실)과 공소장만 따릅니다(언론 기사 인용 없음).
 // 구성: 지도가 영역 전체를 채우고, 왼쪽 빈자리에 지금 장면(시각·장소·한 문장)을 겹쳐 둠. 아래는 시간 막대 하나.
 const NightView = (() => {
+  // 출처는 법원 문서 두 가지뿐(언론 기사 없음). 같은 일이 두 문서에 다 있으면 판결문(재판부가 인정한 사실)을 따름.
   const SRC = {
-    sisain: ['시사IN · 헌정 유린 431분의 타임라인', 'https://www.sisain.co.kr/news/articleView.html?idxno=54520'],
-    dt: ['디지털타임스 · 국무회의 5분 만에 종료', 'https://www.dt.co.kr/article/11632101'],
-    mt: ['머니투데이 · 공소장으로 본 계엄', 'https://www.mt.co.kr/society/2025/12/02/2025112816231532055'],
-    seoul: ['서울신문 · 공소장으로 드러난 경찰 동원', 'https://m.seoul.co.kr/news/2025/01/18/20250118500018'],
-    newsisJcs: ['뉴시스 · 합참 장교 "다시 걸면 된다" 증언', 'https://www.newsis.com/view/NISX20251209_0003434655'],
-    newsisSafe: ['뉴시스 · 박성재·이상민 안가회동', 'https://www.newsis.com/view/NISX20251212_0003439316'],
-    newneek: ['뉴닉 · 계엄은 어디서 시작됐을까', 'https://newneek.co/@newneek/article/15861'],
-    wikitree: ['위키트리 · 롯데리아 회동 CCTV', 'https://www.wikitree.co.kr/articles/1074295'],
-    tf: ['더팩트 · 방첩사 수사단장 "14명 체포 지시"', 'https://news.tf.co.kr/read/life/2209570.htm'],
-    newsisArrest: ['뉴시스 · 관저 체포 집행(1.15)', 'https://www.newsis.com/view/NISX20250115_0003032811'],
-    newstapaArrest: ['뉴스타파 · 체포 불발(1.3)', 'https://newstapa.org/article/0dSpp'],
+    verdict: '1심 판결문 · 서울중앙지법 2026.2.19 선고 2025고합129 등(내란우두머리) · 재판부가 인정한 범죄사실 · 확정 전',
+    indict: '공소장 · 비상계엄 준비 부분 · 특검이 기소한 내용(재판부 판단 아님)',
   };
   // [id, 이름, 설명, 경도, 위도, 보조지도, 이어지는 재판 [인물id, 재판id]…]
   const PLACES = [
     ['office', '용산 대통령실', '국무회의·계엄 선포', 126.9773, 37.5321, null, [['yoon', 'yoon-main'], ['p62', 'case67'], ['p56', 'case71'], ['p68', 'case78'], ['p63', 'case69']]],
     ['jcs', '국방부·합참', '계엄사령부 지휘', 126.9812, 37.5297, null, [['kim', 'kim-main'], ['audit-129', 'military-main-audit-129']]],
     ['assembly', '국회', '봉쇄·진입·해제 의결', 126.9145, 37.5317, null, [['cho', 'cho-main'], ['p29', 'military-main-p29'], ['audit-131', 'field-audit-131'], ['p76', 'case138']]],
-    ['safehouse', '삼청동 안가', '경찰 수뇌부 호출', 126.9822, 37.5858, null, [['cho', 'cho-main'], ['p64', 'case72'], ['p65', 'case73']]],
-    ['residence', '한남동 관저', '체포영장 집행 저지', 127.0040, 37.5370, null, [['yoon', 'yoon-obstruction'], ['p70', 'case80'], ['keon', 'case21']]],
+    ['safehouse', '삼청동 안가', '비상대권 언급 · 경찰 수뇌부 호출', 126.9822, 37.5858, null, [['cho', 'cho-main'], ['p64', 'case72'], ['p65', 'case73']]],
+    ['residence', '한남동 관저', '사령관들과 식사', 127.0040, 37.5370, null, [['yoon', 'yoon-main'], ['kim', 'kim-main'], ['p21', 'military-main-p21'], ['audit-130', 'military-main-audit-130'], ['p29', 'military-main-p29']]],
     ['nec', '과천 중앙선관위', '계엄군 진입', 0.24, 0.48, 'gwacheon', [['p74', 'military-main-p74'], ['audit-134', 'field-audit-134']]],
     ['dsc', '과천 방첩사령부', '체포조 편성', 0.76, 0.72, 'gwacheon', [['p21', 'military-main-p21'], ['audit-133', 'field-audit-133']]],
-    ['burger', '안산 햄버거 가게', '‘햄버거 회동’', 0.5, 0.58, 'ansan', [['noh', 'noh-main'], ['audit-138', 'burger-audit-138'], ['p74', 'moon-list']]],
+    ['burger', '안산 롯데리아', '‘햄버거 회동’', 0.5, 0.58, 'ansan', [['noh', 'noh-main'], ['audit-138', 'burger-audit-138'], ['p74', 'moon-list']]],
   ].map(([id, name, sub, x, y, inset, cases]) => ({id, name, sub, x, y, inset, cases}));
   const P = Object.fromEntries(PLACES.map(p => [p.id, p]));
   // 이름표 위치: 가까운 점끼리 겹치지 않게 [x, y, 정렬]
   const LABEL = {office: [-16, -14, 'end'], jcs: [16, 30, 'start'], burger: [0, 34, 'middle'], nec: [0, 38, 'middle'], dsc: [0, -24, 'middle']};
-  // phase: before(이전) / night(12.3 밤) / after(이후). sort 값은 정렬용 분.
+  // phase: before(계엄 이전) / night(12.3 밤~4일 새벽). 시각은 문서에 적힌 대로(‘경’ 생략).
   const EVENTS = [
-    ['before', '2024.11.17 · 12.1', 'burger', '노상원 전 정보사령관이 정보사 간부들(정성욱·김봉규 대령 등)과 패스트푸드점에서 만나 선관위 장악 등 계엄 준비를 논의한 것으로 조사됐습니다.', 'newneek'],
-    ['before', '12.3 낮', 'burger', '계엄 몇 시간 전, 노상원·김용군·구삼회·방정환 4명이 같은 곳에서 다시 만났습니다. CCTV에 남은 이른바 ‘햄버거 회동’입니다.', 'wikitree'],
-    ['night', '19:20', 'safehouse', '윤석열 대통령과 김용현 국방부 장관이 조지호 경찰청장·김봉식 서울경찰청장을 불러, 22시 계엄 선포와 국회 출동 계획이 적힌 A4 문건을 건넸습니다.', 'seoul'],
-    ['night', '22:17', 'office', '대통령실 대접견실에서 국무회의가 열렸다가 5분 만인 22:22에 끝났습니다. 참석·배석자는 11명이었습니다.', 'dt'],
-    ['night', '22:27', 'office', '윤석열 대통령이 대통령실 브리핑룸에서 비상계엄을 선포했습니다.', 'mt'],
-    ['night', '22:30', 'nec', '계엄군 10여 명이 과천 중앙선관위 청사에 들어가 당직자 휴대전화를 빼앗고 출입을 통제했습니다.', 'sisain'],
-    ['night', '22:35', 'assembly', '경찰 기동대가 국회 출입문에 배치되며 봉쇄가 시작됐습니다. 22:48부터 18분간은 아무도 들어갈 수 없었습니다.', 'seoul'],
-    ['night', '22:43', 'jcs', '김용현 장관이 전군 주요 지휘관 회의를 소집했습니다.', 'sisain'],
-    ['night', '23:03', 'assembly', '우원식 국회의장이 담장을 넘어 국회로 들어갔습니다.', 'sisain'],
-    ['night', '밤', 'dsc', '여인형 방첩사령관이 이재명·한동훈·우원식 등 14명을 체포하라고 지시했고, 체포조가 국회 쪽으로 출동했다는 증언이 나왔습니다.', 'tf'],
-    ['night', '23:48', 'assembly', '무장한 계엄군이 헬기를 타고 국회 경내로 들어오기 시작했습니다.', 'sisain'],
-    ['night', '00:30', 'nec', '계엄군 110여 명이 선관위 과천청사에 추가로 진입했습니다. 같은 시간대 관악구 여론조사심의위원회와 수원 선거연수원에도 병력이 들어갔습니다.', 'sisain'],
-    ['night', '00:39', 'assembly', '계엄군이 국민의힘 당대표실 유리창을 깨고 국회 본청 안으로 들어갔습니다.', 'sisain'],
-    ['night', '01:01', 'assembly', '국회가 재석 의원 190명 전원 찬성으로 계엄 해제 요구 결의안을 가결했습니다.', 'sisain'],
-    ['night', '해제 의결 뒤', 'jcs', '윤 대통령이 합참 결심지원실을 찾아 김용현 장관·박안수 계엄사령관과 만났습니다. “다시 걸면 된다”는 말을 했다는 합참 장교의 법정 증언이 있습니다.', 'newsisJcs'],
-    ['night', '02:03', 'assembly', '국회 경내 계엄군이 모두 철수했습니다.', 'sisain'],
-    ['night', '04:30', 'office', '국무회의에서 계엄 해제안이 의결됐습니다.', 'sisain'],
-    ['after', '12.4 저녁', 'safehouse', '계엄 해제 다음 날, 박성재 법무부 장관·이상민 행정안전부 장관 등이 삼청동 안가에서 만났습니다. 특검은 이 자리에 계엄 관련 문건이 오갔다고 봤습니다.', 'newsisSafe'],
-    ['after', '2025.1.3', 'residence', '공수처가 관저에서 체포영장 집행에 나섰지만 대통령경호처가 막아 무산됐습니다.', 'newstapaArrest'],
-    ['after', '2025.1.15', 'residence', '두 번째 집행 끝에 윤석열 대통령이 관저에서 체포됐습니다.', 'newsisArrest'],
+    ['before', '2024.3.29', 'safehouse', '특검은 윤석열 대통령이 삼청동 안가에서 신원식 국방부 장관·조태용 국정원장·여인형·김용현과 식사하며 ‘비상대권을 통해 헤쳐 나가는 것밖에는 방법이 없다’, ‘군이 나서야 되지 않느냐’고 말했다고 기소했습니다.', 'indict'],
+    ['before', '2024.10.1', 'residence', '국군의 날 행사 뒤 한남동 관저에서 윤석열 대통령이 김용현·여인형·곽종근·이진우와 식사하며, 언론·노동계 ‘좌익세력’을 비판하고 비상대권 행사가 필요하다는 취지로 말했다고 재판부는 인정했습니다.', 'verdict'],
+    ['before', '2024.11.17', 'burger', '노상원 전 정보사령관이 김용현 장관을 만난 뒤 안산 롯데리아에서 문상호 정보사령관·정성욱 대령을 만나 선관위 관련 임무 준비를 확인했습니다. 노상원은 법정에서 이 사실을 부인했습니다.', 'verdict'],
+    ['before', '2024.12.1', 'burger', '노상원이 김용현 장관 공관을 다녀온 뒤 같은 롯데리아(12:18~12:58)에서 문상호·김봉규·정성욱을 다시 만났습니다.', 'verdict'],
+    ['before', '12.3 낮', 'burger', '계엄 당일 14:49~16:03, 노상원이 같은 롯데리아에서 김용군에게 ‘오늘이 계엄이다’라고 알리고 제2수사단 조직도 등이 적힌 문서를 보여 줬습니다. 구삼회·방정환도 합류했습니다.', 'verdict'],
+    ['night', '19:20', 'safehouse', '대통령경호처장을 통해 불려 온 조지호 경찰청장·김봉식 서울경찰청장에게 윤석열 대통령이 ‘오늘 밤 22시에 비상계엄을 선포해야겠다’고 말했고, 김용현 장관은 ‘2200 국회’, ‘2300 민주당사’, ‘여론조사꽃’ 등이 적힌 A4 문서를 한 장씩 건넸습니다.', 'verdict'],
+    ['night', '22:16', 'office', '중소벤처기업부 장관이 도착해 국무회의 구성원 11명이 모였습니다. 윤 대통령은 대접견실에서 ‘지금 계엄을 선포할 수밖에 없다… 나는 간다’고 말하고 나왔습니다.', 'verdict'],
+    ['night', '22:27', 'office', '윤석열 대통령이 대통령실 브리핑룸에서 22:23부터 대국민담화를 발표하고, 22:27 비상계엄을 선포했습니다.', 'verdict'],
+    ['night', '22:28', 'jcs', '김용현 장관이 합참 지하 전투통제실에서 전군주요지휘관회의를 열고, 이진우 수방사령관에게 국회로 출동해 해제 요구안 의결을 막으라고 지시했습니다.', 'verdict'],
+    ['night', '22:30', 'nec', '정보사 대원 10명이 과천 중앙선관위 청사 당직실에 들어가 당직자 휴대전화를 빼앗고 유선전화 선을 뽑았습니다. 이어 서버실을 사진으로 찍고 폐쇄했습니다.', 'verdict'],
+    ['night', '22:48', 'assembly', '경찰 기동대와 국회경비대가 국회 출입문을 막기 시작했습니다. 23:07 국회의원 출입을 잠시 허용했습니다.', 'verdict'],
+    ['night', '23:23', 'jcs', '박안수 계엄사령관이 김용현 장관에게서 받은 ‘계엄사령부 포고령(제1호)’을 공고했습니다.', 'verdict'],
+    ['night', '23:33~00:36', 'assembly', '윤 대통령은 네 차례 이진우 사령관에게 전화해 ‘본회의장으로 가서 4명이 1명씩 들쳐 업고 나오라고 해’, ‘총을 쏴서라도 문을 부수고 들어가서 끌어내라’고 지시했습니다.', 'verdict'],
+    ['night', '23:37', 'assembly', '포고령을 근거로 ‘국회의원 포함해서 전부 통제’ 지시가 내려졌습니다. 이때부터 새벽 01:45까지 국회 출입이 전면 금지됐습니다.', 'verdict'],
+    ['night', '23:49', 'assembly', '707특임단 등 96명을 태운 헬기 12대가 00:11까지 국회의사당 뒤 운동장에 차례로 내렸습니다.', 'verdict'],
+    ['night', '00:24', 'assembly', '수방사 35특임대대 선발대가 경찰 도움을 받아 국회 7문 옆 담을 넘어 들어왔습니다.', 'verdict'],
+    ['night', '00:32', 'assembly', '김현태 707특임단장 등 19명이 국회의사당 233호 유리창을 깨고 본관 2층으로 들어갔습니다.', 'verdict'],
+    ['night', '00:33', 'dsc', '김용현 장관이 여인형 방첩사령관에게 ‘이재명, 우원식, 한동훈 등 3명을 우선 체포하라’고 지시했고, 00:38 방첩사 출동조에 ‘체포해 구금시설(수방사)로 이동’하라는 명령이 내려갔습니다.', 'verdict'],
+    ['night', '00:40', 'nec', '3공수여단 병력 138명이 01:08까지 선관위 과천청사에 도착했고, 이 중 52명이 1층 로비를 점거했습니다.', 'verdict'],
+    ['night', '01:03', 'assembly', '00:49 본회의가 열려 01:01 해제 요구안이 상정됐고, 01:03 재석 190명(더불어민주당 172·국민의힘 18) 만장일치로 가결됐습니다.', 'verdict'],
+    ['night', '01:13', 'assembly', '가결 뒤 윤 대통령이 이진우 사령관에게 다시 전화해 ‘해제됐다 하더라도 내가 두 번, 세 번 계엄령 선포하면 되는 거니까 계속 진행해’라고 했습니다.', 'verdict'],
+    ['night', '01:16', 'jcs', '윤 대통령은 바로 해제하지 않고 01:47까지 합참 지하 결심지원실에서 김용현 장관·박안수 계엄사령관 등과 논의를 이어 갔습니다.', 'verdict'],
+    ['night', '01:45', 'assembly', '경찰이 국회 출입 차단을 풀고 일부 기동대가 철수하기 시작했습니다. 이날 국회 봉쇄에 동원된 경찰 기동대는 29개, 약 2,036명이었습니다.', 'verdict'],
+    ['night', '04:26', 'office', '윤 대통령이 계엄 해제를 발표했습니다. 04:27~04:29 국무회의에서 참석자 13명 전원 합의로 해제안이 의결됐고, 04:32 국방부는 모든 병력이 복귀했다고 발표했습니다.', 'verdict'],
   ].map(([phase, time, place, text, src], i) => ({i, phase, time, place, text, src}));
   const START = EVENTS.findIndex(e => e.time === '22:27');
   // 서울 도심 개략도: 경도 126.895~127.025, 위도 37.512~37.598
@@ -63,8 +59,8 @@ const NightView = (() => {
     if (!p.inset) return [X(p.x), Y(p.y)];
     const b = INSETS[p.inset]; return [b.x + p.x * b.w, b.y + p.y * b.h];
   }
-  const PHASE = { before: '그 전', night: '12월 3일 밤 → 4일 새벽', after: '그 후' };
-  const PHASE_W = { before: 14, night: 68, after: 18 }; // 시간 막대에서 차지하는 너비(%)
+  const PHASE = { before: '그 전', night: '12월 3일 밤 → 4일 새벽' };
+  const PHASE_W = { before: 24, night: 76 }; // 시간 막대에서 차지하는 너비(%)
   const pane = $('#nightPane');
   let built = false, idx = START, timer = null, focusPlace = null, showAllCases = false;
 
@@ -77,7 +73,7 @@ const NightView = (() => {
   // 시간 막대 위 점 위치(%)
   const evX = e => {
     const list = EVENTS.filter(v => v.phase === e.phase), k = list.indexOf(e);
-    const start = e.phase === 'before' ? 0 : e.phase === 'night' ? PHASE_W.before : PHASE_W.before + PHASE_W.night;
+    const start = e.phase === 'before' ? 0 : PHASE_W.before;
     return start + PHASE_W[e.phase] * (k + .5) / list.length;
   };
 
@@ -161,13 +157,12 @@ const NightView = (() => {
     const clock = $('#nmClock');
     clock.textContent = e.time;
     clock.classList.toggle('is-text', !/^\d\d:\d\d$/.test(e.time));
-    $('#nmDate').textContent = e.phase === 'night' ? (/^0[0-5]|해제/.test(e.time) ? '2024년 12월 4일 수요일 새벽' : '2024년 12월 3일 화요일 밤') : e.phase === 'before' ? '계엄 이전' : '계엄 이후';
+    $('#nmDate').textContent = e.phase === 'night' ? (/^0[0-5]|해제/.test(e.time) ? '2024년 12월 4일 수요일 새벽' : '2024년 12월 3일 화요일 밤') : '계엄 이전';
     $('#nmPlace').textContent = place.name;
     $('#nmText').innerHTML = opts.place
       ? `<ol class="nm-list">${EVENTS.filter(v => v.place === opts.place).map(v => `<li><button class="${v.i === idx ? 'is-active' : ''}" data-ev="${v.i}"><time>${esc(v.time)}</time><span>${esc(v.text)}</span></button></li>`).join('')}</ol>`
       : `<p>${esc(e.text)}</p>`;
-    const s = SRC[e.src];
-    $('#nmSrc').innerHTML = s ? `출처 · <a href="${s[1]}" target="_blank" rel="noopener noreferrer">${esc(s[0])} ↗</a>` : '';
+    $('#nmSrc').textContent = SRC[e.src] ? `출처 · ${SRC[e.src]}` : '';
     $('#nmCases').innerHTML = caseChips(place);
     $$('.nm-pin', pane).forEach(g => {
       const id = g.dataset.place, seen = EVENTS.slice(0, idx + 1).some(v => v.place === id);

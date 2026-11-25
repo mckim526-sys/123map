@@ -1,6 +1,7 @@
 // Reader-facing record of what changed on the site. Add one plain-language line per published change
 // (newest first). The "recently checked trials" list below it is built automatically from lastChecked.
 const SITE_CHANGES = [
+  ['2026-11-25', '‘그날 밤’ 장면을 1심 판결문(2025고합129 등, 2026.2.19 선고)의 범죄사실과 공소장 기준으로 다시 썼습니다. 언론 기사 출처를 모두 뺐고, 두 문서에 없는 장면(12.4 안가 모임, 관저 체포영장 집행)은 지웠습니다.'],
   ['2026-11-24', '송호종·이관형 국회 위증 사건 1심 선고, 한덕수 환송심 첫 공판 일정, 군 지휘관 5명 항소심과 종합특검 공판 경과를 반영했습니다.'],
   ['2026-11-23', '한덕수 환송심 배당, 관저 특혜 첫 공판·예산 전용 선고 시간, 양평고속도로 7명 구형, 통일교 항소심과 해병 관련 공판 일정을 반영했습니다.'],
   ['2026-11-23', '날짜가 지났는데 결과가 아직 반영되지 않은 선고·공판은 "예정" 대신 "결과 확인 중"으로 보이게 했습니다. 매일 밤 반영이 빠진 재판을 자동 점검합니다.'],

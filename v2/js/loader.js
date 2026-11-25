@@ -6,7 +6,7 @@
     'js/views/relation.js', 'js/views/ego.js', 'js/views/dialogs.js', 'js/main.js'];
 
   // 파일을 고치면 VERSION을 올려 브라우저 캐시를 무효화
-  const VERSION = '20261124-2200';
+  const VERSION = '20261125-1100';
   const load = src => new Promise((resolve, reject) => {
     const s = document.createElement('script');
     s.src = src; s.async = false;
