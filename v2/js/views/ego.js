@@ -50,11 +50,14 @@ const EgoView = (() => {
     const cases = recs.map(r => ({
       rec: r, label: shortLabel(r.label),
       people: [...Model.trialmates(center, r)].filter(id => inPool.has(id)).map(id => Model.get(id)),
+      sep: Model.separateTrial(center, r).filter(id => inPool.has(id)).map(id => Model.get(id)), // 같은 사건 · 별도 재판
     })); // 사건 순서는 데이터 순서 그대로 (본류가 먼저)
     const co = new Set(cases.flatMap(c => c.people.map(p => p.id)));
-    const others = pool.filter(p => p.id !== center.id && !co.has(p.id) && Model.linkLabel(center, p, S.agency))
+    cases.forEach(c => { c.sep = c.sep.filter(p => !co.has(p.id)); });
+    const sepIds = new Set(cases.flatMap(c => c.sep.map(p => p.id)));
+    const others = pool.filter(p => p.id !== center.id && !co.has(p.id) && !sepIds.has(p.id) && Model.linkLabel(center, p, S.agency))
       .map(p => ({ p, why: Model.linkLabel(center, p, S.agency) }));
-    return { cases, others, total: co.size + others.length };
+    return { cases, others, total: co.size + sepIds.size + others.length };
   }
 
   function tile(p, why, sel) {
@@ -83,9 +86,10 @@ const EgoView = (() => {
 
     const card = c => {
       const r = c.rec, on = r.id === activeCase;
-      const body = c.people.length
+      const body = (c.people.length
         ? tiles(r.id, c.people.map(p => ({ p })), S.detailOpen ? S.selected : '')
-        : `<p class="ego-solo">함께 재판받는 사람 없이 단독으로 재판받습니다</p>`;
+        : `<p class="ego-solo">함께 재판받는 사람 없이 단독으로 재판받습니다</p>`)
+        + (c.sep.length ? `<p class="ego-sep">같은 사건 · 별도 재판</p>${tiles(r.id + '__sep', c.sep.map(p => ({ p, why: '별도 재판' })), S.detailOpen ? S.selected : '')}` : '');
       return `<section class="ego-card${on ? ' is-active' : ''}">
         <button class="ego-card__head" data-id="${esc(center.id)}" data-case-link="${esc(r.id)}" aria-label="${esc(c.label)} 재판 상세 보기">
           <span><b>${esc(c.label)}</b><span class="caption">${esc(r.agency)} · ${esc(r.status)}</span></span>

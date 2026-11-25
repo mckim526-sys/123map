@@ -1090,6 +1090,7 @@ body[data-view="night"] .toolbar, body[data-view="night"] .content-card__head { 
 .ego-card__head > i { font-style: normal; font-size: var(--fs-title); color: var(--text-tertiary); }
 .ego-card__n { flex: none; font-size: var(--fs-caption); font-weight: var(--fw-bold); color: var(--text-secondary); }
 .ego-solo { margin: 0; padding: 0 var(--sp-3) var(--sp-3); font-size: var(--fs-caption); color: var(--text-tertiary); }
+.ego-sep { margin: 0; padding: var(--sp-1) var(--sp-3) var(--sp-2); font-size: var(--fs-caption); font-weight: var(--fw-bold); color: var(--text-tertiary); }
 
 /* 사람 타일: 4칸 격자 */
 .ego-tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--sp-2) var(--sp-1); padding: var(--sp-1) var(--sp-2) var(--sp-3); }

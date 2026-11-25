@@ -34,7 +34,16 @@ const Model = (() => {
     const sameTrial = ra.find(r => r.family && rb.some(o => o.family === r.family));
     if (sameTrial) return sameTrial.label;
     if ((!scope || scope === '내란특검') && CORE_LEADERS.includes(a.id) && CORE_MEMBERS.includes(b.id)) return '내란 본류';
+    // 같은 사건인데 따로 기소돼 별도로 재판받는 사이 (데이터의 record.related)
+    const sep = ra.find(r => (r.related || []).includes(b.id)) || rb.find(r => (r.related || []).includes(a.id));
+    if (sep) return `${sep.label} · 별도 재판`;
     return null;
+  }
+
+  // 같은 사건(혐의)인데 따로 기소돼 별도로 재판받는 사람 id (record.related에서 같은 재판 사람은 뺌)
+  function separateTrial(person, record) {
+    const mates = trialmates(person, record);
+    return (record.related || []).filter(id => id !== person.id && !mates.has(id) && byId.has(id));
   }
 
   // 같은 재판에서 함께 기소·재판받는 사이인가
@@ -89,6 +98,6 @@ const Model = (() => {
 
   return {
     people, get, ROOT_ID, AGENCY_TOTALS, agencies, sources: catalogSources,
-    linkLabel, triedTogether, trialmates, filterPeople, sharedCases, agencyRoot,
+    linkLabel, triedTogether, trialmates, separateTrial, filterPeople, sharedCases, agencyRoot,
   };
 })();

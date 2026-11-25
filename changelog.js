@@ -1,6 +1,7 @@
 // Reader-facing record of what changed on the site. Add one plain-language line per published change
 // (newest first). The "recently checked trials" list below it is built automatically from lastChecked.
 const SITE_CHANGES = [
+  ['2026-11-25', '관계도에서 같은 사건으로 따로 기소돼 별도로 재판받는 사람(김태효, 한덕수·이상민·추경호, 경호처 체포방해 4명)을 ‘그 밖의 관계’ 대신 그 사건 곁에 점선으로 두었습니다.'],
   ['2026-11-25', '모바일 ‘그날 밤’ 아래 시간 막대를 화면 폭에 맞춰, 밤 11시 이후 장면에서 지금 시각 표시가 화면 밖으로 밀리던 문제를 고쳤습니다.'],
   ['2026-11-25', '가로 320px 휴대폰에서 재판 지도를 열면 머리글 탭이 옆으로 넘치던 문제를 고쳤습니다.'],
   ['2026-11-25', '머리글에 ‘처음’ 탭을 넣고, ‘12·3 재판 지도’나 ‘처음’을 누르면 언제나 사진 두 장이 있는 첫 화면으로 돌아가게 했습니다(전에는 고른 사진·사건 목록이 남아 있곤 했음).'],

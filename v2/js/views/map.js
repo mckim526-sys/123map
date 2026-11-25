@@ -17,15 +17,16 @@ const MapView = (() => {
     const cases = recs.map(r => ({
       id: r.id, label: shortLabel(r.label), agency: r.agency,
       ids: [...Model.trialmates(center, r)].filter(id => inList.has(id)),
+      sep: Model.separateTrial(center, r).filter(id => inList.has(id)), // 같은 사건 · 별도 재판 (점선으로 그 사건 곁에)
     }));
+    const coIds = new Set(cases.flatMap(c => c.ids));
     const placed = new Set(), clusters = [];
-    [...cases].sort((a, b) => b.ids.length - a.ids.length).forEach(c => {
-      const own = c.ids.filter(id => !placed.has(id));
+    [...cases].sort((a, b) => (b.ids.length + b.sep.length) - (a.ids.length + a.sep.length)).forEach(c => {
+      const own = [...c.ids, ...c.sep.filter(id => !coIds.has(id))].filter(id => !placed.has(id));
       own.forEach(id => placed.add(id));
       clusters.push({ ...c, place: own.map(id => Model.get(id)) });
     });
-    const coIds = new Set(cases.flatMap(c => c.ids));
-    const others = list.filter(p => p.id !== center.id && !coIds.has(p.id) && Model.linkLabel(center, p, S.agency));
+    const others = list.filter(p => p.id !== center.id && !coIds.has(p.id) && !placed.has(p.id) && Model.linkLabel(center, p, S.agency));
     if (others.length) clusters.push({ id: '', label: '그 밖의 관계', other: true, ids: others.map(p => p.id), place: others });
 
     // 원 둘레에 무리를 이어 붙임 (단독 사건은 빈 자리 하나, 무리 사이 한 칸)
@@ -197,9 +198,10 @@ const MapView = (() => {
     }).join(''));
 
     // 안내 문구
-    const caseN = badges.filter(b => !b.other).length, coN = coIds.size, otherN = out.length - 1 - coN;
+    const caseN = badges.filter(b => !b.other).length, coN = coIds.size;
+    const otherN = egoMode ? (badges.find(b => b.other)?.ids.length || 0) : 0, sepN = out.length - 1 - coN - otherN;
     let ctx;
-    if (egoMode) ctx = `${center.name} 중심 · 사건 ${caseN}건 · 함께 재판 ${coN}명${otherN ? ` · 그 밖의 관계 ${otherN}명` : ''} · 사건 뱃지를 누르면 그 사건이 열립니다`;
+    if (egoMode) ctx = `${center.name} 중심 · 사건 ${caseN}건 · 함께 재판 ${coN}명${sepN ? ` · 같은 사건 별도 재판 ${sepN}명` : ''}${otherN ? ` · 그 밖의 관계 ${otherN}명` : ''} · 사건 뱃지를 누르면 그 사건이 열립니다`;
     else ctx = S.query ? `‘${S.query}’ 검색 결과`
       : `${S.agency} · 관련 인물 ${out.length}명`;
     $('#mapContext').textContent = ctx;
@@ -578,9 +580,11 @@ const MapView = (() => {
       const r = c.records.find(v => v.id === b.id);
       if (!r) return '';
       const mates = b.ids.filter(id => id !== c.id);
-      const why = b.solo || !mates.length
+      const sep = (b.sep || []).filter(id => !last.coIds.has(id));
+      const why = (b.solo || !mates.length
         ? `${esc(c.name)} 혼자 피고인인 재판입니다.`
-        : `${esc(c.name)}${wa(c.name)} 같은 사건으로 함께 기소돼 재판받는 사람들입니다 — ${esc(listNames(mates))}.`;
+        : `${esc(c.name)}${wa(c.name)} 같은 사건으로 함께 기소돼 재판받는 사람들입니다 — ${esc(listNames(mates))}.`)
+        + (sep.length ? ` 같은 사건으로 따로 기소돼 별도로 재판받는 사람(점선): ${esc(listNames(sep))}.` : '');
       const charges = (r.charges || []).slice(0, 3).map(ch => `<li><b>${esc(ch.name)}</b>${ch.act ? `<span>${esc(ch.act)}</span>` : ''}</li>`).join('');
       const more = (r.charges || []).length > 3 ? `<p class="case-tip__more">외 ${r.charges.length - 3}개 혐의</p>` : '';
       return `
