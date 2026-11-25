@@ -984,9 +984,17 @@ body[data-view="night"] .toolbar, body[data-view="night"] .content-card__head { 
   .nm-clock { font-size: 48px; }
   .nm-pin .name { font-size: 26px; } .nm-pin.is-active .name { font-size: 30px; } .nm-pin .sub { font-size: 18px; }
   .nm-area { font-size: 20px; } .nm-inset text { font-size: 18px; }
-  .nm-track { position: sticky; bottom: 0; padding: 0 var(--sp-3); overflow-x: auto; }
-  .nm-track__rail { min-width: 640px; }
+  /* 시간 막대는 가로 스크롤 없이 화면 폭에 맞춤: 점을 좁게, 지금 장면의 시각만 표시 (앞뒤 이동은 ‹ › 버튼) */
+  .nm-track { position: sticky; bottom: 0; padding: 0 var(--sp-4); }
+  .nm-track__dot { width: 12px; margin-left: -6px; }
+  .nm-track__dot::before { inset: 8px 3px; }
+  .nm-track__dot.is-active::before { inset: 6px 1px; box-shadow: 0 0 0 3px #e5484d40; }
+  .nm-track__dot:hover span { opacity: 0; }
+  .nm-track__dot.is-active span { opacity: 1; }
 }
+/* 양 끝 점의 시각 표시는 막대 안쪽으로 붙임 */
+.nm-track__dot.is-start span { left: 0; transform: none; }
+.nm-track__dot.is-end span { left: auto; right: 0; transform: none; }
 
 /* 단독 사건을 고르면: 함께 재판받는 사람이 없으므로 모든 연결선과 다른 인물을 흐리게, 중심 인물과 그 사건 뱃지만 또렷하게 */
 .graph.has-solo .edge .edge__line { opacity: .1; }

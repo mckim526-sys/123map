@@ -34,7 +34,7 @@ const NightView = (() => {
     ['night', '22:30', 'nec', '정보사 대원 10명이 과천 중앙선관위 청사 당직실에 들어가 당직자 휴대전화를 빼앗고 유선전화 선을 뽑았습니다. 이어 서버실을 사진으로 찍고 폐쇄했습니다.', 'verdict'],
     ['night', '22:48', 'assembly', '경찰 기동대와 국회경비대가 국회 출입문을 막기 시작했습니다. 23:07 국회의원 출입을 잠시 허용했습니다.', 'verdict'],
     ['night', '23:23', 'jcs', '박안수 계엄사령관이 김용현 장관에게서 받은 ‘계엄사령부 포고령(제1호)’을 공고했습니다.', 'verdict'],
-    ['night', '23:33~00:36', 'assembly', '윤 대통령은 네 차례 이진우 사령관에게 전화해 ‘본회의장으로 가서 4명이 1명씩 들쳐 업고 나오라고 해’, ‘총을 쏴서라도 문을 부수고 들어가서 끌어내라’고 지시했습니다.', 'verdict'],
+    ['night', '23:33', 'assembly', '윤 대통령은 이때부터 00:36까지 네 차례 이진우 사령관에게 전화해 ‘본회의장으로 가서 4명이 1명씩 들쳐 업고 나오라고 해’, ‘총을 쏴서라도 문을 부수고 들어가서 끌어내라’고 지시했습니다.', 'verdict'],
     ['night', '23:37', 'assembly', '포고령을 근거로 ‘국회의원 포함해서 전부 통제’ 지시가 내려졌습니다. 이때부터 새벽 01:45까지 국회 출입이 전면 금지됐습니다.', 'verdict'],
     ['night', '23:49', 'assembly', '707특임단 등 96명을 태운 헬기 12대가 00:11까지 국회의사당 뒤 운동장에 차례로 내렸습니다.', 'verdict'],
     ['night', '00:24', 'assembly', '수방사 35특임대대 선발대가 경찰 도움을 받아 국회 7문 옆 담을 넘어 들어왔습니다.', 'verdict'],
@@ -114,7 +114,7 @@ const NightView = (() => {
           <div class="nm-track__rail">
             ${Object.keys(PHASE).map(ph => `<span class="nm-track__seg nm-track__seg--${ph}" style="width:${PHASE_W[ph]}%"><i>${PHASE[ph]}</i></span>`).join('')}
             <span class="nm-track__fill" id="nmFill"></span>
-            ${EVENTS.map(e => `<button class="nm-track__dot" data-ev="${e.i}" style="left:${evX(e).toFixed(2)}%" aria-label="${esc(e.time)} · ${esc(P[e.place].name)}"><span>${esc(e.time)}</span></button>`).join('')}
+            ${EVENTS.map(e => `<button class="nm-track__dot${evX(e) < 8 ? ' is-start' : evX(e) > 92 ? ' is-end' : ''}" data-ev="${e.i}" style="left:${evX(e).toFixed(2)}%" aria-label="${esc(e.time)} · ${esc(P[e.place].name)}"><span>${esc(e.time)}</span></button>`).join('')}
           </div>
         </div>
       </div>`;

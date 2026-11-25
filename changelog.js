@@ -1,6 +1,7 @@
 // Reader-facing record of what changed on the site. Add one plain-language line per published change
 // (newest first). The "recently checked trials" list below it is built automatically from lastChecked.
 const SITE_CHANGES = [
+  ['2026-11-25', '모바일 ‘그날 밤’ 아래 시간 막대를 화면 폭에 맞춰, 밤 11시 이후 장면에서 지금 시각 표시가 화면 밖으로 밀리던 문제를 고쳤습니다.'],
   ['2026-11-25', '가로 320px 휴대폰에서 재판 지도를 열면 머리글 탭이 옆으로 넘치던 문제를 고쳤습니다.'],
   ['2026-11-25', '머리글에 ‘처음’ 탭을 넣고, ‘12·3 재판 지도’나 ‘처음’을 누르면 언제나 사진 두 장이 있는 첫 화면으로 돌아가게 했습니다(전에는 고른 사진·사건 목록이 남아 있곤 했음).'],
   ['2026-11-25', '‘그날 밤’ 장면을 1심 판결문(2025고합129 등, 2026.2.19 선고)의 범죄사실과 공소장 기준으로 다시 썼습니다. 언론 기사 출처를 모두 뺐고, 두 문서에 없는 장면(12.4 안가 모임, 관저 체포영장 집행)은 지웠습니다.'],
