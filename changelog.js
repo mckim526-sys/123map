@@ -1,6 +1,7 @@
 // Reader-facing record of what changed on the site. Add one plain-language line per published change
 // (newest first). The "recently checked trials" list below it is built automatically from lastChecked.
 const SITE_CHANGES = [
+  ['2026-11-28', '윤재순 사진을 넣고, 인물마다 붙던 ‘사진: MBC 보도 사진’ 표기를 처음 화면 아래와 출처·보도 창의 한 줄로 합쳤습니다.'],
   ['2026-11-27', '연합뉴스 사진을 쓰던 9명은 사진을 뺐습니다(인물 사진은 MBC 보도 사진만 사용).'],
   ['2026-11-27', '위키미디어·연합뉴스 사진을 쓰던 17명(김대기·신원식·심우정·최상목·황교안·권성동·나경원·이종섭 등)을 MBC 보도 사진으로 바꿨습니다.'],
   ['2026-11-27', 'MBC에서 사진을 찾지 못한 인물 중 18명에게 연합뉴스 사진을 넣었습니다(화면에 ‘사진: 연합뉴스’ 표시).'],
