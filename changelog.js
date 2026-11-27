@@ -1,6 +1,7 @@
 // Reader-facing record of what changed on the site. Add one plain-language line per published change
 // (newest first). The "recently checked trials" list below it is built automatically from lastChecked.
 const SITE_CHANGES = [
+  ['2026-11-27', 'MBC에서 사진을 찾지 못한 인물 중 18명에게 연합뉴스 사진을 넣었습니다(화면에 ‘사진: 연합뉴스’ 표시).'],
   ['2026-11-27', '사진이 없던 인물 44명에게 MBC 기사 사진(사진 설명에 본인 이름이 있고 얼굴이 보이는 것)을 넣었습니다.'],
   ['2026-11-27', '확정된 재판이 ‘상고 기각 · 원심 확정’처럼 형량 없이 보이던 곳(재판 목록·처음 화면)에 최종 형량을 ‘○○ 확정’으로 보여 주고, 그날 밤 출처 표기를 짧게 줄였습니다.'],
   ['2026-11-27', '김건희 사진을 얼굴이 모두 보이는 MBC 자료사진으로 바꿨습니다(처음 화면·관계도 공통).'],
