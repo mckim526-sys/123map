@@ -1,6 +1,7 @@
 // Reader-facing record of what changed on the site. Add one plain-language line per published change
 // (newest first). The "recently checked trials" list below it is built automatically from lastChecked.
 const SITE_CHANGES = [
+  ['2026-11-28', '관련 보도 카드의 ‘기사 원문 보기’ 문구를 뺐습니다(카드를 누르면 기사로 이동).'],
   ['2026-11-28', 'MBC 단체 사진 등에서 박상현·김예성·김대우·윤상현·방정환 사진을 찾아 넣고, 처음 화면 아래 문구를 ‘재판 기록은 판결문과 공개 보도를 바탕으로 합니다.’로 바꿨습니다.'],
   ['2026-11-28', '윤재순 사진을 넣고, 인물마다 붙던 ‘사진: MBC 보도 사진’ 표기를 처음 화면 아래와 출처·보도 창의 한 줄로 합쳤습니다.'],
   ['2026-11-27', '연합뉴스 사진을 쓰던 9명은 사진을 뺐습니다(인물 사진은 MBC 보도 사진만 사용).'],

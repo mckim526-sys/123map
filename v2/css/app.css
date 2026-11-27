@@ -105,7 +105,6 @@ p { margin: 0; }
 .news-card:hover { border-color: var(--border-accent); box-shadow: var(--shadow-1); }
 .news-card__meta { display: block; font-size: var(--fs-caption); color: var(--text-tertiary); }
 .news-card__title { display: block; margin-top: var(--sp-1); font-size: var(--fs-body); line-height: 1.5; font-weight: var(--fw-bold); }
-.news-card__cta { display: block; margin-top: var(--sp-2); font-size: var(--fs-caption); color: var(--text-accent); }
 
 /* 진행 단계 (1·2·3심) */
 .stepper ol { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-1); margin: 0; padding: 0; list-style: none; }

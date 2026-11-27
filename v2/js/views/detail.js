@@ -87,7 +87,6 @@ const DetailView = (() => {
       <a class="news-card" href="${esc(n.url)}" target="_blank" rel="noopener noreferrer">
         <span class="news-card__meta">${esc(n.publisher || 'MBC')} · ${esc(n.date)}</span>
         <b class="news-card__title">${esc(n.title)}</b>
-        <span class="news-card__cta">기사 원문 보기 ↗</span>
       </a>`).join('');
   }
 
