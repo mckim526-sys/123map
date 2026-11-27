@@ -29,12 +29,15 @@ const ListView = (() => {
     const on = sel?.id === p.id; // 선택한 사람의 행은 강조만 (내용은 바꾸지 않음)
     const { rec, count, prog, latest, next } = summary(p, agency);
     const ymd = t => (String(t || '').match(/\d{4}\.\d{2}\.\d{2}/) || [''])[0]; // 사건번호 등 부가 정보 제외
-    const when = [ymd(latest?.s[2]), next && ymd(next[2]) ? `다음 ${ymd(next[2])}` : ''].filter(Boolean).join(' · ');
+    // 확정 문구에 형량이 없으면('상고 기각 · 원심 확정') 앞 심급 형량으로 '○○ 확정', 원래 문구는 아래 줄에
+    const fin = latest ? finalVerdict(rec.stages || [], latest.n - 1) : null;
+    const how = fin?.note ? `${latest.n === 3 && /^상고\s?기각/.test(fin.note) ? '대법원 ' : ''}${fin.note}` : '';
+    const when = [how, ymd(latest?.s[2]), next && ymd(next[2]) ? `다음 ${ymd(next[2])}` : ''].filter(Boolean).join(' · ');
     return `
       <button class="row ${on ? 'is-selected' : ''}" data-id="${esc(p.id)}" data-case-link="${esc(rec.id)}"${on ? ' aria-current="true"' : ''}>
         <span class="row__who">${avatar(p, 'ava--md')}<span class="row__name"><b>${esc(p.name)}</b><span class="caption">${esc(p.role)}</span></span></span>
         <span class="row__case"><b>${esc(rec.label)}${count > 1 ? ` <span class="caption">외 ${count - 1}건</span>` : ''}</b><span class="caption">${esc(rec.agency)}</span></span>
-        <span class="row__verdict ${latest ? '' : 'is-pending'}"><b>${latest ? `${stageName(latest.n)} ${esc(latest.s[0])}` : '선고 전'}</b><span class="caption">${esc(when || '일정 확인 중')}</span></span>
+        <span class="row__verdict ${latest ? '' : 'is-pending'}"><b>${latest ? (fin.note ? esc(fin.main) : `${stageName(latest.n)} ${esc(fin.main)}`) : '선고 전'}</b><span class="caption">${esc(when || '일정 확인 중')}</span></span>
         ${stageCell(prog)}
         <span class="row__go" aria-hidden="true">›</span>
       </button>`;

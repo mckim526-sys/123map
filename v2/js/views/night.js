@@ -3,8 +3,8 @@
 const NightView = (() => {
   // 출처는 법원 문서 두 가지뿐(언론 기사 없음). 같은 일이 두 문서에 다 있으면 판결문(재판부가 인정한 사실)을 따름.
   const SRC = {
-    verdict: '1심 판결문 · 서울중앙지법 2026.2.19 선고 2025고합129 등(내란우두머리) · 재판부가 인정한 범죄사실 · 확정 전',
-    indict: '공소장 · 비상계엄 준비 부분 · 특검이 기소한 내용(재판부 판단 아님)',
+    verdict: '판결문 · 재판부 인정 범죄사실', // 1심 서울중앙지법 2026.2.19 선고 2025고합129 등(내란우두머리)
+    indict: '공소장 · 특검 기소 내용',
   };
   // [id, 이름, 설명, 경도, 위도, 보조지도, 이어지는 재판 [인물id, 재판id]…]
   const PLACES = [
@@ -162,7 +162,7 @@ const NightView = (() => {
     $('#nmText').innerHTML = opts.place
       ? `<ol class="nm-list">${EVENTS.filter(v => v.place === opts.place).map(v => `<li><button class="${v.i === idx ? 'is-active' : ''}" data-ev="${v.i}"><time>${esc(v.time)}</time><span>${esc(v.text)}</span></button></li>`).join('')}</ol>`
       : `<p>${esc(e.text)}</p>`;
-    $('#nmSrc').textContent = SRC[e.src] ? `출처 · ${SRC[e.src]}` : '';
+    $('#nmSrc').textContent = SRC[e.src] ? `출처 : ${SRC[e.src]}` : '';
     $('#nmCases').innerHTML = caseChips(place);
     $$('.nm-pin', pane).forEach(g => {
       const id = g.dataset.place, seen = EVENTS.slice(0, idx + 1).some(v => v.place === id);

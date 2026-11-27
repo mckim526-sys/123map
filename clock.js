@@ -31,7 +31,15 @@
     ids.delete(p.id);
     return [p.id, ...ids];
   }
-  const decided = s => s && s[0] && !/미확인|미도달|판단 전|대기|진행 중|확인 중|없음/.test(s[0]);
+  const decided = s => s && s[0] && (/확정/.test(s[0]) || !/미확인|미도달|판단 전|대기|진행 중|확인 중|없음/.test(s[0]));
+  // 확정 문구에 형량이 없으면('상고 기각 · 원심 확정') 앞 심급 형량으로 '○○ 확정' (v2/js/util.js finalVerdict와 같은 규칙)
+  const SENTENCE = /징역|금고|벌금|무죄|공소기각|집행유예|선고유예|무기|사형|면소|자격정지|추징/;
+  function finalVerdict(st, i) {
+    const t = String((st[i] || [])[0] || '');
+    if (!/확정/.test(t) || SENTENCE.test(t)) return {main: t, note: ''};
+    for (let j = i - 1; j >= 0; j--) { const prev = String((st[j] || [])[0] || ''); if (SENTENCE.test(prev) && !/예정|미확인/.test(prev)) return {main: `${prev} 확정`, note: t}; }
+    return {main: t, note: ''};
+  }
   const planned = s => s && /예정/.test((s[0] || '') + (s[2] || ''));
   const tone = t => /예정/.test(t) ? 'next' : /확정/.test(t) ? 'final' : /무죄|공소기각/.test(t) ? 'acquit' : /징역|무기|벌금|사형|유죄|자격정지/.test(t) ? 'guilty' : 'muted';
   const stageName = i => (i === 2 ? '대법원' : i + 1 + '심');
@@ -41,7 +49,7 @@
     const n = st.findIndex(planned);
     if (n >= 0) return {text: `${stageName(n)} ${st[n][0]}`, date: shortDate(st[n]), tone: 'next'};
     const last = st.map((s, i) => [s, i]).filter(([s]) => decided(s)).pop();
-    if (last) return {text: `${stageName(last[1])} ${last[0][0]}`, date: shortDate(last[0]), tone: tone(last[0][0])};
+    if (last) { const f = finalVerdict(st, last[1]); return {text: f.note ? f.main : `${stageName(last[1])} ${f.main}`, date: shortDate(last[0]), tone: tone(f.main)}; }
     return {text: r.status || '진행 확인 중', date: '', tone: 'muted'};
   }
   const face = (p, cls) => p.photo

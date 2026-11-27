@@ -1,6 +1,7 @@
 // Reader-facing record of what changed on the site. Add one plain-language line per published change
 // (newest first). The "recently checked trials" list below it is built automatically from lastChecked.
 const SITE_CHANGES = [
+  ['2026-11-27', '확정된 재판이 ‘상고 기각 · 원심 확정’처럼 형량 없이 보이던 곳(재판 목록·처음 화면)에 최종 형량을 ‘○○ 확정’으로 보여 주고, 그날 밤 출처 표기를 짧게 줄였습니다.'],
   ['2026-11-27', '김건희 사진을 얼굴이 모두 보이는 MBC 자료사진으로 바꿨습니다(처음 화면·관계도 공통).'],
   ['2026-11-26', '윤석열의 한덕수 재판 위증 혐의 무죄 확정과 김현태 등 군 지휘관 7명의 항소심 두 번째 공판을 반영했습니다.'],
   ['2026-11-25', '추경호 1심 무죄에 대한 특검 항소, 김건희 알선수재 대법원 선고 일정, 김태효 재판 증인신문과 오세훈 상고심 양측 주장을 반영했습니다.'],

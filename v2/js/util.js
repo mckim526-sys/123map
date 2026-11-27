@@ -43,3 +43,16 @@ function todaySeoul() {
   return new Intl.DateTimeFormat('sv-SE', { timeZone: 'Asia/Seoul', year: 'numeric', month: '2-digit', day: '2-digit' })
     .format(new Date()).replaceAll('-', '.');
 }
+
+// 확정 단계의 형량을 한눈에: '상고 기각 · 원심 확정'처럼 형량이 없는 확정 문구면 바로 앞 심급의 형량을 가져와 '○○ 확정'으로
+// 반환 { main: 보여 줄 판단, note: 원래 확정 문구(형량을 가져온 경우만) }
+const SENTENCE = /징역|금고|벌금|무죄|공소기각|집행유예|선고유예|무기|사형|면소|자격정지|추징/;
+function finalVerdict(stages, i) {
+  const t = String((stages[i] || [])[0] || '');
+  if (!/확정/.test(t) || SENTENCE.test(t)) return { main: t, note: '' };
+  for (let j = i - 1; j >= 0; j--) {
+    const prev = String((stages[j] || [])[0] || '');
+    if (SENTENCE.test(prev) && !/예정|미확인/.test(prev)) return { main: `${prev} 확정`, note: t.replace(/\s*·\s*(원심|형)\s*확정$/, '') };
+  }
+  return { main: t, note: '' };
+}
