@@ -298,7 +298,11 @@
     // 두 번 누르면 취소: 이미 고른 사건(뱃지·탭)을 다시 누르면 사건 강조 해제
     if (t.closest('.group-tag.is-active[data-case-link], .case-tabs .is-active[data-case]')) return clearCase();
     const caseLink = t.closest('[data-case-link]');
-    if (caseLink) return open(caseLink.dataset.id, caseLink.dataset.caseLink);
+    if (caseLink) {
+      // 그날 밤 화면엔 사건 기록 패널이 없음 → 관계도에서 재판 상세를 엶 (주소를 #map으로 한 번 거쳐 바깥 머리글 탭도 관계도로)
+      if (S.view === 'night') { setView('map'); history.replaceState(null, '', '#map'); }
+      return open(caseLink.dataset.id, caseLink.dataset.caseLink);
+    }
     const person = t.closest('[data-id]');
     // 두 번 누르면 취소: 관계도에서 지금 선택한 인물을 다시 누르면 선택 해제(상세 닫힘)
     if (person && S.detailOpen && person.dataset.id === S.selected && person.closest('#nodeLayer')) return closeDetail();

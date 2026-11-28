@@ -916,6 +916,10 @@ body.has-detail .detail {
 /* 9-2 ── 그날 밤 (어두운 화면). 지도가 영역을 가득 채우고, 왼쪽에 지금 장면을 겹쳐 둠. 아래는 시간 막대 하나.
    예외: 이 탭만 어두운 바탕이고, 지금 장면의 장소·지나온 경로는 '불이 켜진' 붉은색(--night-hot) */
 body[data-view="night"] .toolbar, body[data-view="night"] .content-card__head { display: none; } /* 그날 밤엔 검색·필터가 필요 없음 */
+/* 그날 밤은 인물 기록과 무관 → 오른쪽 재판 상세를 숨기고, 그 자리는 '판결문으로 읽기'(.nm-read)가 씀 */
+body[data-view="night"] .detail, body[data-view="night"] .sheet-backdrop { display: none !important; }
+body[data-view="night"].has-detail .workspace { grid-template-columns: minmax(0, 1fr); }
+@media (max-width: 760px) { body[data-view="night"].has-detail main.container { padding-bottom: 0; } }
 .night-pane {
   --night-hot: #e5484d; --night-hot-soft: #ff8a8d;
   --text-primary: #f3f5f8; --text-secondary: #b7bfcc; --text-tertiary: #7d8796;
@@ -994,6 +998,37 @@ body[data-view="night"] .toolbar, body[data-view="night"] .content-card__head { 
 .nm-case small { font-size: var(--fs-caption); color: var(--text-tertiary); white-space: nowrap; }
 .nm-more { margin-top: var(--sp-1); padding: 0; border: 0; background: none; font: inherit; font-size: var(--fs-caption); color: var(--text-secondary); text-decoration: underline; cursor: pointer; }
 
+/* 판결문으로 읽기: 넓은 화면에서는 지도 오른쪽에 겹침 */
+.nm-read { position: absolute; z-index: 2; top: 0; right: 0; bottom: 64px; width: min(380px, 34%); padding: var(--sp-6) var(--sp-6) var(--sp-5);
+  overflow-y: auto; scrollbar-width: thin; scrollbar-color: #2a3446 transparent; background: #0b1018f2; border-left: 1px solid #1c2433; }
+.nm-read__eyebrow { margin: 0; font-size: var(--fs-caption); font-weight: var(--fw-bold); letter-spacing: .14em; color: var(--night-hot-soft); }
+.nm-read__sec { margin-top: var(--sp-5); }
+.nm-read__sec + .nm-read__sec { padding-top: var(--sp-4); border-top: 1px solid var(--border-default); }
+.nm-read h3 { display: flex; align-items: baseline; justify-content: space-between; gap: var(--sp-2); margin: 0 0 var(--sp-2); font-size: var(--fs-label); line-height: var(--lh-label); font-weight: var(--fw-bold); color: var(--text-primary); }
+.nm-read h3 small { font-size: var(--fs-caption); font-weight: var(--fw-medium); color: var(--text-tertiary); }
+/* 원문: 명조로, 왼쪽에 붉은 줄 — 따옴표 안 말과 시각은 밝게 */
+.nm-read__quote { margin: 0; padding: var(--sp-1) 0 var(--sp-1) var(--sp-4); border-left: 2px solid var(--night-hot); font-family: var(--font-serif); font-size: 15px; line-height: 1.85; color: #c3cad5; word-break: keep-all; }
+.nm-read__quote mark { background: none; color: #fff; font-weight: 700; }
+.nm-read__t { font-weight: 700; color: var(--night-hot-soft); font-family: var(--font); font-variant-numeric: tabular-nums; }
+.nm-read__cite { margin: var(--sp-2) 0 0; font-size: var(--fs-caption); line-height: var(--lh-caption); color: var(--text-tertiary); }
+/* 쉽게 정리하면: 재판부 판단 · 특검 주장 · 당사자 말을 표로 구분 */
+.nm-read__points { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--sp-3); }
+.nm-read__points li p { margin: var(--sp-1) 0 0; font-size: var(--fs-body); line-height: 1.7; color: #d7dce4; word-break: keep-all; }
+.nm-read__points q { display: block; margin-top: var(--sp-1); font-weight: var(--fw-bold); color: #fff; quotes: '“' '”'; }
+.nm-read__tag { display: inline-block; padding: 1px 8px; border-radius: var(--r-pill); font-size: var(--fs-caption); font-weight: var(--fw-bold); }
+.is-court .nm-read__tag { background: #e5484d26; color: var(--night-hot-soft); }
+.is-claim .nm-read__tag { background: #ffffff14; color: #c9cfd8; }
+.is-party .nm-read__tag { border: 1px solid #ffffff33; color: #aab3c0; }
+.nm-read__terms { margin: 0; display: grid; gap: var(--sp-3); }
+.nm-read__terms dt { font-size: var(--fs-label); font-weight: var(--fw-bold); color: var(--text-primary); }
+.nm-read__terms dd { margin: 2px 0 0; font-size: var(--fs-caption); line-height: 1.65; color: var(--text-secondary); word-break: keep-all; }
+.nm-read__case p { margin: 0; font-size: var(--fs-caption); line-height: 1.7; color: var(--text-secondary); }
+.nm-read__case b { color: var(--text-primary); }
+.nm-read__next { color: var(--night-hot-soft); font-weight: var(--fw-bold); }
+.nm-read__go { margin-top: var(--sp-3); height: 36px; display: inline-flex; align-items: center; gap: var(--sp-1); padding: 0 var(--sp-4); border: 1px solid #ffffff33; border-radius: var(--r-pill);
+  background: none; color: #fff; font: inherit; font-size: var(--fs-label); font-weight: var(--fw-bold); cursor: pointer; }
+.nm-read__go:hover { background: #ffffff14; }
+
 /* 시간 막대: 그 전 · 그날 밤 · 그 후 */
 .nm-track { position: relative; z-index: 3; height: 64px; padding: 0 var(--sp-6); border-top: 1px solid #1c2433; background: #0a0e15; }
 .nm-track__rail { position: relative; height: 100%; display: flex; }
@@ -1014,10 +1049,18 @@ body[data-view="night"] .toolbar, body[data-view="night"] .content-card__head { 
 @media (prefers-reduced-motion: reduce) { .nm-trail, .nm-pin.is-active .glow { animation: none; } }
 
 /* 좁은 영역(모바일·상세가 열린 경우): 지도 → 장면 → 시간 막대 순으로 쌓고 영역 안에서 스크롤 */
+@container (max-width: 1080px) {
+  .nm { display: grid; height: auto; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: none; grid-template-areas: "map map" "scene read" "track track"; }
+  .nm-map { grid-area: map; height: clamp(220px, 42dvh, 380px); }
+  .nm-scene { grid-area: scene; position: static; width: auto; padding: var(--sp-5) var(--sp-5); background: none; overflow: visible; }
+  .nm-read { grid-area: read; position: static; width: auto; overflow: visible; background: #0b1018; }
+  .nm-track { grid-area: track; position: sticky; bottom: 0; }
+}
 @container (max-width: 760px) {
   .nm { display: block; height: auto; }
   .nm-map { height: clamp(180px, 34dvh, 300px); }
   .nm-scene { position: static; width: auto; padding: var(--sp-5) var(--sp-4); background: none; overflow: visible; }
+  .nm-read { position: static; width: auto; padding: var(--sp-5) var(--sp-4); border-left: 0; border-top: 1px solid #1c2433; overflow: visible; }
   .nm-clock { font-size: 48px; }
   .nm-pin .name { font-size: 26px; } .nm-pin.is-active .name { font-size: 30px; } .nm-pin .sub { font-size: 18px; }
   .nm-area { font-size: 20px; } .nm-inset text { font-size: 18px; }
