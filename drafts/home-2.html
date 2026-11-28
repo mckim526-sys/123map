@@ -20,7 +20,7 @@ body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--sa
 .bar nav span:first-child { color: var(--fg); }
 
 /* 얼굴 벽 */
-.wall { position: relative; height: 100svh; min-height: 640px; overflow: hidden; }
+.wall { position: relative; height: 100svh; min-height: 820px; overflow: hidden; }
 .grid { position: absolute; inset: -2px; display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); grid-auto-rows: 116px; grid-auto-flow: dense; gap: 2px; }
 .t { position: relative; overflow: hidden; background: #18181a; }
 .t img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 22%; filter: grayscale(1) contrast(1.08) brightness(.62); display: block; }
@@ -35,18 +35,40 @@ body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--sa
 .t.none { display: grid; place-items: center; font-family: var(--serif); font-size: 26px; color: #3a3a3d; }
 /* 가운데로 갈수록 어둡게 → 문장이 떠오름 */
 .veil { position: absolute; inset: 0; pointer-events: none;
-  background: radial-gradient(ellipse 46% 52% at 50% 52%, rgba(12,12,13,.95) 0%, rgba(12,12,13,.86) 42%, rgba(12,12,13,.35) 78%, rgba(12,12,13,.15) 100%),
+  background: radial-gradient(ellipse 50% 60% at 50% 54%, rgba(12,12,13,.96) 0%, rgba(12,12,13,.9) 46%, rgba(12,12,13,.42) 80%, rgba(12,12,13,.2) 100%),
               linear-gradient(180deg, rgba(12,12,13,.75) 0, rgba(12,12,13,0) 18%, rgba(12,12,13,0) 80%, var(--bg) 100%); }
-.hero { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; padding: 0 24px; }
-.hero > div { max-width: 760px; }
+.hero { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; padding: 72px 24px 32px; }
+.hero > div { width: min(100%, 860px); }
 .eyebrow { font-size: 12px; font-weight: 600; letter-spacing: .3em; color: var(--fg-2); }
 .eyebrow b { color: var(--fg); font-weight: 700; }
-.hero h1 { margin: 18px 0 0; font-family: var(--serif); font-size: clamp(44px, 6.4vw, 92px); font-weight: 900; line-height: 1.1; letter-spacing: -.04em; }
+/* 흐른 시간 */
+.clock { display: flex; justify-content: center; align-items: baseline; gap: 18px; margin-top: 12px; font-variant-numeric: tabular-nums; }
+.clock b { font-family: var(--serif); font-size: clamp(64px, 7vw, 104px); font-weight: 900; line-height: .9; letter-spacing: -.045em; }
+.clock b small { font-size: .32em; font-weight: 500; letter-spacing: 0; margin-left: 4px; color: var(--fg-2); }
+.clock span { font-size: clamp(22px, 2.3vw, 32px); font-weight: 300; letter-spacing: .12em; color: var(--fg-2); }
+.clock span i { font-style: normal; color: var(--fg-3); margin: 0 .12em; }
+.clock span em { font-style: normal; color: var(--fg); }
+.hero h1 { margin: 18px 0 0; font-family: var(--serif); font-size: clamp(30px, 3.2vw, 44px); font-weight: 900; line-height: 1.2; letter-spacing: -.035em; }
+/* 두 사람: 가운데 크게 */
+.duo { display: flex; justify-content: center; gap: 20px; margin-top: 28px; }
+.pf { position: relative; width: clamp(210px, 19vw, 270px); aspect-ratio: 4 / 5; overflow: hidden; background: #18181a; text-align: left;
+  box-shadow: 0 30px 60px rgba(0,0,0,.55); }
+.pf::after { content: ''; position: absolute; inset: 0; border: 1px solid rgba(241,238,232,.18); pointer-events: none; }
+.pf img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) contrast(1.1) brightness(.9); }
+.pf .shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(12,12,13,0) 42%, rgba(12,12,13,.78) 78%, rgba(12,12,13,.95) 100%); }
+.pf .lab { position: absolute; left: 0; right: 0; bottom: 0; padding: 16px 16px 18px; }
+.pf .lab small { display: block; font-size: 11px; letter-spacing: .12em; color: var(--fg-2); }
+.pf .lab b { display: block; margin-top: 2px; font-family: var(--serif); font-size: 30px; font-weight: 900; letter-spacing: -.03em; }
+.pf .lab span { display: block; margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(241,238,232,.18); font-size: 12.5px; line-height: 1.5; color: var(--fg-2); }
+.pf .lab span .long { display: inline; margin: 0; padding: 0; border: 0; font-size: inherit; color: inherit; }
+.pf .lab span em { font-style: normal; color: var(--amber); font-weight: 700; }
+.pf.k img { filter: grayscale(1) contrast(1.15) brightness(.5); } /* 원본이 밝은 사진: 두 사람 밝기 맞춤 */
+.pf .bar3 { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: var(--amber); }
 .hero h1 em { font-style: normal; color: var(--fg); }
 .hero p { margin: 22px auto 0; max-width: 34em; font-size: 17px; line-height: 1.75; color: var(--fg-2); }
-.stats { display: flex; justify-content: center; gap: 36px; margin-top: 34px; }
+.stats { display: flex; justify-content: center; gap: 36px; margin-top: 26px; }
 .stats div { text-align: center; }
-.stats b { display: block; font-family: var(--serif); font-size: 38px; font-weight: 900; letter-spacing: -.03em; line-height: 1; }
+.stats b { display: block; font-family: var(--serif); font-size: 30px; font-weight: 900; letter-spacing: -.03em; line-height: 1; }
 .stats span { display: block; margin-top: 8px; font-size: 12px; letter-spacing: .1em; color: var(--fg-3); }
 .stats .next b { color: var(--amber); }
 .cta { display: flex; justify-content: center; gap: 10px; margin-top: 36px; }
@@ -76,9 +98,23 @@ body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--sa
   .t.big::before { display: none; }
   .veil { background: radial-gradient(ellipse 80% 46% at 50% 54%, rgba(12,12,13,.96) 0%, rgba(12,12,13,.86) 50%, rgba(12,12,13,.4) 85%, rgba(12,12,13,.2) 100%),
               linear-gradient(180deg, rgba(12,12,13,.75) 0, rgba(12,12,13,0) 14%, rgba(12,12,13,0) 82%, var(--bg) 100%); }
-  .hero h1 { font-size: 44px; }
-  .hero p { font-size: 15px; }
-  .stats { gap: 22px; } .stats b { font-size: 28px; }
+  .wall { height: auto; min-height: 0; }
+  .veil { background: linear-gradient(180deg, rgba(12,12,13,.72) 0, rgba(12,12,13,.86) 22%, rgba(12,12,13,.9) 60%, rgba(12,12,13,.82) 88%, var(--bg) 100%); }
+  .eyebrow { font-size: 11px; letter-spacing: .1em; }
+  .pf .lab span .long { display: none; }
+  .grid { position: absolute; }
+  .hero { position: relative; inset: auto; padding: 84px 16px 40px; }
+  .clock { flex-direction: column; align-items: center; gap: 6px; }
+  .clock b { font-size: 76px; }
+  .clock span { font-size: 22px; }
+  .hero h1 { font-size: 28px; }
+  .duo { gap: 10px; margin-top: 22px; }
+  .pf { width: calc(50% - 5px); }
+  .pf .lab { padding: 12px 10px 14px; }
+  .pf .lab b { font-size: 22px; }
+  .pf .lab small { letter-spacing: .04em; }
+  .pf .lab span { font-size: 11.5px; }
+  .stats { gap: 22px; } .stats b { font-size: 26px; }
   .below { grid-template-columns: 1fr; gap: 36px; padding: 28px 16px 48px; }
   .week { grid-template-columns: 1fr 1fr; }
   .card { min-height: 0; }
@@ -92,11 +128,16 @@ body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--sa
   <div class="grid" id="grid" aria-hidden="true"></div>
   <div class="veil"></div>
   <div class="hero"><div>
-    <div class="eyebrow">12·3 비상계엄 이후 <b>724일</b></div>
-    <h1><em>165명</em>이<br>법정에 섰다.</h1>
-    <p>2024년 12월 3일 밤 10시 27분, 비상계엄이 선포됐다. 대통령부터 국회에 들어간 현장 지휘관까지, 네 특검이 기소한 사람들의 재판은 어디까지 왔을까.</p>
+    <div class="eyebrow">2024년 12월 3일 밤 10시 27분 비상계엄 이후</div>
+    <div class="clock" id="clock" role="timer"><b>724<small>일</small></b><span>16<i>:</i>52<i>:</i><em>49</em></span></div>
+    <h1>165명이 법정에 섰다.</h1>
+    <div class="duo">
+      <div class="pf"><img src="../assets/clock-yoon.jpg" alt="" style="object-position:50% 25%"><div class="shade"></div>
+        <div class="lab"><small>전 대통령</small><b>윤석열</b><span><span class="long">사건 10건 · 내란 본류 1심 무기징역<br></span><em>다음 선고 12.4</em> 평양 무인기 2심</span></div><i class="bar3"></i></div>
+      <div class="pf k"><img src="../assets/clock-keon.jpg" alt="" style="object-position:50% 35%"><div class="shade"></div>
+        <div class="lab"><small>윤석열 전 대통령 배우자</small><b>김건희</b><span><span class="long">사건 4건 · 3대 의혹 징역 4년 확정<br></span><em>다음 선고 12.3</em> 매관매직 대법원</span></div><i class="bar3"></i></div>
+    </div>
     <div class="stats"><div><b>103</b><span>선고</span></div><div><b>30</b><span>형 확정</span></div><div class="next"><b>13</b><span>다가오는 선고</span></div></div>
-    <div class="cta"><span>얼굴로 찾기</span><span>사건으로 보기</span></div>
   </div></div>
 </section>
 <section class="below">
@@ -133,16 +174,20 @@ body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--sa
   const next = p => p.records.some(r => (r.stages || []).some(s => /선고 예정/.test(s[0] || '') && ((s[2] || '').match(/\d{4}\.\d{2}\.\d{2}/) || [''])[0] >= today));
   const hash = s => [...s].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7);
   const ppl = persons.filter(p => p.photo || PHOTO[p.id]).sort((a, b) => hash(a.id) - hash(b.id));
-  // 두 사람은 크게, 화면 위쪽 양옆에 오도록 순서 조정
+  // 두 사람은 가운데 크게 나오므로 벽에서는 뺌
   const pick = id => ppl.splice(ppl.findIndex(p => p.id === id), 1)[0];
   const yoon = pick('yoon'), keon = pick('keon');
-  ppl.splice(3, 0, yoon); ppl.splice(12, 0, keon);
   const tile = p => `<div class="t${p === yoon || p === keon ? ' big' : ''}" data-s="${level(p)}"${next(p) ? ' data-next' : ''} data-name="${p.name}"><img src="../assets/${PHOTO[p.id] || p.photoFile || p.id + '.jpg'}" alt="" loading="lazy" style="${p.photoPosition ? 'object-position:' + p.photoPosition : ''}"></div>`;
   // 화면을 다 채울 만큼 되풀이 (두 번째부터는 큰 칸 없이)
   let html = ppl.map(tile).join('');
   const rest = ppl.filter(p => p !== yoon && p !== keon);
-  for (let k = 0; k < 2; k++) html += rest.map(tile).join('');
+  for (let k = 0; k < 3; k++) html += rest.map(tile).join('');
   document.getElementById('grid').innerHTML = html;
+  // 흐른 시간 (1초마다)
+  const START = Date.parse('2024-12-03T22:27:00+09:00'), pad = n => String(n).padStart(2, '0'), clock = document.getElementById('clock');
+  const tick = () => { let s = Math.floor((Date.now() - START) / 1000); const d = Math.floor(s / 86400); s %= 86400; const h = Math.floor(s / 3600); s %= 3600; const m = Math.floor(s / 60); s %= 60;
+    clock.innerHTML = `<b>${d.toLocaleString('ko-KR')}<small>일</small></b><span>${pad(h)}<i>:</i>${pad(m)}<i>:</i><em>${pad(s)}</em></span>`; clock.setAttribute('aria-label', `${d}일 ${h}시간 ${m}분 지났습니다`); };
+  tick(); setInterval(tick, 1000);
 })();
 </script>
 </body>
