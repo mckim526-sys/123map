@@ -1,6 +1,7 @@
 // Reader-facing record of what changed on the site. Add one plain-language line per published change
 // (newest first). The "recently checked trials" list below it is built automatically from lastChecked.
 const SITE_CHANGES = [
+  ['2026-11-28', '출처·보도 안내를 세 줄로 줄이고, 가장 최근 변경 기록의 날짜를 표시하도록 바꿨습니다.'],
   ['2026-11-29', '재판 상세의 설명 상자를 3줄 이내로 요약하고, 관련 보도의 기사 제목은 한 줄을 넘으면 …으로 줄여 보이게 했습니다.'],
   ['2026-11-28', '그날 밤의 각 장면과 장소별 목록에 1심 판결문과 공소사실의 출처와 쪽수를 표시하고, 이진우 통화 발언 시각을 판결문에 맞춰 바로잡았습니다.'],
   ['2026-11-29', '혐의별 판단을 \'결론 — 이유\' 형태로 다듬어 배지에 결론(유죄·무죄·파기환송 등)만 짧게 보이게 하고, 재판 설명에 남아 있던 작업 메모와 불필요한 단서 문장을 정리했습니다.'],
@@ -73,6 +74,14 @@ const SITE_CHANGES = [
   ['2026-11-12', '특검별 지도에서 다른 특검 사건이 연결선 이름으로 표시되던 오류를 고치고, 특검 발표 기소 인원과 아직 수록하지 못한 범위를 표시했습니다.'],
 ];
 (function () {
+  const update = document.getElementById('sourcesUpdated');
+  if (update && SITE_CHANGES.length) {
+    const [date] = SITE_CHANGES[0];
+    const time = update.querySelector('time');
+    time.dateTime = date;
+    time.textContent = date.replaceAll('-', '.');
+    update.hidden = false;
+  }
   const dlg = document.getElementById('changelog');
   if (!dlg) return;
   const checked = persons.flatMap(p => p.records.filter(r => r.lastChecked).map(r => ({p, r})))
