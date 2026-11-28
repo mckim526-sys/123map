@@ -25,17 +25,20 @@ const OPEN = s => !s || !s[0] || /^(미확인|미도달(\s*확인 당시)?|판�
 const STAGE = ['1심', '2심', '대법원'];
 
 const out = { date: today, check: [], appeal: [], overdue: [], upcoming: [] };
-const seen = new Set();
 for (const p of c.p) for (const r of p.records) {
   const st = r.stages || [];
-  st.forEach((s, i) => {
+  const stages = st.map((s, i) => ({ s, stage: STAGE[i], i }));
+  const extra = (r.next || []).map(s => ({ s, stage: s[3] || '환송심' }));
+  [...stages, ...extra].forEach(({ s, stage, i }) => {
     const d = ymdOf(s); if (!d) return;
-    const key = [r.family || r.id, i, d].join('|');
-    const item = () => ({ key, date: d, stage: STAGE[i], text: s[0], court: s[1] || '', label: r.label, agency: r.agency, people: [], record: r.id });
+    const caseOnly = s[4] === 'case';
+    const slot = i ?? `${stage}:${(s[2] || '').match(/\b\d{1,2}:\d{2}\b/)?.[0] || s[0]}`;
+    const key = [r.family || r.id, slot, d].join('|');
+    const item = () => ({ key, date: d, stage, text: s[0], court: s[1] || '', label: r.label, agency: r.agency, people: [], record: r.id, ...(caseOnly ? { caseOnly } : {}) });
     const push = list => {
       let it = list.find(x => x.key === key);
       if (!it) { it = item(); list.push(it); }
-      if (!it.people.some(v => v.id === p.id)) it.people.push({ id: p.id, name: p.name, record: r.id });
+      if (!caseOnly && !it.people.some(v => v.id === p.id)) it.people.push({ id: p.id, name: p.name, record: r.id });
     };
     const dd = day(d) - T;
     if (planned(s)) {
@@ -50,7 +53,7 @@ for (const p of c.p) for (const r of p.records) {
 for (const k of ['check', 'appeal', 'overdue', 'upcoming']) out[k].sort((a, b) => a.date.localeCompare(b.date));
 
 if (args.includes('--json')) { console.log(JSON.stringify(out, null, 1)); process.exit(0); }
-const line = x => `  - ${x.date} ${x.stage} ${x.text} · ${x.label} (${x.agency}) — ${x.people.map(v => v.name).join('·')}${x.court ? ` · ${x.court}` : ''}`;
+const line = x => `  - ${x.date} ${x.stage} ${x.text} · ${x.label} (${x.agency}) — ${x.caseOnly ? '사건 기일 · 출석 대상 미확인' : x.people.map(v => v.name).join('·')}${x.court ? ` · ${x.court}` : ''}`;
 console.log(`[${today} 확인 목록]`);
 console.log(`① 결과 확인 (${evening ? '오늘·' : ''}어제·그저께 예정) ${out.check.length}건`); out.check.forEach(x => console.log(line(x)));
 console.log(`② 상소 여부 확인 (선고 후 7~14일, 다음 심급 비어 있음) ${out.appeal.length}건`); out.appeal.forEach(x => console.log(line(x)));

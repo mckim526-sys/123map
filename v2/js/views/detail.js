@@ -149,6 +149,8 @@ const DetailView = (() => {
           ${record.lastChecked ? `<span class="caption">정보 확인 ${esc(record.lastChecked)}</span>` : ''}
         </div>
         ${verdictTimeline(record)}
+        ${(record.next || []).map(([text, court, date, stage, scope]) => `
+          <p class="caption">${[stage, date, text, court, scope === 'case' ? '사건 기일 · 출석 대상 미확인' : ''].filter(Boolean).map(esc).join(' · ')}</p>`).join('')}
         <button class="btn btn--secondary btn--block" data-compare>혐의별 1심·2심·대법원 판단 나란히 보기</button>
       </section>
       ${section('혐의별 판단', `${record.charges.length}건 · 눌러서 펼치기`, 'charges')}

@@ -7,7 +7,7 @@
 (function () {
   if (typeof persons === 'undefined') return;
   const today = new Date(Date.now() + 9 * 3600e3).toISOString().slice(0, 10).replace(/-/g, '.');
-  persons.forEach(p => p.records.forEach(r => (r.stages || []).forEach(s => {
+  persons.forEach(p => p.records.forEach(r => [...(r.stages || []), ...(r.next || [])].forEach(s => {
     const d = (String(s[2] || '').match(/\d{4}\.\d{2}\.\d{2}/) || [])[0];
     if (!d || d >= today || !/예정/.test(String(s[0] || '') + String(s[2] || ''))) return;
     s.scheduled = [s[0], s[2]];

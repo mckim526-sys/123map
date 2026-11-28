@@ -15,6 +15,7 @@ const Relation = (() => {
   // 연결을 이루는 재판의 피고인 전원 (선 양 끝 두 사람만이 아니라)
   function roster(entry) {
     if (!entry?.records?.length) return [];
+    if (entry.kind !== 'co') return entry.records;
     const seed = entry.records.find(v => v.record.family || (v.record.members || []).length > 1) || entry.records[0];
     const ids = Model.trialmates(seed.person, seed.record); ids.add(seed.person.id);
     const out = [...entry.records];
@@ -35,6 +36,7 @@ const Relation = (() => {
     const { a, b, cases, index } = st;
     const entry = cases[index], label = Model.linkLabel(a, b, ctx.agency());
     const team = roster(entry), group = team.length > 2;
+    const split = team.some(v => v.record.proceedingsSplit);
     const articles = [...new Map(team.flatMap(v => v.record.news || [])
       .filter(n => /^https:\/\/imnews\.imbc\.com\//.test(n.url)).map(n => [n.url, n])).values()].slice(0, 2);
 
@@ -47,8 +49,8 @@ const Relation = (() => {
     const lastVerdict = r => (r.stages || []).filter(s => s && s[0] && !/미확인|미도달/.test(s[0])).map(s => s[0]).pop() || r.status || '확인 중';
 
     const bodyHtml = group
-      ? `<h3 class="section-title">함께 재판받는 피고인<small>${team.length}명</small></h3>
-         <p class="caption">이름을 누르면 그 사람의 재판 상세로 이동합니다. 상소 여부가 사람마다 달라 진행 단계는 각자 표시합니다.</p>
+      ? `<h3 class="section-title">${split ? '함께 기소된 피고인' : '함께 재판받는 피고인'}<small>${team.length}명</small></h3>
+         <p class="caption">${split ? '재판부가 일부 피고인의 변론을 분리했습니다.' : '이름을 누르면 그 사람의 재판 상세로 이동합니다. 상소 여부가 사람마다 달라 진행 단계는 각자 표시합니다.'}</p>
          <ol class="rp-roster">${team.map(({ person, record }) => `
            <li class="${person.id === a.id || person.id === b.id ? 'is-pair' : ''}">
              <div class="rp-roster__head">

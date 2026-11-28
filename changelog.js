@@ -1,6 +1,7 @@
 // Reader-facing record of what changed on the site. Add one plain-language line per published change
 // (newest first). The "recently checked trials" list below it is built automatically from lastChecked.
 const SITE_CHANGES = [
+  ['2026-11-28', '타임라인에 일부 유죄 판결을 구분해 표시하고, 채 상병 수사 외압·통일교 등 공판 일정과 변론 분리, 이배용 상고와 공소기각 확정 기록을 바로잡았습니다.'],
   ['2026-11-29', '헌법재판관 미임명 사건에서 같은 사건번호(2025고합1678)로 기소됐지만 법관 기피 신청으로 재판이 멈춘 최상목을 한덕수·정진석·김주현·이원모와 "같은 사건 · 별도 재판"으로 이었습니다.'],
   ['2026-11-29', '특검 필터를 고른 상태에서 재판 상세의 다른 특검 사건을 누르면 관계도도 그 특검으로 넘어가게 했습니다.'],
   ['2026-11-28', '헌법재판관 미임명·지명 사건에서 한덕수·정진석·김주현·이원모의 1심 선고 일정을 11월 30일 오후 2시로 맞췄습니다.'],

@@ -7,7 +7,7 @@ const di = process.argv.indexOf('--date'); // 시험용: --date YYYY-MM-DD
 const out = JSON.parse(execFileSync('node', [path.join(__dirname, 'agenda.js'), '--json', '--evening', ...(di > 0 ? ['--date', process.argv[di + 1]] : [])], { encoding: 'utf8' }));
 const testsFailed = process.argv.includes('--tests-failed');
 
-const line = x => `- ${x.date} · **${x.stage} ${x.text}** · ${x.label} (${x.agency}) — ${x.people.map(v => v.name).join('·')}${x.court ? ` · ${x.court}` : ''}`;
+const line = x => `- ${x.date} · **${x.stage} ${x.text}** · ${x.label} (${x.agency}) — ${x.caseOnly ? '사건 기일 · 출석 대상 미확인' : x.people.map(v => v.name).join('·')}${x.court ? ` · ${x.court}` : ''}`;
 const parts = [];
 if (testsFailed) parts.push('### ⚠️ 회귀 검사 실패\n`node --test tests/navigation.test.cjs tests/public-sources.test.cjs`가 실패했습니다. 데이터 파일이 깨졌거나 MBC 외 주소가 들어갔을 수 있습니다. Actions 실행 기록을 확인하세요.');
 if (out.overdue.length) parts.push(`### 지난 일정이 아직 '예정'으로 남음 (${out.overdue.length}건)\n사이트에는 '결과 확인 중'으로 표시되고 있습니다. 결과(또는 연기)를 반영해야 합니다.\n${out.overdue.map(line).join('\n')}`);

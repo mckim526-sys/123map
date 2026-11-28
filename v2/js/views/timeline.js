@@ -23,20 +23,22 @@ const TimelineView = (() => {
     const groups = new Map();
     for (const p of list) for (const r of p.records) {
       if (agency !== 'all' && r.agency !== agency) continue;
-      // 환송심처럼 심급 세 칸 밖의 일정: record.next = [[내용, 재판부, 날짜, 심급 이름]]
+      // 추가 일정의 다섯째 값이 'case'면 사건 기일만 공개됐고 출석 대상은 확인되지 않은 경우입니다.
       [...(r.stages || []).map((s, i) => [s, i === 2 ? '대법원' : (i + 1) + '심']), ...(r.next || []).map(n => [n, n[3] || '환송심'])].forEach(([s, stageLabel]) => {
         const m = String(s[2] || '').match(/(\d{4})\.(\d{2})\.(\d{2})/);
         if (!m) return;
         const upcoming = /예정/.test(s[2]) || /예정/.test(s[0]) || m[0] > today;
         if (/보도|제출|배당/.test(s[2]) && !upcoming) return; // 보도·제출일은 법원 판단이 아님
         if (/없음|포기|취하/.test(s[0] || '') && !/징역|금고|벌금|무죄|유죄/.test(s[0] || '')) return; // 열리지 않은 심급
-        const key = [m[0], s[1], r.family || r.id, s[0]].join('|');
+        const time = String(s[2] || '').match(/\b\d{1,2}:\d{2}\b/)?.[0] || '';
+        const caseOnly = s[4] === 'case';
+        const key = [m[0], time, s[1], r.family || r.id, stageLabel, s[0], caseOnly].join('|');
         if (!groups.has(key)) groups.set(key, {
           date: new Date(+m[1], +m[2] - 1, +m[3]), ymd: m[0], text: s[0], court: s[1],
-          stage: stageLabel, label: r.label, agency: r.agency, upcoming, people: [],
+          stage: stageLabel, label: r.label, agency: r.agency, upcoming, caseOnly, time, people: [],
         });
         const g = groups.get(key);
-        if (!g.people.some(v => v.p.id === p.id)) g.people.push({ p, caseId: r.id });
+        if (!caseOnly && !g.people.some(v => v.p.id === p.id)) g.people.push({ p, caseId: r.id });
       });
     }
     return [...groups.values()];
@@ -62,6 +64,7 @@ const TimelineView = (() => {
   const card = e => {
     const k = kind(e.text, e.upcoming);
     const dd = e.upcoming ? dday(e.date) : '';
+    const court = [dropMemo(e.court), e.time].filter(Boolean).join(' · ');
     return `
     <article class="tl-item ${mine(e) ? 'is-mine' : ''}">
       <div class="tl-item__when">
@@ -71,8 +74,8 @@ const TimelineView = (() => {
       </div>
       <div class="tl-item__body">
         <p class="tl-item__result">${k === 'upcoming' ? '' : `<span class="kind kind--${k}">${kindLabel(k, e.text)}</span>`}${esc(tlText(e.text))}</p>
-        <p class="tl-item__meta">${esc(e.stage)} · ${esc(e.label)} · ${esc(e.agency)}${dropMemo(e.court) ? ` · ${esc(dropMemo(e.court))}` : ''}</p>
-        <div class="tl-item__people">${e.people.map(v => `<button class="pill pill--person ${sel?.id === v.p.id ? 'is-me' : ''}" data-id="${esc(v.p.id)}" data-case-link="${esc(v.caseId)}">${avatar(v.p, 'ava--sm')}${esc(v.p.name)}</button>`).join('')}</div>
+        <p class="tl-item__meta">${esc(e.stage)} · ${esc(e.label)} · ${esc(e.agency)}${court ? ` · ${esc(court)}` : ''}</p>
+        ${e.caseOnly ? '<p class="caption">사건 기일 · 출석 대상 미확인</p>' : `<div class="tl-item__people">${e.people.map(v => `<button class="pill pill--person ${sel?.id === v.p.id ? 'is-me' : ''}" data-id="${esc(v.p.id)}" data-case-link="${esc(v.caseId)}">${avatar(v.p, 'ava--sm')}${esc(v.p.name)}</button>`).join('')}</div>`}
       </div>
     </article>`;
   };
@@ -120,7 +123,7 @@ const TimelineView = (() => {
       const list = (byDay.get(ymd) || []).sort((a, b) => mine(b) - mine(a) || b.people.length - a.people.length);
       const wd = (lead + d - 1) % 7;
       const evs = list.slice(0, 3).map(e => { const k = kind(e.text, e.upcoming);
-        const who = `${e.people[0].p.name}${e.people.length > 1 ? ` 외 ${e.people.length - 1}` : ''}`;
+        const who = e.caseOnly ? e.label : `${e.people[0].p.name}${e.people.length > 1 ? ` 외 ${e.people.length - 1}` : ''}`;
         return `<span class="cal-ev cal-ev--${k} ${mine(e) ? 'is-mine' : ''}" title="${esc(who + ' · ' + e.text)}"><i class="cal-dot cal-dot--${k}"></i><b>${esc(who)}</b><span class="cal-ev__t"> ${esc(e.text)}</span></span>`; }).join('');
       const dots = list.slice(0, 4).map(e => `<i class="cal-dot cal-dot--${kind(e.text, e.upcoming)}"></i>`).join('');
       cells.push(`<button class="cal-cell ${list.length ? 'has-ev' : ''} ${list.some(mine) ? 'is-mine' : ''} ${ymd === today ? 'is-today' : ''} ${ymd === cal.day ? 'is-active' : ''} ${wd === 0 ? 'is-sun' : ''}"
