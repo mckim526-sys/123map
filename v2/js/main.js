@@ -149,6 +149,8 @@
     S.selected = p.id;
     const rec = p.records.find(r => r.id === cid) || p.records.find(r => r.agency === S.agency) || p.records[0];
     if (!rec) return;
+    // 다른 특검의 사건을 고르면 관계도도 그 특검으로 넘어감(특검 필터가 '전체'가 아닐 때) → 그 사건 사람들이 관계도에 보이게
+    if (S.agency !== 'all' && rec.agency !== S.agency) { S.agency = rec.agency; setAgencyChips(); }
     if ($('#compareDialog').open) $('#compareDialog').close();
     S.caseId = rec.id; S.detailOpen = true; S.intro = false;
     if (!document.body.classList.contains('has-detail')) S.sheet = 'half'; // 처음 열 때는 반 높이

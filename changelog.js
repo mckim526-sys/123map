@@ -1,6 +1,7 @@
 // Reader-facing record of what changed on the site. Add one plain-language line per published change
 // (newest first). The "recently checked trials" list below it is built automatically from lastChecked.
 const SITE_CHANGES = [
+  ['2026-11-29', '특검 필터를 고른 상태에서 재판 상세의 다른 특검 사건을 누르면 관계도도 그 특검으로 넘어가게 했습니다.'],
   ['2026-11-28', '헌법재판관 미임명·지명 사건에서 한덕수·정진석·김주현·이원모의 1심 선고 일정을 11월 30일 오후 2시로 맞췄습니다.'],
   ['2026-11-28', '그날 밤 01:13 통화 설명에 1심 재판부의 판단과 윤석열 전 대통령의 지시 부인을 함께 적었습니다.'],
   ['2026-11-28', '관계도 공동재판 묶음을 법원 사건 기준으로 바로잡았습니다(관저 감사 무마 분리, 통일교 집단 입당·정교유착·웰바이오텍·매관매직 공동피고인, 강호필·박재열과 최주원 등 4명 한 재판). 검색 중 ‘단독’ 오표시, 연결선 이름·팝업·이동 주소 불일치, 모바일 사건 중심 카드 묶음, 선 클릭이 막히던 문제, 모바일 그래프 전환 시 중심이 바뀌던 문제를 고쳤습니다.'],
