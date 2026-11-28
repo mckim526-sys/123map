@@ -37,18 +37,17 @@ body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--sa
 .veil { position: absolute; inset: 0; pointer-events: none;
   background: radial-gradient(ellipse 58% 58% at 50% 52%, rgba(12,12,13,.96) 0%, rgba(12,12,13,.88) 48%, rgba(12,12,13,.4) 82%, rgba(12,12,13,.2) 100%),
               linear-gradient(180deg, rgba(12,12,13,.75) 0, rgba(12,12,13,0) 18%, rgba(12,12,13,0) 66%, rgba(12,12,13,.85) 86%, var(--bg) 100%); }
-.hero { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; padding: 60px 24px 212px; } /* 아래 212px: 이번 주 법정 칸 */
+.hero { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; padding: 64px 24px 72px; }
 .hero > div { width: min(100%, 1120px); }
 .eyebrow { font-size: 12px; font-weight: 600; letter-spacing: .3em; color: var(--fg-2); }
 /* 흐른 시간: 문장 위 한 줄 */
-.timebar { position: absolute; z-index: 3; left: 0; right: 0; bottom: 34px; display: flex; justify-content: center; align-items: baseline; gap: 18px; text-align: center; }
-.timebar::before, .timebar::after { content: ''; flex: 0 1 120px; height: 1px; align-self: center; background: linear-gradient(90deg, rgba(241,238,232,0), rgba(241,238,232,.35)); }
-.timebar::after { background: linear-gradient(90deg, rgba(241,238,232,.35), rgba(241,238,232,0)); }
-.timebar .tb-l { font-size: 12px; font-weight: 600; letter-spacing: .3em; color: var(--fg-2); }
+.timebar { position: absolute; z-index: 3; left: 32px; bottom: 28px; text-align: left; }
+.timebar .tb-l { display: block; margin-bottom: 6px; font-size: 11px; font-weight: 600; letter-spacing: .24em; color: var(--fg-2); }
+.timebar .clock { justify-content: flex-start; gap: 10px; }
 .clock { display: flex; justify-content: center; align-items: baseline; gap: 14px; font-variant-numeric: tabular-nums; }
-.clock b { font-family: var(--serif); font-size: clamp(28px, 2.4vw, 34px); font-weight: 900; line-height: 1; letter-spacing: -.03em; }
+.clock b { font-family: var(--serif); font-size: clamp(24px, 2vw, 30px); font-weight: 900; line-height: 1; letter-spacing: -.03em; }
 .clock b small { font-size: .5em; font-weight: 500; margin-left: 2px; color: var(--fg-2); }
-.clock span { font-size: clamp(16px, 1.4vw, 20px); font-weight: 300; letter-spacing: .14em; color: var(--fg-2); }
+.clock span { font-size: clamp(14px, 1.1vw, 16px); font-weight: 300; letter-spacing: .14em; color: var(--fg-2); }
 .clock span i { font-style: normal; color: var(--fg-3); margin: 0 .1em; }
 .clock span em { font-style: normal; color: var(--fg); }
 /* 문장 양옆에 두 사람 */
@@ -77,6 +76,7 @@ body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--sa
 .lift .bar3 { position: absolute; left: 0; right: 0; bottom: 0; z-index: 1; height: 3px; background: var(--amber); }
 #liftY { --ry: 11deg; --sheen: 100deg; }
 #liftK { --ry: -11deg; --sheen: 260deg; }
+.hero p.line { margin: clamp(44px, 6.5vh, 64px) 0 0; max-width: none; white-space: nowrap; font-family: var(--serif); font-size: clamp(20px, 1.9vw, 26px); font-weight: 700; line-height: 1.3; letter-spacing: -.02em; color: var(--fg); }
 .hero p { margin: clamp(40px, 6vh, 60px) auto 0; max-width: 34em; font-size: 17px; line-height: 1.75; color: var(--fg-2); }
 .stats { display: flex; justify-content: center; gap: 36px; margin-top: 26px; }
 .stats div { text-align: center; }
@@ -92,20 +92,16 @@ body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--sa
 .legend li { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-top: 1px solid var(--line); font-size: 14px; color: var(--fg-2); }
 .legend i { width: 36px; height: 3px; background: var(--c); }
 .legend b { margin-left: auto; font-family: var(--serif); font-size: 18px; color: var(--fg); }
-.dock { position: absolute; z-index: 3; left: 0; right: 0; bottom: 0; padding: 0 32px 26px; }
-.dock-in { max-width: 960px; margin: 0 auto; } /* 카드 3장: 가운데 문장 폭에 맞춤 */
-.dock-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; margin-bottom: 10px; }
-.dock-head h2 { margin: 0; font-size: 12px; font-weight: 700; letter-spacing: .26em; color: var(--fg-2); }
-.dock .timebar { position: static; gap: 12px; }
-.dock .timebar::before, .dock .timebar::after { display: none; }
-.dock .timebar .tb-l { font-size: 11px; letter-spacing: .2em; }
-.dock .clock b { font-size: 24px; }
-.dock .clock span { font-size: 15px; }
-.week { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2px; }
-.dock .card { min-height: 0; padding: 14px 16px 15px; background: rgba(21, 21, 23, .9); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
-.dock .card .d { font-size: 26px; }
-.dock .card .dd { top: 14px; }
-.dock .card b { margin-top: 14px; font-size: 15px; }
+.dock { position: absolute; z-index: 3; right: 32px; bottom: 28px; width: 300px; padding: 11px 14px 4px; background: rgba(12, 12, 13, .72);
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); border: 1px solid rgba(241, 238, 232, .12); }
+.dock h2 { margin: 0 0 4px; font-size: 11px; font-weight: 700; letter-spacing: .24em; color: var(--fg-2); }
+.docket { list-style: none; margin: 0; padding: 0; }
+.docket li { display: grid; grid-template-columns: 46px minmax(0, 1fr) auto; gap: 10px; align-items: baseline; padding: 7px 0; border-top: 1px solid var(--line); }
+.docket time { font-family: var(--serif); font-size: 15px; font-weight: 900; letter-spacing: -.02em; line-height: 1.2; }
+.docket time small { display: block; font-family: var(--sans); font-size: 10px; font-weight: 600; letter-spacing: .08em; color: var(--fg-3); }
+.docket b { display: block; font-size: 12.5px; font-weight: 700; }
+.docket em { display: block; margin-top: 1px; font-style: normal; font-size: 11px; color: var(--fg-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.docket i { font-style: normal; font-size: 10.5px; font-weight: 800; letter-spacing: .06em; color: var(--amber); }
 .card { position: relative; padding: 16px 16px 18px; background: #151517; min-height: 168px; }
 .card .d { font-family: var(--serif); font-size: 30px; font-weight: 900; letter-spacing: -.03em; line-height: 1; }
 .card .d small { margin-left: 6px; font-family: var(--sans); font-size: 12px; font-weight: 600; color: var(--fg-3); letter-spacing: .08em; }
@@ -128,19 +124,12 @@ body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--sa
   .grid { position: absolute; }
   .hero { position: relative; inset: auto; padding: 84px 16px 40px; }
   .hero { padding-bottom: 12px; }
-  .dock { position: relative; padding: 18px 0 30px; }
-  .dock-head { padding: 0 16px; }
-  .dock .timebar { gap: 8px; }
-  .dock .timebar .tb-l { display: none; }
-  .dock .clock b { font-size: 20px; }
-  .dock .clock span { font-size: 13px; }
-  .dock .week { gap: 4px; padding: 0 16px; }
-  .dock .card { padding: 10px 10px 12px; }
-  .dock .card .d { font-size: 19px; }
-  .dock .card .d small { display: block; margin: 4px 0 0; font-size: 10px; }
-  .dock .card .dd { top: 10px; right: 10px; font-size: 10px; }
-  .dock .card b { margin-top: 8px; font-size: 13px; }
-  .dock .card span { font-size: 11px; }
+  .timebar { position: relative; left: auto; bottom: auto; padding: 18px 16px 0; text-align: center; }
+  .timebar .tb-l { letter-spacing: .14em; margin-bottom: 4px; }
+  .timebar .clock { justify-content: center; }
+  .clock b { font-size: 24px; }
+  .clock span { font-size: 14px; }
+  .dock { position: relative; right: auto; bottom: auto; width: auto; margin: 14px 16px 28px; }
   .clock b { font-size: 28px; }
   .clock span { font-size: 16px; }
   .headrow { margin-top: 20px; }
@@ -149,12 +138,10 @@ body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--sa
   .lift .lab small, .lift .lab span { display: none; }
   .lift .lab b { font-size: 14px; }
   #liftY { --ry: 9deg; } #liftK { --ry: -9deg; }
-  .hero p { font-size: 14px; line-height: 1.7; margin-top: 32px; }
-  @media (max-height: 680px) and (max-width: 360px) { .hero { padding-top: 74px; } .hero p { margin-top: 26px; font-size: 13.5px; } .stats { margin-top: 16px; } .dock { padding-top: 12px; padding-bottom: 20px; } }
+  .hero p.line { margin-top: 30px; font-size: min(19px, 4.6vw); }
+  @media (max-height: 680px) and (max-width: 360px) { .hero { padding-top: 74px; } .hero p.line { margin-top: 26px; } .stats { margin-top: 16px; } .timebar { padding-top: 12px; } .dock { margin-bottom: 20px; } }
   .stats { gap: 22px; } .stats b { font-size: 26px; }
   .below { padding: 28px 16px 40px; }
-  .week { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .card { min-height: 0; }
   .foot { padding: 0 16px 32px; flex-direction: column; gap: 4px; }
 }
 </style>
@@ -172,17 +159,18 @@ body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--sa
   </div>
   <div class="hero"><div>
     <div class="headrow"><h1 id="headline">법정에 선<br>165명</h1></div>
-    <p>2024년 12월 3일 밤 10시 27분, 비상계엄이 선포됐다. 대통령부터 국회에 들어간 현장 지휘관까지, 네 특검이 기소한 사람들의 재판은 어디까지 왔을까.</p>
+    <p class="line">2024년 12월 3일 밤, 비상계엄이 선포됐다.</p>
     <div class="stats"><div><b>103</b><span>선고</span></div><div><b>30</b><span>형 확정</span></div><div class="next"><b>13</b><span>다가오는 선고</span></div></div>
   </div></div>
-  <div class="dock"><div class="dock-in">
-    <div class="dock-head"><h2>이번 주 법정</h2><div class="timebar"><span class="tb-l">12·3 비상계엄 이후</span><span class="clock" id="clock" role="timer"><b>724<small>일</small></b><span>16<i>:</i>52<i>:</i><em>49</em></span></span></div></div>
-    <div class="week">
-      <div class="card"><span class="dd">D-2</span><div class="d">11.30<small>월</small></div><b>한덕수 외 3명</b><span>헌법재판관 미임명·지명<br>1심 · 오후 2시</span></div>
-      <div class="card"><span class="dd">D-2</span><div class="d">11.30<small>월</small></div><b>허석곤 외 1명</b><span>언론사 단전·단수<br>1심 · 오후 3시</span></div>
-      <div class="card"><span class="dd">D-5</span><div class="d">12.03<small>목</small></div><b>김건희</b><span>매관매직<br>대법원 · 오전 10시 15분</span></div>
-    </div>
-  </div></div>
+  <div class="timebar"><span class="tb-l">12·3 비상계엄 이후</span><span class="clock" id="clock" role="timer"><b>724<small>일</small></b><span>16<i>:</i>52<i>:</i><em>49</em></span></span></div>
+  <aside class="dock" aria-label="이번 주 법정">
+    <h2>이번 주 법정</h2>
+    <ol class="docket">
+      <li><time>11.30<small>월</small></time><span><b>한덕수 외 3명</b><em>헌법재판관 미임명·지명 · 1심</em></span><i>D-2</i></li>
+      <li><time>11.30<small>월</small></time><span><b>허석곤 외 1명</b><em>언론사 단전·단수 · 1심</em></span><i>D-2</i></li>
+      <li><time>12.03<small>목</small></time><span><b>김건희</b><em>매관매직 · 대법원</em></span><i>D-5</i></li>
+    </ol>
+  </aside>
 </section>
 <section class="below">
   <div>
@@ -237,7 +225,7 @@ body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--sa
     //  (아래 '이번 주 법정'·위 머리글과 부딪히지 않는 줄을 고름)
     const bh = ch * 2 + gap, exact = (hc - bh / 2 - y(0)) / (ch + gap);
     const stB = document.querySelector('.stats').getBoundingClientRect().bottom - W.top;
-    const dkT = document.querySelector('.dock-head').getBoundingClientRect().top - W.top;
+    const tbEl = document.querySelector('.timebar'), dkT = getComputedStyle(tbEl).position === 'absolute' ? W.height - 16 : tbEl.getBoundingClientRect().top - W.top;
     const hT = heroIn.getBoundingClientRect().top - W.top;
     const cands = [...new Set([Math.round(exact), Math.floor(exact), Math.ceil(exact)])].filter(r => r >= 0)
       .map(r => ({ r, d: y(r) + bh / 2 - hc })).sort((a, b) => Math.abs(a.d) - Math.abs(b.d));
