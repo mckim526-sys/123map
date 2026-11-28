@@ -127,8 +127,8 @@ const DetailView = (() => {
 
   function newsCard(n) {
     return `
-      <a class="news-card" href="${esc(n.url)}" target="_blank" rel="noopener noreferrer">
-        <span class="news-card__meta">${esc(n.publisher || 'MBC')} · ${esc(n.date)}</span>
+      <a class="news-card" href="${esc(n.url)}" target="_blank" rel="noopener noreferrer" aria-label="${esc(n.title)} (${esc(n.publisher || 'MBC')} ${esc(n.date)}, 새 창)">
+        <span class="news-card__meta">${esc(n.date)}</span>
         <b class="news-card__title" title="${esc(n.title)}">${esc(n.title)}</b>
       </a>`;
   }
@@ -193,14 +193,14 @@ const DetailView = (() => {
         </div>
         ${verdictTimeline(record)}
         ${(record.next || []).map(additionalSchedule).join('')}
-        <button class="btn btn--secondary btn--block" data-compare>혐의별 판단 비교</button>
+        <button class="btn btn--secondary btn--block" data-compare>재판부별 판단</button>
       </section>
       ${section('혐의별 판단', `${record.charges.length}건 · 눌러서 펼치기`, 'charges')}
       <div class="stack">${chargeList(record)}</div>
       ${record.note ? `<p class="callout">${esc(record.note)}</p>` : ''}
       ${people.length ? section('연결된 인물', `${people.length}명 · 누르면 관계 설명`, 'people') + expandableList(people, 7, '명', 'person-chips') : ''}
-      ${section('관련 보도', `${news.length}건`, 'news')}
-      ${news.length ? expandableList(news.map(newsCard), 5, '건', 'stack') : '<p class="caption">연결할 보도를 확인하고 있습니다.</p>'}
+      ${section('관련 보도', `MBC · ${news.length}건`, 'news')}
+      ${news.length ? expandableList(news.map(newsCard), 5, '건', 'news-list') : '<p class="caption">연결할 보도를 확인하고 있습니다.</p>'}
       <div class="detail__fineprint">
         <p class="caption">‘미확인’은 무죄나 재판 미진행을 뜻하지 않습니다. 사건별 확인 시점이 다르며, 형량을 다른 사건과 합산하지 않습니다.</p>
       </div>`;
@@ -242,7 +242,10 @@ const DetailView = (() => {
   // 나란히 비교: 혐의(행) × 심급(열) 표
   function compare(person, record) {
     const stages = [0, 1, 2].map(i => record.stages[i] || ['', '', '']);
-    const head = stages.map((s, i) => { const w = splitWhen(s[2]); return `<th scope="col"><span>${stageName(i + 1)}${w.date ? ` · ${esc(w.date)}` : ''}</span><b>${esc(stageView(stages, i).text || '기록 없음')}</b></th>`; }).join('');
+    const head = stages.map((s, i) => {
+      const w = splitWhen(s[2]), v = stageView(stages, i);
+      return `<th scope="col"><span>${stageName(i + 1)}${w.date ? ` · ${esc(w.date)}` : ''}</span><b>${esc(v.text || '기록 없음')}</b>${!v.quiet && v.court ? `<small>${esc(v.court)}</small>` : ''}</th>`;
+    }).join('');
     const rows = record.charges.map(c => `
       <tr>
         <th scope="row"><b>${esc(c.name)}</b><span>${esc(c.act)}</span></th>
@@ -252,7 +255,7 @@ const DetailView = (() => {
           return `<td class="${pending ? 'is-pending' : 'is-' + rulingKind(rulingSummary(j))}" data-stage="${stageName(i + 1)}">${pending ? '—' : esc(j || '—')}</td>`;
         }).join('')}
       </tr>`).join('');
-    $('#compareEyebrow').textContent = `${person.name} · ${record.agency} · 혐의별 1심·2심·대법원 판단`;
+    $('#compareEyebrow').textContent = `${person.name} · ${record.agency} · 재판부별 판단`;
     $('#compareTitle').textContent = record.title;
     $('#compareBody').innerHTML = `
       <div class="compare-wrap">

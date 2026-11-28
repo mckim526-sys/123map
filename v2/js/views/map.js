@@ -225,10 +225,9 @@ const MapView = (() => {
     }).join(''));
 
     // 안내 문구
-    const caseN = badges.reduce((n, b) => n + (b.other ? 0 : b.soloGroup ? b.members.length : 1), 0), coN = coIds.size;
-    const otherN = egoMode ? (badges.find(b => b.other)?.ids.length || 0) : 0, sepN = out.length - 1 - coN - otherN;
+    const caseN = badges.reduce((n, b) => n + (b.other ? 0 : b.soloGroup ? b.members.length : 1), 0);
     let ctx;
-    if (egoMode) ctx = `${center.name} 중심 · 사건 ${caseN}건 · 함께 재판 ${coN}명${sepN ? ` · 같은 사건 별도 재판 ${sepN}명` : ''}${otherN ? ` · 그 밖의 관계 ${otherN}명` : ''} · 사건 뱃지를 누르면 그 사건이 열립니다`;
+    if (egoMode) ctx = `${center.name} 중심 · 사건 ${caseN}건 · 사건 뱃지를 누르면 그 사건이 열립니다`;
     else ctx = S.query ? `‘${S.query}’ 검색 결과`
       : `${S.agency} · 관련 인물 ${out.length}명`;
     $('#mapContext').textContent = ctx;
@@ -246,7 +245,7 @@ const MapView = (() => {
   // ── 좌우 가지형: 넓은 화면의 인물 중심 보기 ─────────────
   // 가운데 중심 인물, 양옆 기둥에 사건 상자(양쪽 높이가 비슷하게 나눔). 중심 인물에서 상자마다 곡선 하나.
   //  · 상자 제목을 누르면 그 재판 상세 · 상자 안 사람을 누르면 그 사람 중심으로(같은 사건 기록이 열림)
-  //  · 한 사람은 첫 상자에만 사진으로 놓고, 다른 상자의 사건에도 함께 있으면 그 상자엔 이름만 적음
+  //  · 여러 사건에 걸친 사람은 그 사건 상자마다 나옴(가운데 인물 아래 '연결 N명'은 한 번만 셈)
   //  · 단독 재판은 한 상자에 모으고, 사건이 아닌 관계는 '그 밖의 관계' 상자
   //  · 영역에 다 들어가지 않으면 한 단계씩 작게(사진 40 → 32 → 가로 이름표 → 촘촘한 이름표), 그래도 넘치면 기둥 안에서만 세로 스크롤
   // 모바일(그래프 보기)과 특검·검색 보기는 기존 배치 그대로
@@ -292,33 +291,25 @@ const MapView = (() => {
       return `<button class="node bx-chip ${kind}" data-id="${esc(p.id)}"${o ? ` data-case-link="${esc(o.id)}"` : ''}${title ? ` title="${esc(title)}"` : ''}
         aria-label="${esc(p.name)} 중심으로 보기">${avatar(p, 'node__dot')}<strong>${esc(p.name)}</strong></button>`;
     };
-    const alsoLine = (ids, r) => {
-      if (!ids.length) return '';
-      const names = ids.slice(0, 6).map(id => {
-        const p = Model.get(id), o = recFor(p, r);
-        return `<button class="bx-also__p" data-id="${esc(id)}"${o ? ` data-case-link="${esc(o.id)}"` : ''}>${esc(p.name)}</button>`;
-      }).join('<i aria-hidden="true">·</i>');
-      return `<p class="bx-also"><span>다른 상자에도<span class="bx-also__long"> 있는 사람</span></span>${names}${ids.length > 6 ? `<em>외 ${ids.length - 6}명</em>` : ''}</p>`;
-    };
     const items = [], solos = [];
     badges.forEach((b, i) => {
       if (b.other) return;
-      if (!b.total && !b.place.length) { solos.push([b, i]); return; }
-      const r = recOf(b.id), here = new Set(b.place.map(p => p.id));
-      const also = [...new Set([...b.ids, ...(b.sep || [])])].filter(id => !here.has(id) && id !== center.id);
+      // 그 사건의 사람 모두(함께 재판 → 같은 사건 별도 재판 순). 여러 사건에 걸친 사람은 사건 상자마다 나옴
+      const ids = [...new Set([...b.ids, ...(b.sep || [])])].filter(id => id !== center.id);
+      if (!b.total && !ids.length) { solos.push([b, i]); return; }
+      const r = recOf(b.id);
       const count = b.total ? `함께 ${b.total}명` : '별도 재판';
       items.push(`<section class="bx${b.total ? '' : ' is-sep'}" data-b="${i}">
         <i class="bx-bg" aria-hidden="true"></i>
         <button class="group-tag bx-head" data-group="${i}" data-id="${esc(center.id)}" data-case-link="${esc(b.id)}"
           aria-label="${esc(center.name)} ${esc(b.label)} 재판 보기 (${count})"><span class="bx-head__t">${esc(b.label)}</span><small>${esc(b.agency)}</small><b>${count}</b></button>
-        ${b.place.length ? `<div class="bx-ppl">${b.place.map(p => chip(p, b.ids.includes(p.id) ? 'is-co' : 'is-rel is-sep', r)).join('')}</div>` : ''}
-        ${alsoLine(also, r)}
-        ${!b.place.length && !also.length ? `<p class="bx-also">함께 재판받는 ${b.total}명은 지금 조건(검색·특검)에서 숨겨져 있습니다</p>` : ''}
+        ${ids.length ? `<div class="bx-ppl">${ids.map(id => chip(Model.get(id), b.ids.includes(id) ? 'is-co' : 'is-rel is-sep', r)).join('')}</div>`
+          : `<p class="bx-also">함께 재판받는 ${b.total}명은 지금 조건(검색·특검)에서 숨겨져 있습니다</p>`}
       </section>`);
     });
     if (solos.length) items.push(`<section class="bx is-solo" data-b="solo">
         <i class="bx-bg" aria-hidden="true"></i>
-        <p class="bx-head bx-head--static"><span class="bx-head__t">단독 재판</span><small>혼자 피고인</small><b>${solos.length}건</b></p>
+        <p class="bx-head bx-head--static"><span class="bx-head__t">단독 재판</span><b>${solos.length}건</b></p>
         <div class="bx-solos">${solos.map(([b, i]) => `<button class="group-tag is-solo bx-solo" data-group="${i}" data-id="${esc(center.id)}" data-case-link="${esc(b.id)}"
           aria-label="${esc(center.name)} ${esc(b.label)} 재판 보기 (단독 재판)">${esc(b.label)}</button>`).join('')}</div>
       </section>`);
@@ -331,7 +322,7 @@ const MapView = (() => {
 
     const caseN = center.records.filter(r => S.agency === 'all' || r.agency === S.agency).length;
     const placedIds = badges.filter(b => !b.other).flatMap(b => b.place.map(p => p.id));
-    const otherN = oi >= 0 ? badges[oi].ids.length : 0, sepN = placedIds.filter(id => !coIds.has(id)).length;
+    const otherN = oi >= 0 ? badges[oi].ids.length : 0;
     // 가운데 인물: '○○ 중심' 줄 대신 사진 아래에 선택 해제 (관계도 높이를 아낌)
     const hub = `<div class="bx-center"><button class="node bx-hub ${S.detailOpen ? 'is-selected' : ''} ${center.id === Model.agencyRoot(S.agency) ? 'is-root' : ''}" data-id="${esc(center.id)}"
         aria-label="${esc(center.name)} ${S.detailOpen ? '선택 해제' : '재판 보기'}">${avatar(center, 'node__dot')}<strong>${esc(center.name)}</strong>
@@ -388,7 +379,7 @@ const MapView = (() => {
     // 좌우 가지형은 영역에 꼭 맞게 그리므로 확대·이동 없이 1배
     view.s = 1; view.x = graph.offsetLeft; view.y = graph.offsetTop; moved = false;
     renderFocus(S, null);
-    $('#mapContext').textContent = `${center.name} 중심 · 사건 ${caseN}건 · 함께 재판 ${coIds.size}명${sepN ? ` · 같은 사건 별도 재판 ${sepN}명` : ''}${otherN ? ` · 그 밖의 관계 ${otherN}명` : ''}`; // 누르기 안내는 아래 범례 줄에
+    $('#mapContext').textContent = `${center.name} 중심 · 사건 ${caseN}건`; // 인원은 제목 옆 숫자·가운데 인물 아래에, 누르기 안내는 아래 범례 줄에
 
     // ── 움직임: 이전 배치는 잠깐 흐려지고, 남는 사람은 날아가고, 새 상자·사람은 차례로, 곡선은 마지막에 그려짐
     const ghosts = ghostLayer();
@@ -814,7 +805,7 @@ const MapView = (() => {
     graph.addEventListener('mouseenter', () => graph.classList.add('is-hovering'));
     graph.addEventListener('mouseleave', () => { graph.classList.remove('is-hovering'); clear(); });
     graph.addEventListener('mouseover', e => {
-      const node = e.target.closest('.node, .bx-also__p');
+      const node = e.target.closest('.node');
       if (node?.dataset.intro) return; // 오프닝 인물은 메뉴로 처리
       if (node) return light(node.dataset.id);
       const edge = e.target.closest('.edge');

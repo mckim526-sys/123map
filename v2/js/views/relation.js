@@ -82,7 +82,7 @@ const Relation = (() => {
       <div class="rp-body">
         ${picker}
         ${bodyHtml}
-        ${articles.length ? `<h3 class="section-title">관련 보도</h3><div class="stack">${articles.map(n => `<a class="news-card" href="${esc(n.url)}" target="_blank" rel="noopener noreferrer"><span class="news-card__meta">MBC · ${esc(n.date)}</span><b class="news-card__title" title="${esc(n.title)}">${esc(n.title)}</b></a>`).join('')}</div>` : ''}
+        ${articles.length ? `<h3 class="section-title">관련 보도</h3><div class="news-list">${articles.map(n => `<a class="news-card" href="${esc(n.url)}" target="_blank" rel="noopener noreferrer"><span class="news-card__meta">${esc(n.date)}</span><b class="news-card__title" title="${esc(n.title)}">${esc(n.title)}</b></a>`).join('')}</div>` : ''}
         <p class="caption rp-caution">기소 내용은 법원이 인정한 사실과 다를 수 있습니다. 연결선은 공모나 유죄를 뜻하지 않습니다.</p>
       </div>
       <footer class="rp-foot"><button class="btn btn--primary btn--block" data-open-person="${esc(b.id)}">${esc(b.name)} 재판 보기</button></footer>`;

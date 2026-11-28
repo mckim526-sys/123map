@@ -97,14 +97,18 @@ p { margin: 0; }
   font-size: var(--fs-caption); line-height: var(--lh-caption); color: var(--text-secondary);
 }
 
-/* 보도 카드 */
+/* 관련 보도: 한 줄 목록 (날짜 · 제목 한 줄 … · ↗). 모두 MBC라 언론사는 머리에 한 번만 */
+.news-list { border-top: 1px solid var(--border-default); }
 .news-card {
-  display: block; padding: var(--sp-4); border: 1px solid var(--border-default); border-radius: var(--r-md);
-  background: var(--bg-page); text-decoration: none; transition: border-color var(--motion), box-shadow var(--motion);
+  display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: baseline; gap: var(--sp-3);
+  padding: var(--sp-2) var(--sp-1); border-bottom: 1px solid var(--border-default); text-decoration: none; color: var(--text-primary);
+  transition: background var(--motion), color var(--motion);
 }
-.news-card:hover { border-color: var(--border-accent); box-shadow: var(--shadow-1); }
-.news-card__meta { display: block; font-size: var(--fs-caption); color: var(--text-tertiary); }
-.news-card__title { display: block; margin-top: var(--sp-1); font-size: var(--fs-body); line-height: 1.5; font-weight: var(--fw-bold);
+.news-card::after { content: "↗"; font-size: var(--fs-caption); color: var(--text-tertiary); }
+.news-card:hover { background: var(--bg-subtle); }
+.news-card:hover .news-card__title { color: var(--text-accent); }
+.news-card__meta { font-size: var(--fs-caption); color: var(--text-tertiary); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.news-card__title { min-width: 0; font-size: var(--fs-label); line-height: var(--lh-label); font-weight: var(--fw-medium);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } /* 기사 제목은 한 줄, 넘치면 … (전체 제목은 title 속성) */
 
 /* 진행 단계 (1·2·3심) */
@@ -491,16 +495,9 @@ body.has-detail .workspace { grid-template-columns: minmax(0, 1fr) var(--panel-w
 .bx-wrap[data-fit="3"] .node.bx-chip, .bx-wrap[data-fit="4"] .node.bx-chip { --s: 18px; gap: var(--sp-1); height: 22px; padding: 0 var(--sp-1) 0 2px; background: none; }
 .bx-wrap[data-fit="3"] .node.bx-chip strong, .bx-wrap[data-fit="4"] .node.bx-chip strong { line-height: 22px; }
 .bx-wrap[data-fit="3"] .bx-ppl, .bx-wrap[data-fit="4"] .bx-ppl { gap: 2px var(--sp-1); }
-.bx-wrap[data-fit="3"] .bx-also, .bx-wrap[data-fit="4"] .bx-also { margin-top: var(--sp-1); }
-.bx-wrap[data-fit="3"] .bx-also__long, .bx-wrap[data-fit="4"] .bx-also__long { display: none; }
 .bx-wrap[data-fit="3"] .bx-hub__role, .bx-wrap[data-fit="4"] .bx-hub__role { display: none; }
-/* 다른 상자에도 있는 사람(이름만) · 단독 재판 이름표 */
-.bx-also { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px var(--sp-1); margin-top: var(--sp-2); font-size: var(--fs-caption); line-height: var(--lh-caption); color: var(--text-tertiary); }
-.bx-head + .bx-also { margin-top: 0; }
-.bx-also span { margin-right: var(--sp-1); }
-.bx-also i, .bx-also em { font-style: normal; color: var(--text-tertiary); }
-.bx-also__p { padding: 0; border: 0; background: none; font: inherit; font-weight: var(--fw-medium); color: var(--text-secondary); cursor: pointer; }
-.bx-also__p:hover, .bx-also__p:focus-visible { color: var(--text-accent); text-decoration: underline; }
+/* 검색·특검으로 사람이 모두 숨겨진 사건의 안내 · 단독 재판 이름표 */
+.bx-also { margin: 0; font-size: var(--fs-caption); line-height: var(--lh-caption); color: var(--text-tertiary); }
 .bx-solos { display: flex; flex-wrap: wrap; gap: var(--sp-1); }
 .bx-wrap .bx-solo { height: 26px; padding: 0 var(--sp-3); background: var(--bg-page); font-size: var(--fs-caption); }
 .bx-wrap .bx-solo.is-active { background: var(--gray-900); border-style: solid; }
@@ -773,6 +770,7 @@ body.has-detail .detail {
 .compare thead th { border-top: 0; background: var(--bg-subtle); font-weight: var(--fw-regular); }
 .compare thead th span { display: block; font-size: var(--fs-caption); color: var(--text-tertiary); }
 .compare thead th b { font-size: var(--fs-subtitle); }
+.compare thead th small { display: block; margin-top: 2px; font-size: var(--fs-caption); line-height: var(--lh-caption); color: var(--text-secondary); }
 .compare thead th:first-child { width: 26%; font-size: var(--fs-caption); color: var(--text-tertiary); vertical-align: bottom; }
 .compare tbody th { font-weight: var(--fw-regular); }
 .compare tbody th b { display: block; font-size: var(--fs-subtitle); }

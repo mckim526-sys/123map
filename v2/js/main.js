@@ -45,7 +45,8 @@
     if (S.view === 'timeline') $('#resultCount').textContent = `${TimelineView.count()}건`;
     NightView.render();
     if (S.view === 'night') $('#resultCount').textContent = `장소 ${NightView.count()}곳`;
-    if (S.view === 'map' && !ego) $('#resultCount').textContent = `${$$('#nodeLayer .node').length}명`; // 관계도: 실제로 그려진 인원
+    // 관계도: 실제로 그려진 인원 (좌우 가지형은 여러 사건에 걸친 사람이 상자마다 나오므로 한 번만 셈)
+    if (S.view === 'map' && !ego) $('#resultCount').textContent = `${new Set($$('#nodeLayer .node').map(n => n.dataset.id || n.dataset.intro)).size}명`;
     // 목록·타임라인에서는 관계도 안내 대신 보기별 설명을 표시
     if (S.view === 'list') $('#mapContext').textContent = '인물마다 대표 사건의 최근 판단과 진행 단계를 보여 줍니다 · 누르면 재판 상세가 열립니다';
     if (S.view === 'timeline') $('#mapContext').textContent = '선고·확정·결심·예정 일정을 달력으로 · 날짜를 누르면 그날 일정을 모아 봅니다 · 함께 선고된 피고인은 한 항목';
