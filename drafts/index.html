@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>첫 화면 시안 모음 — 12·3 재판 지도</title>
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
+<style>
+:root { --bg: #f4f3f0; --ink: #16181d; --ink-2: #5d616b; --line: #dcdad4; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Pretendard Variable', Pretendard, -apple-system, sans-serif; -webkit-font-smoothing: antialiased; }
+main { max-width: 1080px; margin: 0 auto; padding: 48px 24px 64px; }
+h1 { margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -.02em; }
+p.lead { margin: 8px 0 32px; color: var(--ink-2); font-size: 15px; line-height: 1.6; }
+.grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+a.card { display: block; color: inherit; text-decoration: none; background: #fff; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; transition: box-shadow .2s, transform .2s; }
+a.card:hover { box-shadow: 0 8px 24px rgba(0,0,0,.08); transform: translateY(-2px); }
+.thumb { aspect-ratio: 16 / 10; background: #222; overflow: hidden; }
+.thumb img { width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; }
+.meta { padding: 16px 18px 18px; }
+.meta b { display: block; font-size: 17px; font-weight: 800; }
+.meta span { display: block; margin-top: 6px; font-size: 13.5px; line-height: 1.55; color: var(--ink-2); }
+.meta small { display: inline-block; margin-top: 10px; font-size: 12px; font-weight: 700; color: var(--ink); }
+@media (max-width: 720px) { .grid { grid-template-columns: 1fr; } main { padding: 28px 16px 48px; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>첫 화면 시안</h1>
+  <p class="lead">디자인 확인용 화면입니다. 시안 1·2·3은 눌러도 동작하지 않는 정지 화면이고, A+C 미리보기만 실제 기능이 붙어 있습니다. 숫자·일정은 2026년 11월 28일 기준입니다.</p>
+  <div class="grid">
+    <a class="card" href="home-1.html"><div class="thumb"><img src="thumb-1.jpg" alt=""></div><div class="meta"><b>시안 1 · 기록지</b><span>밝은 종이 위 신문 1면. 명조와 검은 괘선, 망점 사진, 붉은 '확정' 도장만 색으로.</span><small>열기 →</small></div></a>
+    <a class="card" href="home-2.html"><div class="thumb"><img src="thumb-2.jpg" alt=""></div><div class="meta"><b>시안 2 · 얼굴들</b><span>법정에 선 사람들의 얼굴로 첫 화면을 채움. 얼굴 아래 막대가 재판 단계, 호박색은 선고를 앞둔 사람.</span><small>열기 →</small></div></a>
+    <a class="card" href="home-3.html"><div class="thumb"><img src="thumb-3.jpg" alt=""></div><div class="meta"><b>시안 3 · 다음 선고</b><span>스위스 그래픽 풍. 주인공을 '흐른 시간' 대신 '다음 선고까지 D-2'로. 특검별 진행 막대와 두 사람의 심급 표.</span><small>열기 →</small></div></a>
+    <a class="card" href="../clock-preview.html"><div class="thumb"><img src="thumb-ac.jpg" alt=""></div><div class="meta"><b>A+C 미리보기 · 신문 1면 + 법정의 시간</b><span>앞서 만든 먹색 편집형 화면. 실제 기능(사진 → 사건 → 관계도)이 붙어 있습니다.</span><small>열기 →</small></div></a>
+  </div>
+</main>
+</body>
+</html>

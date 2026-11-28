@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>시안 1 · 기록지 — 12·3 재판 기록</title>
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+/* 시안 1 · 기록지 — 밝은 종이 위 활판 인쇄. 명조 중심, 검은 괘선, 망점 사진, 붉은 도장(확정·D-day)만 색 */
+:root {
+  --paper: #f3eee4; --paper-2: #ebe5d8; --ink: #191712; --ink-2: #4f4a3f; --ink-3: #8a8474;
+  --rule: #191712; --rule-soft: rgba(25, 23, 18, .16); --seal: #b2281f;
+  --serif: 'Noto Serif KR', 'AppleMyungjo', serif; --sans: 'Pretendard Variable', Pretendard, -apple-system, sans-serif;
+}
+* { box-sizing: border-box; }
+html { background: var(--paper); }
+body { margin: 0; color: var(--ink); font-family: var(--serif); -webkit-font-smoothing: antialiased; word-break: keep-all; }
+/* 종이 결 */
+body::before { content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 10; opacity: .5; mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .55  0 0 0 0 .5  0 0 0 0 .42  0 0 0 .09 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"); }
+.page { max-width: 1240px; margin: 0 auto; padding: 28px 40px 56px; }
+a { color: inherit; }
+.sans { font-family: var(--sans); }
+
+/* 제호 */
+.dateline { display: flex; justify-content: space-between; font-family: var(--sans); font-size: 12px; letter-spacing: .08em; color: var(--ink-2); padding-bottom: 10px; }
+.mast { text-align: center; padding: 18px 0 14px; border-top: 1px solid var(--rule); border-bottom: 4px double var(--rule); }
+.mast h1 { margin: 0; font-size: clamp(40px, 6.2vw, 78px); font-weight: 900; letter-spacing: -.035em; line-height: 1; }
+.mast h1 span { font-weight: 500; letter-spacing: -.02em; }
+.mast p { margin: 10px 0 0; font-family: var(--sans); font-size: 12px; letter-spacing: .32em; color: var(--ink-2); }
+.nav { display: flex; justify-content: center; gap: 28px; padding: 10px 0; border-bottom: 1px solid var(--rule); font-family: var(--sans); font-size: 13px; font-weight: 600; letter-spacing: .04em; }
+.nav span { opacity: .82; }
+.nav b { border-bottom: 2px solid var(--ink); }
+
+/* 1면 머리 */
+.front { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 0; border-bottom: 1px solid var(--rule); }
+.front > * { padding: 36px 0 32px; }
+.count { padding-right: 36px; border-right: 1px solid var(--rule); display: flex; flex-direction: column; justify-content: space-between; }
+.kicker { font-family: var(--sans); font-size: 12px; font-weight: 700; letter-spacing: .24em; color: var(--seal); }
+.count .days { margin: 10px 0 0; font-size: clamp(130px, 15.5vw, 214px); font-weight: 900; line-height: .82; letter-spacing: -.06em; color: var(--ink); white-space: nowrap; }
+.days small { font-size: .2em; font-weight: 700; letter-spacing: 0; margin-left: .1em; }
+.count p { margin: 18px 0 0; font-size: 17px; line-height: 1.65; color: var(--ink-2); }
+.count p b { color: var(--ink); }
+.story { padding-left: 36px; }
+.story h2 { margin: 0; font-size: clamp(30px, 3.4vw, 46px); font-weight: 900; line-height: 1.24; letter-spacing: -.03em; }
+.story .deck { margin: 16px 0 0; font-size: 19px; line-height: 1.7; color: var(--ink-2); font-weight: 400; }
+.byline { margin-top: 14px; font-family: var(--sans); font-size: 12px; letter-spacing: .06em; color: var(--ink-3); }
+.print { position: relative; margin: 22px 0 0; }
+.print .ph { position: relative; aspect-ratio: 16 / 8; overflow: hidden; background: var(--paper-2); }
+.print img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 42%; filter: grayscale(1) contrast(1.35) brightness(1.08); mix-blend-mode: multiply; display: block; }
+.print .ph::after { content: ''; position: absolute; inset: 0; mix-blend-mode: multiply; background-image: radial-gradient(rgba(25, 23, 18, .34) .9px, transparent 1.25px); background-size: 4px 4px; }
+.print figcaption { margin-top: 8px; font-family: var(--sans); font-size: 12px; line-height: 1.5; color: var(--ink-2); }
+.print figcaption b { color: var(--ink); }
+
+/* 세 단 */
+.cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-bottom: 1px solid var(--rule); }
+.col { padding: 28px 28px 30px; border-right: 1px solid var(--rule-soft); }
+.col:first-child { padding-left: 0; }
+.col:last-child { padding-right: 0; border-right: 0; }
+.col h3 { display: flex; align-items: baseline; justify-content: space-between; margin: 0 0 14px; padding-bottom: 8px; border-bottom: 2px solid var(--ink); font-size: 24px; font-weight: 900; letter-spacing: -.02em; }
+.col h3 small { font-family: var(--sans); font-size: 12px; font-weight: 600; letter-spacing: .06em; color: var(--ink-3); }
+.who { display: grid; grid-template-columns: 76px 1fr; gap: 14px; align-items: end; margin-bottom: 14px; }
+.who .ph { position: relative; width: 76px; height: 92px; overflow: hidden; background: var(--paper-2); }
+.who img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) contrast(1.3) brightness(1.06); mix-blend-mode: multiply; }
+.who .ph::after { content: ''; position: absolute; inset: 0; mix-blend-mode: multiply; background-image: radial-gradient(rgba(25, 23, 18, .32) .8px, transparent 1.15px); background-size: 3.5px 3.5px; }
+.who p { margin: 0; font-family: var(--sans); font-size: 12px; line-height: 1.6; color: var(--ink-2); }
+.cases { list-style: none; margin: 0; padding: 0; }
+.cases li { padding: 11px 0; border-top: 1px solid var(--rule-soft); }
+.cases b { display: block; font-size: 16px; font-weight: 700; letter-spacing: -.01em; }
+.path { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; margin-top: 3px; font-family: var(--sans); font-size: 12.5px; color: var(--ink-2); }
+.path i { font-style: normal; color: var(--ink-3); }
+.path em { font-style: normal; color: var(--ink-3); }
+.stamp { display: inline-block; padding: 0 5px; border: 1.5px solid var(--seal); border-radius: 2px; font-family: var(--sans); font-size: 11px; font-weight: 800; letter-spacing: .08em; color: var(--seal); transform: rotate(-3deg); }
+.soon { color: var(--seal); font-weight: 700; }
+.more { margin: 10px 0 0; font-family: var(--sans); font-size: 12px; color: var(--ink-3); }
+
+/* 이번 주 법정 */
+.docket { list-style: none; margin: 0; padding: 0; }
+.docket li { display: grid; grid-template-columns: 64px 1fr auto; gap: 12px; align-items: start; padding: 13px 0; border-top: 1px solid var(--rule-soft); }
+.docket .d { font-size: 26px; font-weight: 900; line-height: 1; letter-spacing: -.03em; }
+.docket .d small { display: block; margin-top: 5px; font-family: var(--sans); font-size: 11px; font-weight: 600; letter-spacing: .14em; color: var(--ink-3); }
+.docket b { display: block; font-size: 16px; font-weight: 700; }
+.docket span { display: block; margin-top: 2px; font-family: var(--sans); font-size: 12.5px; line-height: 1.5; color: var(--ink-2); }
+.docket .stamp { margin-top: 2px; font-size: 12px; padding: 1px 6px; }
+
+/* 숫자로 보는 재판 */
+.figs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-bottom: 4px double var(--rule); }
+.fig { padding: 24px 0 22px 24px; border-left: 1px solid var(--rule-soft); }
+.fig:first-child { border-left: 0; padding-left: 0; }
+.fig b { display: block; font-size: clamp(44px, 5vw, 64px); font-weight: 900; line-height: 1; letter-spacing: -.04em; }
+.fig b small { font-size: .34em; font-weight: 700; letter-spacing: 0; margin-left: 4px; }
+.fig span { display: block; margin-top: 8px; font-family: var(--sans); font-size: 12px; letter-spacing: .08em; color: var(--ink-2); }
+.foot { display: flex; justify-content: space-between; gap: 16px; padding-top: 12px; font-family: var(--sans); font-size: 11.5px; color: var(--ink-3); }
+
+@media (max-width: 960px) {
+  .page { padding: 18px 18px 40px; }
+  .front { grid-template-columns: 1fr; }
+  .count { border-right: 0; border-bottom: 1px solid var(--rule); padding: 26px 0 24px; }
+  .story { padding: 24px 0 26px; }
+  .story h2 { font-size: 27px; }
+  .story .deck { font-size: 17px; }
+  .cols { grid-template-columns: 1fr; }
+  .col, .col:first-child, .col:last-child { padding: 24px 0; border-right: 0; border-top: 1px solid var(--rule-soft); }
+  .col:first-child { border-top: 0; }
+  .figs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .fig { padding: 18px 0 16px 18px; }
+  .fig:nth-child(3) { border-left: 0; padding-left: 0; }
+  .fig:nth-child(n+3) { border-top: 1px solid var(--rule-soft); }
+  .nav { gap: 16px; font-size: 12px; overflow-x: auto; justify-content: flex-start; white-space: nowrap; }
+  .dateline span:last-child { display: none; }
+  .foot { flex-direction: column; gap: 4px; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="dateline"><span>2026년 11월 28일 토요일</span><span>계엄 선포 724일째 · 서울</span></div>
+  <header class="mast">
+    <h1>12·3 재판 <span>기록</span></h1>
+    <p>네 특검 · 피고인 165명 · 1심부터 대법원까지</p>
+  </header>
+  <nav class="nav"><b>1면</b><span>관계도</span><span>재판 목록</span><span>타임라인</span><span>그날 밤</span><span>출처·보도</span></nav>
+
+  <section class="front">
+    <div class="count">
+      <div>
+        <div class="kicker">12·3 비상계엄 이후</div>
+        <p class="days">724<small>일</small></p>
+      </div>
+      <p>오늘까지 <b>선고 103번</b>이 있었고, <b>30건</b>의 형이 확정됐다.<br>앞으로 <b>13번</b>의 선고가 남아 있다.</p>
+    </div>
+    <article class="story">
+      <h2>2024년 12월 3일 밤 10시 27분,<br>비상계엄이 선포됐다.</h2>
+      <p class="deck">그 뒤로 흐른 시간만큼, 법정은 어디까지 왔을까. 내란·김건희·해병대·종합 네 특검이 법정에 세운 사람들의 1심, 2심, 대법원 판단을 한 장에 모았다.</p>
+      <div class="byline">재판 기록은 판결문과 공개 보도를 바탕으로 합니다 · 2026.11.28 기준</div>
+      <figure class="print">
+        <div class="ph"><img src="../assets/clock-window.jpg" alt=""></div>
+        <figcaption><b>2024년 12월 4일 새벽,</b> 국회 본관 창문을 깨고 진입하는 계엄군.</figcaption>
+      </figure>
+    </article>
+  </section>
+
+  <section class="cols">
+    <div class="col">
+      <h3>윤석열 <small>사건 10건</small></h3>
+      <div class="who"><div class="ph"><img src="../assets/clock-yoon-face.jpg" alt=""></div><p>전 대통령<br>내란 우두머리 1심 무기징역<br>체포방해 징역 7년 확정</p></div>
+      <ul class="cases">
+        <li><b>내란 본류</b><div class="path">1심 무기징역 <i>→</i> <span class="soon">2심 선고 2027.1.26</span></div></li>
+        <li><b>체포방해·국무회의</b><div class="path">1심 5년 <i>→</i> 2심 7년 <i>→</i> <span class="stamp">확정</span></div></li>
+        <li><b>평양 무인기 일반이적</b><div class="path">1심 징역 30년 <i>→</i> <span class="soon">2심 선고 12.4</span></div></li>
+        <li><b>법정 위증</b><div class="path">1심 무죄 <i>→</i> 2심 무죄 <i>→</i> <span class="stamp">무죄 확정</span></div></li>
+        <li><b>공직선거법</b><div class="path">1심·2심 징역 1년 6개월·집유 3년 <i>→</i> <em>상고</em></div></li>
+      </ul>
+      <p class="more">무상 여론조사 · 호주대사 출국 · 수사 외압 외 2건</p>
+    </div>
+    <div class="col">
+      <h3>김건희 <small>사건 4건</small></h3>
+      <div class="who"><div class="ph"><img src="../assets/clock-keon-face.jpg" alt=""></div><p>윤석열 전 대통령 배우자<br>3대 의혹 징역 4년 확정<br>매관매직 대법원 선고 앞둠</p></div>
+      <ul class="cases">
+        <li><b>3대 의혹</b><div class="path">1심 1년 8개월 <i>→</i> 2심 4년 <i>→</i> <span class="stamp">확정</span></div></li>
+        <li><b>매관매직</b><div class="path">1심 7년 <i>→</i> 2심 5년 <i>→</i> <span class="soon">대법원 선고 12.3</span></div></li>
+        <li><b>관저 이전</b><div class="path">1심 공판 중 <i>·</i> <em>12.7 증인신문</em></div></li>
+        <li><b>통일교 집단 입당</b><div class="path">1심 공판 중 <i>·</i> <em>피고인신문 마침</em></div></li>
+      </ul>
+    </div>
+    <div class="col">
+      <h3>이번 주 법정 <small>선고 5건</small></h3>
+      <ul class="docket">
+        <li><span class="d">11.30<small>월</small></span><div><b>한덕수 외 3명</b><span>헌법재판관 미임명·지명 · 1심 · 오후 2시</span></div><span class="stamp">D-2</span></li>
+        <li><span class="d">11.30<small>월</small></span><div><b>허석곤 외 1명</b><span>언론사 단전·단수 · 1심 · 오후 3시</span></div><span class="stamp">D-2</span></li>
+        <li><span class="d">12.03<small>목</small></span><div><b>김건희</b><span>매관매직 · 대법원 · 오전 10시 15분</span></div><span class="stamp">D-5</span></li>
+        <li><span class="d">12.03<small>목</small></span><div><b>이은우</b><span>계엄 비판 자막 삭제 · 대법원</span></div><span class="stamp">D-5</span></li>
+        <li><span class="d">12.04<small>금</small></span><div><b>윤석열 외 3명</b><span>평양 무인기 일반이적 · 2심</span></div><span class="stamp">D-6</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="figs" aria-label="숫자로 보는 재판">
+    <div class="fig"><b>165<small>명</small></b><span>법정에 선 사람</span></div>
+    <div class="fig"><b>216<small>건</small></b><span>재판 기록</span></div>
+    <div class="fig"><b>103<small>번</small></b><span>지금까지의 선고</span></div>
+    <div class="fig"><b>30<small>건</small></b><span>형이 확정된 재판</span></div>
+  </section>
+  <footer class="foot"><span>재판 기록은 판결문과 공개 보도를 바탕으로 합니다.</span><span>시안 1 · 기록지 — 디자인 확인용 정지 화면</span></footer>
+</div>
+</body>
+</html>

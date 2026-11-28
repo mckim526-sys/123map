@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>시안 2 · 얼굴들 — 12·3 재판 지도</title>
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+/* 시안 2 · 얼굴들 — 법정에 선 사람들의 얼굴로 첫 화면을 채움. 흑백 얼굴 벽 + 가운데 한 문장.
+   얼굴 아래 가는 막대가 재판 단계(1심 · 2심 · 확정), 다가오는 선고는 호박색. 색은 그 하나뿐 */
+:root { --bg: #0c0c0d; --fg: #f1eee8; --fg-2: #a9a6a0; --fg-3: #6f6c67; --amber: #e2a94b; --line: rgba(241, 238, 232, .14);
+  --serif: 'Noto Serif KR', serif; --sans: 'Pretendard Variable', Pretendard, -apple-system, sans-serif; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--sans); -webkit-font-smoothing: antialiased; word-break: keep-all; }
+.bar { position: absolute; z-index: 5; top: 0; left: 0; right: 0; display: flex; align-items: center; justify-content: space-between; padding: 18px 32px; }
+.bar b { font-family: var(--serif); font-size: 20px; font-weight: 900; letter-spacing: -.02em; }
+.bar nav { display: flex; gap: 22px; font-size: 13px; color: var(--fg-2); }
+.bar nav span:first-child { color: var(--fg); }
+
+/* 얼굴 벽 */
+.wall { position: relative; height: 100svh; min-height: 640px; overflow: hidden; }
+.grid { position: absolute; inset: -2px; display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); grid-auto-rows: 116px; grid-auto-flow: dense; gap: 2px; }
+.t { position: relative; overflow: hidden; background: #18181a; }
+.t img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 22%; filter: grayscale(1) contrast(1.08) brightness(.62); display: block; }
+.t::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: var(--s, transparent); }
+.t[data-s="1"] { --s: rgba(241, 238, 232, .28); }
+.t[data-s="2"] { --s: rgba(241, 238, 232, .58); }
+.t[data-s="3"] { --s: var(--fg); }
+.t[data-next] { --s: var(--amber); }
+.t.big { grid-column: span 2; grid-row: span 2; }
+.t.big img { filter: grayscale(1) contrast(1.1) brightness(.92); }
+.t.big::before { content: attr(data-name); position: absolute; left: 12px; bottom: 12px; z-index: 1; font-family: var(--serif); font-size: 20px; font-weight: 700; text-shadow: 0 1px 12px rgba(0,0,0,.7); }
+.t.none { display: grid; place-items: center; font-family: var(--serif); font-size: 26px; color: #3a3a3d; }
+/* 가운데로 갈수록 어둡게 → 문장이 떠오름 */
+.veil { position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(ellipse 46% 52% at 50% 52%, rgba(12,12,13,.95) 0%, rgba(12,12,13,.86) 42%, rgba(12,12,13,.35) 78%, rgba(12,12,13,.15) 100%),
+              linear-gradient(180deg, rgba(12,12,13,.75) 0, rgba(12,12,13,0) 18%, rgba(12,12,13,0) 80%, var(--bg) 100%); }
+.hero { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; padding: 0 24px; }
+.hero > div { max-width: 760px; }
+.eyebrow { font-size: 12px; font-weight: 600; letter-spacing: .3em; color: var(--fg-2); }
+.eyebrow b { color: var(--fg); font-weight: 700; }
+.hero h1 { margin: 18px 0 0; font-family: var(--serif); font-size: clamp(44px, 6.4vw, 92px); font-weight: 900; line-height: 1.1; letter-spacing: -.04em; }
+.hero h1 em { font-style: normal; color: var(--fg); }
+.hero p { margin: 22px auto 0; max-width: 34em; font-size: 17px; line-height: 1.75; color: var(--fg-2); }
+.stats { display: flex; justify-content: center; gap: 36px; margin-top: 34px; }
+.stats div { text-align: center; }
+.stats b { display: block; font-family: var(--serif); font-size: 38px; font-weight: 900; letter-spacing: -.03em; line-height: 1; }
+.stats span { display: block; margin-top: 8px; font-size: 12px; letter-spacing: .1em; color: var(--fg-3); }
+.stats .next b { color: var(--amber); }
+.cta { display: flex; justify-content: center; gap: 10px; margin-top: 36px; }
+.cta span { height: 44px; display: inline-flex; align-items: center; padding: 0 20px; border: 1px solid rgba(241,238,232,.35); font-size: 14px; font-weight: 600; letter-spacing: .02em; }
+.cta span:first-child { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+
+/* 아래: 읽는 법 + 이번 주 */
+.below { max-width: 1200px; margin: 0 auto; padding: 40px 32px 72px; display: grid; grid-template-columns: 300px 1fr; gap: 56px; }
+.below h2 { margin: 0 0 18px; font-size: 12px; font-weight: 700; letter-spacing: .26em; color: var(--fg-2); }
+.legend { list-style: none; margin: 0; padding: 0; }
+.legend li { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-top: 1px solid var(--line); font-size: 14px; color: var(--fg-2); }
+.legend i { width: 36px; height: 3px; background: var(--c); }
+.legend b { margin-left: auto; font-family: var(--serif); font-size: 18px; color: var(--fg); }
+.week { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 2px; }
+.card { position: relative; padding: 16px 16px 18px; background: #151517; min-height: 168px; }
+.card .d { font-family: var(--serif); font-size: 30px; font-weight: 900; letter-spacing: -.03em; line-height: 1; }
+.card .d small { margin-left: 6px; font-family: var(--sans); font-size: 12px; font-weight: 600; color: var(--fg-3); letter-spacing: .08em; }
+.card .dd { position: absolute; top: 16px; right: 16px; font-size: 11px; font-weight: 800; letter-spacing: .08em; color: var(--amber); }
+.card b { display: block; margin-top: 22px; font-size: 16px; font-weight: 700; }
+.card span { display: block; margin-top: 4px; font-size: 12.5px; line-height: 1.5; color: var(--fg-2); }
+.foot { max-width: 1200px; margin: 0 auto; padding: 0 32px 40px; font-size: 11.5px; color: var(--fg-3); display: flex; justify-content: space-between; }
+
+@media (max-width: 900px) {
+  .bar { padding: 14px 16px; } .bar nav { display: none; }
+  .grid { grid-template-columns: repeat(auto-fill, minmax(64px, 1fr)); grid-auto-rows: 82px; }
+  .t.big { grid-column: span 1; grid-row: span 1; } /* 좁은 화면: 가운데 문장과 겹치지 않게 같은 크기로 */
+  .t.big::before { display: none; }
+  .veil { background: radial-gradient(ellipse 80% 46% at 50% 54%, rgba(12,12,13,.96) 0%, rgba(12,12,13,.86) 50%, rgba(12,12,13,.4) 85%, rgba(12,12,13,.2) 100%),
+              linear-gradient(180deg, rgba(12,12,13,.75) 0, rgba(12,12,13,0) 14%, rgba(12,12,13,0) 82%, var(--bg) 100%); }
+  .hero h1 { font-size: 44px; }
+  .hero p { font-size: 15px; }
+  .stats { gap: 22px; } .stats b { font-size: 28px; }
+  .below { grid-template-columns: 1fr; gap: 36px; padding: 28px 16px 48px; }
+  .week { grid-template-columns: 1fr 1fr; }
+  .card { min-height: 0; }
+  .foot { padding: 0 16px 32px; flex-direction: column; gap: 4px; }
+}
+</style>
+</head>
+<body>
+<header class="bar"><b>12·3 재판 지도</b><nav><span>처음</span><span>관계도</span><span>재판 목록</span><span>타임라인</span><span>그날 밤</span></nav></header>
+<section class="wall">
+  <div class="grid" id="grid" aria-hidden="true"></div>
+  <div class="veil"></div>
+  <div class="hero"><div>
+    <div class="eyebrow">12·3 비상계엄 이후 <b>724일</b></div>
+    <h1><em>165명</em>이<br>법정에 섰다.</h1>
+    <p>2024년 12월 3일 밤 10시 27분, 비상계엄이 선포됐다. 대통령부터 국회에 들어간 현장 지휘관까지, 네 특검이 기소한 사람들의 재판은 어디까지 왔을까.</p>
+    <div class="stats"><div><b>103</b><span>선고</span></div><div><b>30</b><span>형 확정</span></div><div class="next"><b>13</b><span>다가오는 선고</span></div></div>
+    <div class="cta"><span>얼굴로 찾기</span><span>사건으로 보기</span></div>
+  </div></div>
+</section>
+<section class="below">
+  <div>
+    <h2>얼굴 아래 막대 · 165명</h2>
+    <ul class="legend">
+      <li><i style="--c:transparent;outline:1px dashed rgba(241,238,232,.25)"></i>아직 선고 전<b>73</b></li>
+      <li><i style="--c:rgba(241,238,232,.28)"></i>1심 선고까지<b>51</b></li>
+      <li><i style="--c:rgba(241,238,232,.58)"></i>2심 선고까지<b>12</b></li>
+      <li><i style="--c:#f1eee8"></i>형 확정<b>29</b></li>
+      <li><i style="--c:#e2a94b"></i>선고를 앞둔 사람<b>43</b></li>
+    </ul>
+  </div>
+  <div>
+    <h2>이번 주 법정</h2>
+    <div class="week">
+      <div class="card"><span class="dd">D-2</span><div class="d">11.30<small>월</small></div><b>한덕수 외 3명</b><span>헌법재판관 미임명·지명<br>1심 · 오후 2시</span></div>
+      <div class="card"><span class="dd">D-2</span><div class="d">11.30<small>월</small></div><b>허석곤 외 1명</b><span>언론사 단전·단수<br>1심 · 오후 3시</span></div>
+      <div class="card"><span class="dd">D-5</span><div class="d">12.03<small>목</small></div><b>김건희</b><span>매관매직<br>대법원 · 오전 10시 15분</span></div>
+      <div class="card"><span class="dd">D-5</span><div class="d">12.03<small>목</small></div><b>이은우</b><span>계엄 비판 자막 삭제<br>대법원</span></div>
+      <div class="card"><span class="dd">D-6</span><div class="d">12.04<small>금</small></div><b>윤석열 외 3명</b><span>평양 무인기 일반이적<br>2심</span></div>
+    </div>
+  </div>
+</section>
+<footer class="foot"><span>재판 기록은 판결문과 공개 보도를 바탕으로 합니다 · 2026.11.28 기준</span><span>시안 2 · 얼굴들 — 디자인 확인용 정지 화면</span></footer>
+<script src="../reader-data.js"></script>
+<script>
+// 디자인 확인용: 재판 데이터에서 얼굴과 단계만 가져와 벽을 채움 (누르기 등 기능 없음)
+(function () {
+  const PHOTO = { yoon: 'clock-yoon-face.jpg', keon: 'clock-keon-face.jpg' };
+  const done = t => /징역|금고|벌금|무죄|공소기각|집행유예|선고유예|무기|사형|면소|파기환송|기각|유지|확정/.test(t) && !/예정|미확인|미도달|판단 전|중단|제기/.test(t);
+  const level = p => Math.max(0, ...p.records.map(r => { const s = r.stages || []; if (s.some(x => /확정/.test(x[0]) && !/예정|미확인/.test(x[0]))) return 3; return done((s[2] || [''])[0]) ? 3 : done((s[1] || [''])[0]) ? 2 : done((s[0] || [''])[0]) ? 1 : 0; }));
+  const today = '2026.11.28';
+  const next = p => p.records.some(r => (r.stages || []).some(s => /선고 예정/.test(s[0] || '') && ((s[2] || '').match(/\d{4}\.\d{2}\.\d{2}/) || [''])[0] >= today));
+  const hash = s => [...s].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7);
+  const ppl = persons.filter(p => p.photo || PHOTO[p.id]).sort((a, b) => hash(a.id) - hash(b.id));
+  // 두 사람은 크게, 화면 위쪽 양옆에 오도록 순서 조정
+  const pick = id => ppl.splice(ppl.findIndex(p => p.id === id), 1)[0];
+  const yoon = pick('yoon'), keon = pick('keon');
+  ppl.splice(3, 0, yoon); ppl.splice(12, 0, keon);
+  const tile = p => `<div class="t${p === yoon || p === keon ? ' big' : ''}" data-s="${level(p)}"${next(p) ? ' data-next' : ''} data-name="${p.name}"><img src="../assets/${PHOTO[p.id] || p.photoFile || p.id + '.jpg'}" alt="" loading="lazy" style="${p.photoPosition ? 'object-position:' + p.photoPosition : ''}"></div>`;
+  // 화면을 다 채울 만큼 되풀이 (두 번째부터는 큰 칸 없이)
+  let html = ppl.map(tile).join('');
+  const rest = ppl.filter(p => p !== yoon && p !== keon);
+  for (let k = 0; k < 2; k++) html += rest.map(tile).join('');
+  document.getElementById('grid').innerHTML = html;
+})();
+</script>
+</body>
+</html>
