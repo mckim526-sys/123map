@@ -30,6 +30,7 @@ function stageView(stages, i) {
     else text = `${stageName(i)} 선고 후`;
   } else if (/없음|포기|취하/.test(t) && !ruled(t.replace(/\S*\s*확정/, ''))) {
     text = (t.match(/^[^·]*?(없음|포기|취하)/) || [t])[0].trim();
+    return { text, court: '', quiet: true }; // 열리지 않은 심급: 재판부·메모 줄 없음
   } else if (!ruled(t) && !/예정/.test(t + (s[2] || '')) && /상고|항소|배당|심리|선고 전|판단 전|미확인/.test(t)) {
     text = '심리 중';
   }

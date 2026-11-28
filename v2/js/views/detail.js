@@ -52,7 +52,7 @@ const DetailView = (() => {
       const tag = { current: '현재', final: '확정' }[state];
       const when = splitWhen(s[2]);
       const view = stageView(record.stages, n - 1);
-      const court = [view.court, when.extra].filter(Boolean).join(' · '); // 사건번호는 재판부 줄 끝으로
+      const court = view.quiet ? '' : [view.court, when.extra].filter(Boolean).join(' · '); // 사건번호는 재판부 줄 끝으로
       return `
         <li class="verdict__item is-${state} ${link}"${n === prog.stage ? ' aria-current="step"' : ''}>
           <span class="verdict__mark" aria-hidden="true">${state === 'done' ? '✓' : n}</span>
