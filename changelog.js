@@ -1,6 +1,7 @@
 // Reader-facing record of what changed on the site. Add one plain-language line per published change
 // (newest first). The "recently checked trials" list below it is built automatically from lastChecked.
 const SITE_CHANGES = [
+  ['2026-11-29', '처음 화면의 다가오는 선고를 시간·문장에서 조금 더 떨어뜨려 아래쪽에 여유 있게 배치했습니다.'],
   ['2026-11-29', '관계선을 누르면 뜨던 \'인물 사이의 연결\' 창을 없앴습니다. 선에 마우스를 올리면 두 사람과 사건을 짧게 보여 주고, 누르면 그 사건의 재판 상세가 바로 열립니다.'],
   ['2026-11-29', '재판 상세의 연결된 인물을 누르면 \'인물 사이의 연결\' 창 대신 관계도가 그 사람 중심으로 바뀌고 같은 사건 기록이 열립니다. 마우스를 올리면 관계도에서 그 사람을 표시합니다.'],
   ['2026-11-29', '처음 화면에서 인물 사진을 누른 뒤 고른 사진을 화면 높이에 맞춰 낮추고 다른 인물은 얼굴이 보이는 정사각형으로 줄여, 노트북 화면에서도 두 사람 얼굴이 함께 보이게 했습니다.'],

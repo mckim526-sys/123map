@@ -63,7 +63,8 @@ body.picked .backdrop { opacity: .14; }
 .lead { margin: var(--sp-8) 0 0; padding-top: var(--sp-5); border-top: 1px solid var(--border-default); max-width: 24em;
   font-family: var(--font-serif); font-size: var(--fs-headline); line-height: var(--lh-headline); font-weight: var(--fw-bold); }
 /* 다가오는 선고: 상자·색 배경 없이 가는 선과 글자만 (어두운 바탕 토큰을 .hero에서 물려받음) */
-.week { max-width: 460px; margin-top: var(--sp-10); }
+.week { max-width: 460px; margin-top: clamp(var(--sp-10), 9svh, 96px); } /* 시간·문장과 여유를 두고 아래쪽에 (화면 높이에 비례) */
+@media (max-width: 760px) { .week { margin-top: var(--sp-10); } } /* 휴대폰은 위아래로 이어지므로 전과 같게 */
 .week[hidden] { display: none; }
 .week__head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--sp-3); padding-bottom: var(--sp-2); border-bottom: 1px solid var(--border-default); }
 .week__head h2 { margin: 0; font-size: var(--fs-label); line-height: var(--lh-label); font-weight: var(--fw-bold); letter-spacing: .02em; color: var(--text-secondary); }
@@ -185,7 +186,7 @@ body.picked .cases { display: block; background: var(--bg-page); border: 1px sol
   .clock-home .elapsed .minute { margin-top: var(--sp-3); }
   .clock-home .lead { margin-top: var(--sp-4); padding-top: var(--sp-3); font-size: var(--fs-title); line-height: var(--lh-title); }
   .clock-home .lead br { display: none; }
-  .clock-home .week { margin-top: var(--sp-4); }
+  .clock-home .week { margin-top: clamp(var(--sp-8), 7svh, var(--sp-12)); }
   .clock-home .week__row { padding-block: var(--sp-2); }
 }
 @media (min-width: 901px) and (max-height: 680px) {
