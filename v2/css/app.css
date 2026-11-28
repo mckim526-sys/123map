@@ -521,6 +521,9 @@ body.has-detail .detail {
 .case-card > .eyebrow { margin-bottom: calc(-1 * var(--sp-2)); } /* 사건의 특검: 제목 바로 위 */
 .case-card__title { margin: 0; font-size: var(--fs-title); line-height: var(--lh-title); font-weight: var(--fw-bold); }
 .case-card__meta { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-2); }
+.case-schedule summary { cursor: pointer; }
+.case-schedule p { margin-top: var(--sp-1); }
+.case-schedule details p { margin-inline-start: var(--sp-4); }
 
 /* 심급별 결과 타임라인: 진행 상태(완료·현재·확정·예정)를 표식으로 */
 .verdict { position: relative; display: flex; flex-direction: column; gap: var(--sp-4); margin: var(--sp-1) 0; padding: 0; list-style: none; }

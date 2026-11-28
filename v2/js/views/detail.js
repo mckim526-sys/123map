@@ -87,6 +87,24 @@ const DetailView = (() => {
     return `<ol class="verdict" aria-label="심급별 결과 · ${esc(prog.label)}">${items}</ol>`;
   }
 
+  function additionalSchedule([text, court, date, stage, scope]) {
+    const label = (text || '').trim();
+    const when = (date || '').trim();
+    const dateTime = when.match(/\b\d{1,2}:\d{2}\b/)?.[0];
+    const courtParts = (court || '').split(/\s*·\s*/).filter(Boolean);
+    // 오래된 기록에서는 공판 시간이 재판부 뒤에 적혀 있을 수 있습니다.
+    const last = courtParts.at(-1) || '';
+    const courtTime = /^\d{1,2}:\d{2}$/.test(last) && (!dateTime || dateTime === last) ? courtParts.pop() : '';
+    const dateLabel = [when.replace(/\s*예정$/, ''), !dateTime && courtTime].filter(Boolean).join(' ');
+    const event = [stage && !label.startsWith(stage) ? stage : '', label,
+      /예정$/.test(when) && !label.includes('예정') ? '예정' : ''].filter(Boolean).join(' ');
+    const summary = esc([dateLabel, event].filter(Boolean).join(' · '));
+    return `<div class="case-schedule caption">
+      ${courtParts.length ? `<details><summary>${summary}</summary><p>${esc(courtParts.join(' · '))}</p></details>` : `<p>${summary}</p>`}
+      ${scope === 'case' ? '<p>사건 기일 · 출석 대상 미확인</p>' : ''}
+    </div>`;
+  }
+
   function chargeList(record) {
     return record.charges.map((c, k) => {
       const last = latestRuling(c.judgments);
@@ -161,9 +179,8 @@ const DetailView = (() => {
           ${record.lastChecked ? `<span class="caption">정보 확인 ${esc(record.lastChecked)}</span>` : ''}
         </div>
         ${verdictTimeline(record)}
-        ${(record.next || []).map(([text, court, date, stage, scope]) => `
-          <p class="caption">${[stage, date, text, court, scope === 'case' ? '사건 기일 · 출석 대상 미확인' : ''].filter(Boolean).map(esc).join(' · ')}</p>`).join('')}
-        <button class="btn btn--secondary btn--block" data-compare>혐의별 1심·2심·대법원 판단 나란히 보기</button>
+        ${(record.next || []).map(additionalSchedule).join('')}
+        <button class="btn btn--secondary btn--block" data-compare>혐의별 판단 비교</button>
       </section>
       ${section('혐의별 판단', `${record.charges.length}건 · 눌러서 펼치기`, 'charges')}
       <div class="stack">${chargeList(record)}</div>
