@@ -463,7 +463,7 @@ body.has-detail .workspace { grid-template-columns: minmax(0, 1fr) var(--panel-w
 .kind--upcoming { color: var(--text-accent); }
 .kind--acquit { color: var(--teal-600); }
 .kind--final { color: var(--navy-800); }
-.kind--guilty { color: var(--gray-900); }
+.kind--guilty, .kind--mixed { color: var(--gray-900); }
 .tl-item__people { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
 .tl-night { margin-top: var(--sp-8); padding: var(--sp-4); border-radius: var(--r-md); background: var(--bg-subtle); }
 .tl-night summary { cursor: pointer; font-size: var(--fs-label); font-weight: var(--fw-bold); }
@@ -845,6 +845,7 @@ body.has-detail .detail {
 .cal-ev > b { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 .cal-ev__t { display: none; } /* 결과 글은 칸 아래 그날 목록에서 (칸 안에서 잘리지 않게) */
 .cal-dot { flex: none; width: 6px; height: 6px; border-radius: var(--r-pill); background: var(--gray-900); }
+.cal-dot--mixed { background: linear-gradient(90deg, var(--gray-900) 50%, var(--teal-600) 50%); }
 .cal-dot--acquit { background: var(--teal-600); }
 .cal-dot--final { background: var(--navy-800); }
 .cal-dot--upcoming { background: var(--accent); }

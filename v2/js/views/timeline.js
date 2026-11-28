@@ -9,11 +9,14 @@ const TimelineView = (() => {
     ['12.4 04:27', '국무회의, 계엄 해제안 의결'],
   ];
 
-  const kind = (text, upcoming) => upcoming ? 'upcoming'
-    : /파기|환송/.test(text) ? 'remand'
-    : /무죄|공소기각/.test(text) ? 'acquit'
-    : /확정/.test(text) ? 'final'
-    : /징역|금고|벌금|유죄|무기|사형|선고유예/.test(text) ? 'guilty' : 'other';
+  function kind(text, upcoming) {
+    if (upcoming) return 'upcoming';
+    if (/파기|환송/.test(text)) return 'remand';
+    const guilty = /징역|금고|벌금|무기|사형|선고유예|유죄(?!\s*(?:아님|여부|판단\s*(?:전|없음|미확인)))/.test(text);
+    if (/무죄|공소기각/.test(text)) return guilty ? 'mixed' : 'acquit';
+    if (/확정/.test(text)) return 'final';
+    return guilty ? 'guilty' : 'other';
+  }
 
   function collect(list, agency) {
     const today = todaySeoul();
@@ -41,7 +44,7 @@ const TimelineView = (() => {
 
   // 일정 제목: 내부 메모를 빼고, '판단 전'·'선고 전'만 남으면 '심리 중'
   const tlText = t => dropMemo(t).split(' · ').filter(x => x && !/^(판단|선고) 전$/.test(x)).join(' · ') || '심리 중';
-  const KIND_LABEL = { upcoming: '예정', remand: '파기환송', acquit: '무죄', final: '확정', guilty: '유죄', other: '절차' };
+  const KIND_LABEL = { upcoming: '예정', remand: '파기환송', acquit: '무죄', final: '확정', guilty: '유죄', mixed: '일부 유죄', other: '절차' };
   const kindLabel = (k, text) => k === 'acquit' && /공소기각/.test(text) ? '공소기각' : KIND_LABEL[k];
   const WEEK = '일월화수목금토';
   const dday = date => {
@@ -140,7 +143,7 @@ const TimelineView = (() => {
       <div class="cal-months chips" aria-label="일정이 있는 달">${years.map(yr => `<span class="cal-year">${yr}</span>${months.filter(x => x.startsWith(yr)).map(x =>
         `<button data-tl-month="${x}" class="${x === cal.month ? 'is-active' : ''}">${Number(x.slice(5))}월</button>`).join('')}`).join('')}</div>
       <div class="cal-grid" role="group" aria-label="${monthName(cal.month)} 달력">${[...WEEK].map((w, k) => `<span class="cal-wd ${k === 0 ? 'is-sun' : ''}">${w}</span>`).join('')}${cells.join('')}</div>
-      <p class="cal-legend"><span class="kind kind--guilty">유죄</span><span class="kind kind--acquit">무죄·공소기각</span><span class="kind kind--final">확정</span><span class="kind kind--upcoming">예정</span></p>
+      <p class="cal-legend"><span class="kind kind--guilty">유죄</span><span class="kind kind--mixed">일부 유죄</span><span class="kind kind--acquit">무죄·공소기각</span><span class="kind kind--final">확정</span><span class="kind kind--upcoming">예정</span></p>
       <h3 class="section-title tl-section cal-day-head" id="tl-day">${dayOn ? `${Number(cal.day.slice(5, 7))}월 ${Number(cal.day.slice(8))}일` : `${Number(cal.month.slice(5))}월 전체`}<small>${shown.length}건${dayOn ? ' · <button class="link-btn" data-tl-day="">이 달 전체 보기</button>' : ''}</small></h3>
       ${shown.map(card).join('') || '<p class="empty">이 달에는 기록된 재판 일정이 없습니다.</p>'}`;
   }
