@@ -7,7 +7,7 @@ const DetailView = (() => {
     `<h3 class="section-title"${id ? ` data-sec="${id}"` : ''}>${title}${aside ? `<small>${aside}</small>` : ''}</h3>`;
 
   // 판단이 실제로 나온 마지막 심급 ("항소심 판단 전", "판단 미확인" 등은 제외)
-  const PENDING = /판단 전|미확인|확인 중|대조 중|해당 없음|미도달|없음|취하|^\s*[-–—]?\s*$/;
+  const PENDING = /판단 전|선고 전|미확인|확인 중|대조 중|해당 없음|미도달|없음|취하|^\s*[-–—]?\s*$/;
   const rulingKind = t => /무죄|공소기각|면소/.test(t) ? 'acquit' : /유죄|징역|벌금/.test(t) ? 'guilty' : 'other';
   const rulingSummary = text => String(text || '').trim().split(/\.(?:\s|$)|\s+[—–-]\s+/, 1)[0];
 
