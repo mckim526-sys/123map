@@ -15,7 +15,7 @@
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--sans); -webkit-font-smoothing: antialiased; word-break: keep-all; }
 .bar { position: absolute; z-index: 5; top: 0; left: 0; right: 0; display: flex; align-items: center; justify-content: space-between; padding: 18px 32px; }
-.bar b { font-family: var(--serif); font-size: 20px; font-weight: 900; letter-spacing: -.02em; }
+.bar .logo { display: block; height: 22px; width: auto; } /* MBC 뉴스 공식 로고(imnews.imbc.com)의 'MBC' 글자를 흰색으로 */
 .bar nav { display: flex; gap: 22px; font-size: 13px; color: var(--fg-2); }
 .bar nav span:first-child { color: var(--fg); }
 
@@ -36,8 +36,8 @@ body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--sa
 /* 가운데로 갈수록 어둡게 → 문장이 떠오름 */
 .veil { position: absolute; inset: 0; pointer-events: none;
   background: radial-gradient(ellipse 58% 58% at 50% 52%, rgba(12,12,13,.96) 0%, rgba(12,12,13,.88) 48%, rgba(12,12,13,.4) 82%, rgba(12,12,13,.2) 100%),
-              linear-gradient(180deg, rgba(12,12,13,.75) 0, rgba(12,12,13,0) 18%, rgba(12,12,13,0) 80%, var(--bg) 100%); }
-.hero { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; padding: 64px 24px 110px; }
+              linear-gradient(180deg, rgba(12,12,13,.75) 0, rgba(12,12,13,0) 18%, rgba(12,12,13,0) 66%, rgba(12,12,13,.85) 86%, var(--bg) 100%); }
+.hero { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; padding: 60px 24px 212px; } /* 아래 212px: 이번 주 법정 칸 */
 .hero > div { width: min(100%, 1120px); }
 .eyebrow { font-size: 12px; font-weight: 600; letter-spacing: .3em; color: var(--fg-2); }
 /* 흐른 시간: 문장 위 한 줄 */
@@ -62,9 +62,9 @@ body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--sa
 .lift { position: absolute; margin: 0; overflow: visible; transform-style: preserve-3d; opacity: 0; transition: opacity .6s .2s;
   transform: rotateY(var(--ry)) translateZ(46px); }
 .lift.on { opacity: 1; }
-.lift .card { position: absolute; inset: 0; overflow: hidden; background: #18181a; border-radius: 1px;
+.lift .lcard { position: absolute; inset: 0; overflow: hidden; background: #18181a; border-radius: 1px;
   box-shadow: 0 34px 60px -10px rgba(0,0,0,.85), 0 12px 24px rgba(0,0,0,.6), 0 0 0 1px rgba(241,238,232,.22); }
-.lift .card::before { content: ''; position: absolute; inset: 0; z-index: 2; pointer-events: none; /* 빛이 문장 쪽에서 비치는 듯한 광택 */
+.lift .lcard::before { content: ''; position: absolute; inset: 0; z-index: 2; pointer-events: none; /* 빛이 문장 쪽에서 비치는 듯한 광택 */
   background: linear-gradient(var(--sheen), rgba(255,255,255,.12), rgba(255,255,255,0) 42%); }
 .lift img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) contrast(1.1) brightness(.92); }
 .lift.k img { filter: grayscale(1) contrast(1.15) brightness(.55); } /* 원본이 밝은 사진: 두 사람 밝기 맞춤 */
@@ -77,7 +77,7 @@ body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--sa
 .lift .bar3 { position: absolute; left: 0; right: 0; bottom: 0; z-index: 1; height: 3px; background: var(--amber); }
 #liftY { --ry: 11deg; --sheen: 100deg; }
 #liftK { --ry: -11deg; --sheen: 260deg; }
-.hero p { margin: 60px auto 0; max-width: 34em; font-size: 17px; line-height: 1.75; color: var(--fg-2); }
+.hero p { margin: clamp(40px, 6vh, 60px) auto 0; max-width: 34em; font-size: 17px; line-height: 1.75; color: var(--fg-2); }
 .stats { display: flex; justify-content: center; gap: 36px; margin-top: 26px; }
 .stats div { text-align: center; }
 .stats b { display: block; font-family: var(--serif); font-size: 34px; font-weight: 900; letter-spacing: -.03em; line-height: 1; }
@@ -85,13 +85,27 @@ body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--sa
 .stats .next b { color: var(--amber); }
 
 /* 아래: 읽는 법 + 이번 주 */
-.below { max-width: 1200px; margin: 0 auto; padding: 40px 32px 72px; display: grid; grid-template-columns: 300px 1fr; gap: 56px; }
+.below { max-width: 1200px; margin: 0 auto; padding: 40px 32px 56px; }
+.below > div { max-width: 420px; }
 .below h2 { margin: 0 0 18px; font-size: 12px; font-weight: 700; letter-spacing: .26em; color: var(--fg-2); }
 .legend { list-style: none; margin: 0; padding: 0; }
 .legend li { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-top: 1px solid var(--line); font-size: 14px; color: var(--fg-2); }
 .legend i { width: 36px; height: 3px; background: var(--c); }
 .legend b { margin-left: auto; font-family: var(--serif); font-size: 18px; color: var(--fg); }
-.week { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 2px; }
+.dock { position: absolute; z-index: 3; left: 0; right: 0; bottom: 0; padding: 0 32px 26px; }
+.dock-in { max-width: 960px; margin: 0 auto; } /* 카드 3장: 가운데 문장 폭에 맞춤 */
+.dock-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; margin-bottom: 10px; }
+.dock-head h2 { margin: 0; font-size: 12px; font-weight: 700; letter-spacing: .26em; color: var(--fg-2); }
+.dock .timebar { position: static; gap: 12px; }
+.dock .timebar::before, .dock .timebar::after { display: none; }
+.dock .timebar .tb-l { font-size: 11px; letter-spacing: .2em; }
+.dock .clock b { font-size: 24px; }
+.dock .clock span { font-size: 15px; }
+.week { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2px; }
+.dock .card { min-height: 0; padding: 14px 16px 15px; background: rgba(21, 21, 23, .9); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+.dock .card .d { font-size: 26px; }
+.dock .card .dd { top: 14px; }
+.dock .card b { margin-top: 14px; font-size: 15px; }
 .card { position: relative; padding: 16px 16px 18px; background: #151517; min-height: 168px; }
 .card .d { font-family: var(--serif); font-size: 30px; font-weight: 900; letter-spacing: -.03em; line-height: 1; }
 .card .d small { margin-left: 6px; font-family: var(--sans); font-size: 12px; font-weight: 600; color: var(--fg-3); letter-spacing: .08em; }
@@ -101,7 +115,8 @@ body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--sa
 .foot { max-width: 1200px; margin: 0 auto; padding: 0 32px 40px; font-size: 11.5px; color: var(--fg-3); display: flex; justify-content: space-between; }
 
 @media (max-width: 900px) {
-  .bar { padding: 14px 16px; } .bar nav { display: none; }
+  .bar { padding: 16px; } .bar nav { display: none; }
+  .bar .logo { height: 18px; }
   .grid { grid-template-columns: repeat(auto-fill, minmax(44px, 1fr)); grid-auto-rows: 56px; }
   .t.big { grid-column: span 1; grid-row: span 1; } /* 좁은 화면: 가운데 문장과 겹치지 않게 같은 크기로 */
   .t.big::before { display: none; }
@@ -113,9 +128,19 @@ body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--sa
   .grid { position: absolute; }
   .hero { position: relative; inset: auto; padding: 84px 16px 40px; }
   .hero { padding-bottom: 12px; }
-  .timebar { position: relative; bottom: auto; padding: 8px 16px 44px; flex-wrap: wrap; gap: 6px 12px; }
-  .timebar::before, .timebar::after { display: none; }
-  .timebar .tb-l { width: 100%; font-size: 11px; letter-spacing: .14em; }
+  .dock { position: relative; padding: 18px 0 30px; }
+  .dock-head { padding: 0 16px; }
+  .dock .timebar { gap: 8px; }
+  .dock .timebar .tb-l { display: none; }
+  .dock .clock b { font-size: 20px; }
+  .dock .clock span { font-size: 13px; }
+  .dock .week { gap: 4px; padding: 0 16px; }
+  .dock .card { padding: 10px 10px 12px; }
+  .dock .card .d { font-size: 19px; }
+  .dock .card .d small { display: block; margin: 4px 0 0; font-size: 10px; }
+  .dock .card .dd { top: 10px; right: 10px; font-size: 10px; }
+  .dock .card b { margin-top: 8px; font-size: 13px; }
+  .dock .card span { font-size: 11px; }
   .clock b { font-size: 28px; }
   .clock span { font-size: 16px; }
   .headrow { margin-top: 20px; }
@@ -124,24 +149,25 @@ body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--sa
   .lift .lab small, .lift .lab span { display: none; }
   .lift .lab b { font-size: 14px; }
   #liftY { --ry: 9deg; } #liftK { --ry: -9deg; }
-  .hero p { font-size: 15px; margin-top: 36px; }
+  .hero p { font-size: 14px; line-height: 1.7; margin-top: 32px; }
+  @media (max-height: 680px) and (max-width: 360px) { .hero { padding-top: 74px; } .hero p { margin-top: 26px; font-size: 13.5px; } .stats { margin-top: 16px; } .dock { padding-top: 12px; padding-bottom: 20px; } }
   .stats { gap: 22px; } .stats b { font-size: 26px; }
-  .below { grid-template-columns: 1fr; gap: 36px; padding: 28px 16px 48px; }
-  .week { grid-template-columns: 1fr 1fr; }
+  .below { padding: 28px 16px 40px; }
+  .week { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .card { min-height: 0; }
   .foot { padding: 0 16px 32px; flex-direction: column; gap: 4px; }
 }
 </style>
 </head>
 <body>
-<header class="bar"><b>12·3 재판 지도</b><nav><span>처음</span><span>관계도</span><span>재판 목록</span><span>타임라인</span><span>그날 밤</span></nav></header>
+<header class="bar"><img class="logo" src="mbc-wordmark-white.png" alt="MBC"><nav><span>처음</span><span>관계도</span><span>재판 목록</span><span>타임라인</span><span>그날 밤</span></nav></header>
 <section class="wall">
   <div class="grid" id="grid" aria-hidden="true"></div>
   <div class="veil"></div>
   <div class="lifts" aria-hidden="true">
-    <figure class="lift" id="liftY"><div class="card"><img src="../assets/clock-yoon.jpg" alt="" style="object-position:50% 25%"><div class="shade"></div>
+    <figure class="lift" id="liftY"><div class="lcard"><img src="../assets/clock-yoon.jpg" alt="" style="object-position:50% 25%"><div class="shade"></div>
       <figcaption class="lab"><small>전 대통령</small><b>윤석열</b><span><em>다음 선고 12.4</em> 무인기 2심</span></figcaption><i class="bar3"></i></div></figure>
-    <figure class="lift k" id="liftK"><div class="card"><img src="../assets/clock-keon.jpg" alt="" style="object-position:50% 35%"><div class="shade"></div>
+    <figure class="lift k" id="liftK"><div class="lcard"><img src="../assets/clock-keon.jpg" alt="" style="object-position:50% 35%"><div class="shade"></div>
       <figcaption class="lab"><small>윤석열 전 대통령 배우자</small><b>김건희</b><span><em>다음 선고 12.3</em> 매관매직</span></figcaption><i class="bar3"></i></div></figure>
   </div>
   <div class="hero"><div>
@@ -149,7 +175,14 @@ body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--sa
     <p>2024년 12월 3일 밤 10시 27분, 비상계엄이 선포됐다. 대통령부터 국회에 들어간 현장 지휘관까지, 네 특검이 기소한 사람들의 재판은 어디까지 왔을까.</p>
     <div class="stats"><div><b>103</b><span>선고</span></div><div><b>30</b><span>형 확정</span></div><div class="next"><b>13</b><span>다가오는 선고</span></div></div>
   </div></div>
-  <div class="timebar"><span class="tb-l">12·3 비상계엄 이후</span><span class="clock" id="clock" role="timer"><b>724<small>일</small></b><span>16<i>:</i>52<i>:</i><em>49</em></span></span></div>
+  <div class="dock"><div class="dock-in">
+    <div class="dock-head"><h2>이번 주 법정</h2><div class="timebar"><span class="tb-l">12·3 비상계엄 이후</span><span class="clock" id="clock" role="timer"><b>724<small>일</small></b><span>16<i>:</i>52<i>:</i><em>49</em></span></span></div></div>
+    <div class="week">
+      <div class="card"><span class="dd">D-2</span><div class="d">11.30<small>월</small></div><b>한덕수 외 3명</b><span>헌법재판관 미임명·지명<br>1심 · 오후 2시</span></div>
+      <div class="card"><span class="dd">D-2</span><div class="d">11.30<small>월</small></div><b>허석곤 외 1명</b><span>언론사 단전·단수<br>1심 · 오후 3시</span></div>
+      <div class="card"><span class="dd">D-5</span><div class="d">12.03<small>목</small></div><b>김건희</b><span>매관매직<br>대법원 · 오전 10시 15분</span></div>
+    </div>
+  </div></div>
 </section>
 <section class="below">
   <div>
@@ -161,16 +194,6 @@ body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--sa
       <li><i style="--c:#f1eee8"></i>형 확정<b>29</b></li>
       <li><i style="--c:#e2a94b"></i>선고를 앞둔 사람<b>43</b></li>
     </ul>
-  </div>
-  <div>
-    <h2>이번 주 법정</h2>
-    <div class="week">
-      <div class="card"><span class="dd">D-2</span><div class="d">11.30<small>월</small></div><b>한덕수 외 3명</b><span>헌법재판관 미임명·지명<br>1심 · 오후 2시</span></div>
-      <div class="card"><span class="dd">D-2</span><div class="d">11.30<small>월</small></div><b>허석곤 외 1명</b><span>언론사 단전·단수<br>1심 · 오후 3시</span></div>
-      <div class="card"><span class="dd">D-5</span><div class="d">12.03<small>목</small></div><b>김건희</b><span>매관매직<br>대법원 · 오전 10시 15분</span></div>
-      <div class="card"><span class="dd">D-5</span><div class="d">12.03<small>목</small></div><b>이은우</b><span>계엄 비판 자막 삭제<br>대법원</span></div>
-      <div class="card"><span class="dd">D-6</span><div class="d">12.04<small>금</small></div><b>윤석열 외 3명</b><span>평양 무인기 일반이적<br>2심</span></div>
-    </div>
   </div>
 </section>
 <footer class="foot"><span>재판 기록은 판결문과 공개 보도를 바탕으로 합니다 · 2026.11.28 기준</span><span>시안 2 · 얼굴들 — 디자인 확인용 정지 화면</span></footer>
@@ -200,16 +223,27 @@ body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--sa
     clock.innerHTML = `<b>${d.toLocaleString('ko-KR')}<small>일</small></b><span>${pad(h)}<i>:</i>${pad(m)}<i>:</i><em>${pad(s)}</em></span>`; clock.setAttribute('aria-label', `${d}일 ${h}시간 ${m}분 지났습니다`); };
   tick(); setInterval(tick, 1000);
   const wall = document.querySelector('.wall'), grid = document.getElementById('grid'), h1 = document.getElementById('headline');
-  const lifts = { Y: document.getElementById('liftY'), K: document.getElementById('liftK') };
+  const lifts = { Y: document.getElementById('liftY'), K: document.getElementById('liftK') }, heroIn = document.querySelector('.hero > div');
   function place() {
     const tiles = [...grid.children]; if (!tiles.length) return;
     tiles.forEach(t => t.classList.remove('slot'));
+    heroIn.style.transform = '';
     const W = wall.getBoundingClientRect(), t0 = tiles[0].getBoundingClientRect();
     const cols = tiles.filter(t => Math.abs(t.getBoundingClientRect().top - t0.top) < 1).length;
     const cw = t0.width, ch = t0.height, gap = 2;
     const x = c => t0.left - W.left + c * (cw + gap), y = r => t0.top - W.top + r * (ch + gap);
     const H = h1.getBoundingClientRect(), hl = H.left - W.left, hr = H.right - W.left, hc = (H.top + H.bottom) / 2 - W.top;
-    const r0 = Math.max(0, Math.round((hc - (ch * 2 + gap) / 2 - y(0)) / (ch + gap))); // 문장 높이 가운데에 맞춘 줄
+    // 사진 칸(2줄)을 문장 높이에 가장 가까운 벽 줄에 두고, 가운데 글 덩어리를 그 칸 가운데로 살짝 옮김
+    //  (아래 '이번 주 법정'·위 머리글과 부딪히지 않는 줄을 고름)
+    const bh = ch * 2 + gap, exact = (hc - bh / 2 - y(0)) / (ch + gap);
+    const stB = document.querySelector('.stats').getBoundingClientRect().bottom - W.top;
+    const dkT = document.querySelector('.dock-head').getBoundingClientRect().top - W.top;
+    const hT = heroIn.getBoundingClientRect().top - W.top;
+    const cands = [...new Set([Math.round(exact), Math.floor(exact), Math.ceil(exact)])].filter(r => r >= 0)
+      .map(r => ({ r, d: y(r) + bh / 2 - hc })).sort((a, b) => Math.abs(a.d) - Math.abs(b.d));
+    const ok = c => y(c.r) >= 52 && hT + c.d >= 56 && stB + c.d <= dkT - 10;
+    const pick = cands.find(ok) || cands[0], r0 = pick.r;
+    heroIn.style.transform = `translateY(${pick.d.toFixed(1)}px)`;
     const room = innerWidth < 600 ? 6 : 14; // 문장과 사진 사이 최소 간격
     let cl = -1; for (let c = 0; c < cols - 1; c++) if (x(c) + 2 * cw + gap <= hl - room) cl = c; // 문장 왼쪽에 가장 가까운 2칸
     let cr = cols; for (let c = cols - 2; c >= 0; c--) if (x(c) >= hr + room) cr = c; // 문장 오른쪽에 가장 가까운 2칸
