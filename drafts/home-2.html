@@ -37,14 +37,18 @@ body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--sa
 .veil { position: absolute; inset: 0; pointer-events: none;
   background: radial-gradient(ellipse 58% 58% at 50% 52%, rgba(12,12,13,.96) 0%, rgba(12,12,13,.88) 48%, rgba(12,12,13,.4) 82%, rgba(12,12,13,.2) 100%),
               linear-gradient(180deg, rgba(12,12,13,.75) 0, rgba(12,12,13,0) 18%, rgba(12,12,13,0) 80%, var(--bg) 100%); }
-.hero { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; padding: 64px 24px 24px; }
+.hero { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; padding: 64px 24px 110px; }
 .hero > div { width: min(100%, 1120px); }
 .eyebrow { font-size: 12px; font-weight: 600; letter-spacing: .3em; color: var(--fg-2); }
 /* 흐른 시간: 문장 위 한 줄 */
-.clock { display: flex; justify-content: center; align-items: baseline; gap: 14px; margin-top: 12px; font-variant-numeric: tabular-nums; }
-.clock b { font-family: var(--serif); font-size: clamp(32px, 3vw, 42px); font-weight: 900; line-height: 1; letter-spacing: -.03em; }
+.timebar { position: absolute; z-index: 3; left: 0; right: 0; bottom: 34px; display: flex; justify-content: center; align-items: baseline; gap: 18px; text-align: center; }
+.timebar::before, .timebar::after { content: ''; flex: 0 1 120px; height: 1px; align-self: center; background: linear-gradient(90deg, rgba(241,238,232,0), rgba(241,238,232,.35)); }
+.timebar::after { background: linear-gradient(90deg, rgba(241,238,232,.35), rgba(241,238,232,0)); }
+.timebar .tb-l { font-size: 12px; font-weight: 600; letter-spacing: .3em; color: var(--fg-2); }
+.clock { display: flex; justify-content: center; align-items: baseline; gap: 14px; font-variant-numeric: tabular-nums; }
+.clock b { font-family: var(--serif); font-size: clamp(28px, 2.4vw, 34px); font-weight: 900; line-height: 1; letter-spacing: -.03em; }
 .clock b small { font-size: .5em; font-weight: 500; margin-left: 2px; color: var(--fg-2); }
-.clock span { font-size: clamp(18px, 1.7vw, 24px); font-weight: 300; letter-spacing: .14em; color: var(--fg-2); }
+.clock span { font-size: clamp(16px, 1.4vw, 20px); font-weight: 300; letter-spacing: .14em; color: var(--fg-2); }
 .clock span i { font-style: normal; color: var(--fg-3); margin: 0 .1em; }
 .clock span em { font-style: normal; color: var(--fg); }
 /* 문장 양옆에 두 사람 */
@@ -73,15 +77,12 @@ body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--sa
 .lift .bar3 { position: absolute; left: 0; right: 0; bottom: 0; z-index: 1; height: 3px; background: var(--amber); }
 #liftY { --ry: 11deg; --sheen: 100deg; }
 #liftK { --ry: -11deg; --sheen: 260deg; }
-.hero p { margin: 24px auto 0; max-width: 34em; font-size: 17px; line-height: 1.75; color: var(--fg-2); }
+.hero p { margin: 60px auto 0; max-width: 34em; font-size: 17px; line-height: 1.75; color: var(--fg-2); }
 .stats { display: flex; justify-content: center; gap: 36px; margin-top: 26px; }
 .stats div { text-align: center; }
 .stats b { display: block; font-family: var(--serif); font-size: 34px; font-weight: 900; letter-spacing: -.03em; line-height: 1; }
 .stats span { display: block; margin-top: 8px; font-size: 12px; letter-spacing: .1em; color: var(--fg-3); }
 .stats .next b { color: var(--amber); }
-.cta { display: flex; justify-content: center; gap: 10px; margin-top: 30px; }
-.cta span { height: 44px; display: inline-flex; align-items: center; padding: 0 20px; border: 1px solid rgba(241,238,232,.35); font-size: 14px; font-weight: 600; letter-spacing: .02em; }
-.cta span:first-child { background: var(--fg); color: var(--bg); border-color: var(--fg); }
 
 /* 아래: 읽는 법 + 이번 주 */
 .below { max-width: 1200px; margin: 0 auto; padding: 40px 32px 72px; display: grid; grid-template-columns: 300px 1fr; gap: 56px; }
@@ -111,15 +112,19 @@ body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--sa
   .eyebrow { font-size: 11px; letter-spacing: .14em; }
   .grid { position: absolute; }
   .hero { position: relative; inset: auto; padding: 84px 16px 40px; }
-  .clock b { font-size: 30px; }
-  .clock span { font-size: 17px; }
+  .hero { padding-bottom: 12px; }
+  .timebar { position: relative; bottom: auto; padding: 8px 16px 44px; flex-wrap: wrap; gap: 6px 12px; }
+  .timebar::before, .timebar::after { display: none; }
+  .timebar .tb-l { width: 100%; font-size: 11px; letter-spacing: .14em; }
+  .clock b { font-size: 28px; }
+  .clock span { font-size: 16px; }
   .headrow { margin-top: 20px; }
   .hero h1 { font-size: clamp(22px, 6.6vw, 30px); }
   .lift .lab { padding: 6px 7px 8px; }
   .lift .lab small, .lift .lab span { display: none; }
   .lift .lab b { font-size: 14px; }
   #liftY { --ry: 9deg; } #liftK { --ry: -9deg; }
-  .hero p { font-size: 15px; }
+  .hero p { font-size: 15px; margin-top: 36px; }
   .stats { gap: 22px; } .stats b { font-size: 26px; }
   .below { grid-template-columns: 1fr; gap: 36px; padding: 28px 16px 48px; }
   .week { grid-template-columns: 1fr 1fr; }
@@ -140,13 +145,11 @@ body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--sa
       <figcaption class="lab"><small>윤석열 전 대통령 배우자</small><b>김건희</b><span><em>다음 선고 12.3</em> 매관매직</span></figcaption><i class="bar3"></i></div></figure>
   </div>
   <div class="hero"><div>
-    <div class="eyebrow">12·3 비상계엄 이후</div>
-    <div class="clock" id="clock" role="timer"><b>724<small>일</small></b><span>16<i>:</i>52<i>:</i><em>49</em></span></div>
-    <div class="headrow"><h1 id="headline">165명이<br>법정에 섰다.</h1></div>
+    <div class="headrow"><h1 id="headline">법정에 선<br>165명</h1></div>
     <p>2024년 12월 3일 밤 10시 27분, 비상계엄이 선포됐다. 대통령부터 국회에 들어간 현장 지휘관까지, 네 특검이 기소한 사람들의 재판은 어디까지 왔을까.</p>
     <div class="stats"><div><b>103</b><span>선고</span></div><div><b>30</b><span>형 확정</span></div><div class="next"><b>13</b><span>다가오는 선고</span></div></div>
-    <div class="cta"><span>얼굴로 찾기</span><span>사건으로 보기</span></div>
   </div></div>
+  <div class="timebar"><span class="tb-l">12·3 비상계엄 이후</span><span class="clock" id="clock" role="timer"><b>724<small>일</small></b><span>16<i>:</i>52<i>:</i><em>49</em></span></span></div>
 </section>
 <section class="below">
   <div>
