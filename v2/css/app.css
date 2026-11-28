@@ -911,7 +911,7 @@ body[data-view="night"] .toolbar, body[data-view="night"] .content-card__head { 
   --night-hot: #e5484d; --night-hot-soft: #ff8a8d;
   --text-primary: #f3f5f8; --text-secondary: #b7bfcc; --text-tertiary: #7d8796;
   --border-default: #263042;
-  container-type: inline-size; padding: 0; overflow: hidden; background: #0a0e15; color: var(--text-primary);
+  container-type: inline-size; padding: 0; overflow: hidden auto; background: #0a0e15; color: var(--text-primary);
 }
 .nm { position: relative; height: 100%; display: grid; grid-template-rows: minmax(0, 1fr) auto; }
 .nm-map { position: relative; margin: 0; min-height: 0; overflow: hidden;
@@ -949,18 +949,25 @@ body[data-view="night"] .toolbar, body[data-view="night"] .content-card__head { 
 .nm-date { font-size: var(--fs-label); font-weight: var(--fw-bold); color: var(--night-hot-soft); letter-spacing: .02em; }
 .nm-clock { margin-top: var(--sp-1); font-size: 64px; line-height: 1; font-weight: var(--fw-heavy); letter-spacing: -.03em; font-variant-numeric: tabular-nums; color: #fff; }
 .nm-clock.is-text { font-size: 36px; line-height: 1.15; }
-.nm-place-name { margin: var(--sp-2) 0 0; font-size: var(--fs-headline); line-height: var(--lh-headline); font-weight: var(--fw-heavy); color: #fff; }
+.nm-place-name { margin: var(--sp-2) 0 0; font-size: var(--fs-body); line-height: var(--lh-body); font-weight: var(--fw-bold); color: var(--text-secondary); }
+.nm-headline { margin: var(--sp-2) 0 0; font-size: var(--fs-headline); line-height: var(--lh-headline); color: var(--text-primary); }
 .nm-text { margin-top: var(--sp-3); font-size: var(--fs-subtitle); line-height: 1.65; color: #d7dce4; }
 .nm-src, .nm-list-source { font-size: var(--fs-caption); line-height: var(--lh-caption); font-weight: var(--fw-medium); color: var(--text-secondary); }
-.nm-src { margin-top: var(--sp-3); }
-.nm-src:not([hidden]) + .nm-text { margin-top: var(--sp-2); }
-.nm-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
-.nm-list button { width: 100%; display: grid; grid-template-columns: 64px 1fr; gap: var(--sp-3); padding: var(--sp-2); border: 0; border-radius: var(--r-sm); background: none;
-  text-align: left; font: inherit; font-size: var(--fs-body); line-height: 1.55; color: #9aa3b2; cursor: pointer; }
-.nm-list button:hover { background: #ffffff0d; color: #dfe4ea; }
-.nm-list button.is-active { background: #e5484d22; color: #fff; }
-.nm-list time { font-weight: var(--fw-bold); color: var(--night-hot-soft); font-variant-numeric: tabular-nums; }
-.nm-list-source { display: block; margin-bottom: var(--sp-1); }
+.nm-src { margin-top: var(--sp-2); }
+.nm-accounts { display: grid; gap: var(--sp-3); margin: 0; }
+.nm-accounts > div { border-top: 1px solid var(--border-default); padding-top: var(--sp-2); }
+.nm-accounts dt { font-size: var(--fs-label); line-height: var(--lh-label); font-weight: var(--fw-bold); color: var(--text-secondary); }
+.nm-accounts dd { margin: var(--sp-1) 0 0; }
+.nm-accounts q { display: block; margin-top: var(--sp-1); font-weight: var(--fw-bold); color: var(--text-primary); quotes: '“' '”'; }
+.nm-list { list-style: none; margin: 0; padding: 0; }
+.nm-list li + li { border-top: 1px solid var(--border-default); }
+.nm-list button { width: 100%; display: grid; grid-template-columns: 5.6em minmax(0, 1fr); gap: var(--sp-2); padding: var(--sp-2); border: 0; border-radius: var(--r-sm); background: none;
+  text-align: left; font: inherit; font-size: var(--fs-body); line-height: var(--lh-body); color: var(--text-primary); cursor: pointer; }
+.nm-list button:hover { background: #ffffff0d; }
+.nm-list button[aria-expanded="true"] { background: #e5484d22; }
+.nm-list-time { font-size: var(--fs-caption); color: var(--night-hot-soft); font-variant-numeric: tabular-nums; }
+.nm-list-source { display: block; margin-top: var(--sp-1); }
+.nm-list-detail { padding: var(--sp-2) var(--sp-2) var(--sp-3); }
 .nm-controls { display: flex; align-items: center; gap: var(--sp-2); margin-top: var(--sp-5); }
 .nm-ctl { width: 40px; height: 40px; border: 1px solid #ffffff26; border-radius: var(--r-pill); background: none; color: #fff; font-size: 20px; cursor: pointer; }
 .nm-ctl:hover { background: #ffffff14; }
@@ -1000,8 +1007,7 @@ body[data-view="night"] .toolbar, body[data-view="night"] .content-card__head { 
 /* 좁은 영역(모바일·상세가 열린 경우): 지도 → 장면 → 시간 막대 순으로 쌓고 영역 안에서 스크롤 */
 @container (max-width: 760px) {
   .nm { display: block; height: auto; }
-  .night-pane { overflow-y: auto; }
-  .nm-map { height: 300px; }
+  .nm-map { height: clamp(180px, 34dvh, 300px); }
   .nm-scene { position: static; width: auto; padding: var(--sp-5) var(--sp-4); background: none; overflow: visible; }
   .nm-clock { font-size: 48px; }
   .nm-pin .name { font-size: 26px; } .nm-pin.is-active .name { font-size: 30px; } .nm-pin .sub { font-size: 18px; }

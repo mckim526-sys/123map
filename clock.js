@@ -65,7 +65,6 @@
   stage.innerHTML = FIGS.map(p => `
     <button class="fig" data-fig="${p.id}" aria-pressed="false" aria-controls="cases">
       ${figFace(p)}
-      <span class="fig-no">${p.id === 'yoon' ? '01' : '02'}</span>
       <span class="fig-label"><small>${esc(p.role)}</small><b>${esc(p.name)}</b><em>사건 ${p.records.length}건 보기 <i aria-hidden="true">→</i></em></span>
     </button>`).join('');
   if (!reduce && matchMedia('(hover: hover)').matches) {
