@@ -125,12 +125,25 @@ const DetailView = (() => {
     }).join('');
   }
 
-  function newsCards(record) {
-    return (record.news || []).map(n => `
+  function newsCard(n) {
+    return `
       <a class="news-card" href="${esc(n.url)}" target="_blank" rel="noopener noreferrer">
         <span class="news-card__meta">${esc(n.publisher || 'MBC')} · ${esc(n.date)}</span>
         <b class="news-card__title" title="${esc(n.title)}">${esc(n.title)}</b>
-      </a>`).join('');
+      </a>`;
+  }
+
+  function expandableList(cards, limit, unit, listClass) {
+    const list = items => `<div class="${listClass}">${items.join('')}</div>`;
+    const extra = cards.slice(limit);
+    return list(cards.slice(0, limit)) + (extra.length ? `
+      <details class="detail-more">
+        <summary>
+          <span class="detail-more__expand">${extra.length}${unit} 더 보기</span>
+          <span class="detail-more__collapse">접기</span>
+        </summary>
+        ${list(extra)}
+      </details>` : '');
   }
 
   const profile = (person, record) => `
@@ -166,7 +179,7 @@ const DetailView = (() => {
       const co = Model.triedTogether(person, v, agency);
       return `<button class="person-chip ${co ? 'is-co' : ''}" data-id="${esc(v.id)}" data-related-to="${esc(person.id)}" aria-haspopup="dialog">
         ${avatar(v, 'ava--sm')}<b>${esc(v.name)}</b><span>${co ? '함께 기소 · ' : ''}${esc(Model.linkLabel(person, v, agency))}</span></button>`;
-    }).join('');
+    });
 
     return `
       ${profile(person, record)}
@@ -185,9 +198,9 @@ const DetailView = (() => {
       ${section('혐의별 판단', `${record.charges.length}건 · 눌러서 펼치기`, 'charges')}
       <div class="stack">${chargeList(record)}</div>
       ${record.note ? `<p class="callout">${esc(record.note)}</p>` : ''}
-      ${people ? section('연결된 인물', `${related.length}명 · 누르면 관계 설명`, 'people') + `<div class="person-chips">${people}</div>` : ''}
+      ${people.length ? section('연결된 인물', `${people.length}명 · 누르면 관계 설명`, 'people') + expandableList(people, 7, '명', 'person-chips') : ''}
       ${section('관련 보도', `${news.length}건`, 'news')}
-      ${news.length ? `<div class="stack">${newsCards(record)}</div>` : '<p class="caption">연결할 보도를 확인하고 있습니다.</p>'}
+      ${news.length ? expandableList(news.map(newsCard), 5, '건', 'stack') : '<p class="caption">연결할 보도를 확인하고 있습니다.</p>'}
       <div class="detail__fineprint">
         <p class="caption">‘미확인’은 무죄나 재판 미진행을 뜻하지 않습니다. 사건별 확인 시점이 다르며, 형량을 다른 사건과 합산하지 않습니다.</p>
       </div>`;

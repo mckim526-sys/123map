@@ -595,6 +595,12 @@ body.has-detail .detail {
 .person-chip span { font-size: var(--fs-caption); color: var(--text-tertiary); }
 .person-chip.is-co b { color: var(--blue-700); }
 .person-chip:hover, .person-chip.is-previewing { border-color: var(--border-accent); }
+.detail-more { margin-top: var(--sp-1); }
+.detail-more > summary { width: fit-content; padding: var(--sp-2) var(--sp-1); cursor: pointer; font-size: var(--fs-label); font-weight: var(--fw-bold); color: var(--text-secondary); }
+.detail-more > summary:hover { color: var(--text-primary); }
+.detail-more > div { margin-top: var(--sp-1); }
+.detail-more__collapse, .detail-more[open] .detail-more__expand { display: none; }
+.detail-more[open] .detail-more__collapse { display: inline; }
 
 /* 11 ── 연결 팝업 */
 .relation-pop {
