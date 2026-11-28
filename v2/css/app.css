@@ -414,6 +414,118 @@ body.has-detail .workspace { grid-template-columns: minmax(0, 1fr) var(--panel-w
 .graph .node.is-peer-weak { opacity: .7; }
 .node.is-hover .node__dot { transform: translateY(-50%) scale(1.15); }
 
+/* 7-b ── 관계도 좌우 가지형 (넓은 화면의 인물 중심 보기 · map.js drawBranch)
+   가운데 중심 인물, 양옆 기둥에 사건 상자. 다 들어가지 않으면 data-fit 0 → 4 단계로 작아짐
+   (0 사진 40 · 1 사진 32 · 2 가로 이름표 · 3 촘촘한 이름표 · 4 = 3 + 기둥 안 세로 스크롤) */
+#mapPane.is-branch, #mapPane.is-branch:active { cursor: default; }
+#mapPane.is-branch .map-zoom { display: none; } /* 영역에 꼭 맞게 그리므로 확대·이동 없음 */
+.bx-wrap {
+  --hub-w: 200px; --gap: 56px; --hub-s: 96px; --chip-s: 40px; --chip-w: 64px;
+  position: absolute; inset: 0; display: grid; grid-template-columns: minmax(0, 1fr) var(--hub-w) minmax(0, 1fr); grid-template-rows: minmax(0, 1fr);
+  column-gap: var(--gap); pointer-events: auto;
+}
+.bx-wrap[data-fit="1"] { --hub-w: 176px; --gap: 44px; --hub-s: 80px; --chip-s: 32px; --chip-w: 56px; }
+.bx-wrap[data-fit="2"] { --hub-w: 152px; --gap: 36px; --hub-s: 64px; }
+.bx-wrap[data-fit="3"], .bx-wrap[data-fit="4"] { --hub-w: 128px; --gap: 28px; --hub-s: 56px; }
+.bx-wrap.is-single { grid-template-columns: var(--hub-w) minmax(0, 560px); justify-content: center; }
+.bx-wrap.is-alone { grid-template-columns: var(--hub-w); justify-content: center; }
+.bx-wrap.is-single .bx-side.is-l, .bx-wrap.is-alone .bx-side { display: none; }
+.bx-links { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.bx-link { fill: none; stroke: var(--edge-co); stroke-width: 1.5; stroke-linecap: round; opacity: .7; transition: stroke var(--motion), stroke-width var(--motion), opacity var(--motion); }
+.bx-link.is-rel { stroke: var(--edge-rel); stroke-width: 1.2; stroke-dasharray: 4 4; }
+.bx-link.is-active { stroke: var(--accent); stroke-width: 2.5; opacity: 1; }
+/* 기둥: 상자를 세로로 쌓고 가운데 정렬(넘치면 위부터) · 가운데 인물 쪽으로 붙임 */
+.bx-side { display: flex; flex-direction: column; gap: var(--sp-3); min-width: 0; min-height: 0; padding: 2px; }
+.bx-side.is-l { align-items: flex-end; }
+.bx-side.is-r { align-items: flex-start; }
+.bx-side > :first-child { margin-top: auto; }
+.bx-side > :last-child { margin-bottom: auto; }
+.bx-wrap[data-fit="4"] .bx-side { overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: var(--scrollbar) transparent; }
+/* 사건 상자 (테두리·바탕은 .bx-bg가 맡음 → 날아가는 사진이 상자에 가리지 않게) */
+.bx { position: relative; flex: none; width: 100%; max-width: 520px; padding: var(--sp-2) var(--sp-3) var(--sp-3); transition: opacity var(--motion); }
+.bx > :not(.bx-bg) { position: relative; }
+.bx-bg { position: absolute; inset: 0; border: 1px solid var(--border-default); border-radius: var(--r-md); background: var(--bg-page); box-shadow: var(--shadow-1);
+  transition: border-color var(--motion), box-shadow var(--motion); }
+.bx.is-solo .bx-bg, .bx.is-other .bx-bg { border-style: dashed; box-shadow: none; }
+.bx.is-active .bx-bg { border-color: var(--gray-900); box-shadow: 0 0 0 1px var(--gray-900), var(--shadow-2); }
+.bx-wrap[data-fit="2"] .bx, .bx-wrap[data-fit="3"] .bx, .bx-wrap[data-fit="4"] .bx { padding: var(--sp-1) var(--sp-2) var(--sp-2); }
+.bx-wrap[data-fit="3"] .bx-side, .bx-wrap[data-fit="4"] .bx-side { gap: var(--sp-2); }
+/* 상자 제목: 누르면 그 재판 상세 · 지금 보는 사건은 검정 채움 */
+.bx-wrap .group-tag { position: relative; z-index: auto; transform: none; }
+.bx-wrap .bx-head {
+  display: flex; align-items: baseline; gap: var(--sp-2); width: calc(100% + var(--sp-2) * 2); height: auto; min-height: 28px;
+  margin: 0 calc(var(--sp-2) * -1) var(--sp-2); padding: var(--sp-1) var(--sp-2); border: 0; border-radius: var(--r-sm);
+  background: none; text-align: left; white-space: normal; font-size: var(--fs-label); line-height: var(--lh-label); color: var(--text-primary);
+}
+.bx-head__t { font-weight: var(--fw-heavy); }
+.bx-wrap .bx-head small { font-size: var(--fs-caption); font-weight: var(--fw-medium); color: var(--text-tertiary); white-space: nowrap; }
+.bx-wrap .bx-head b { margin-left: auto; padding-left: var(--sp-2); font-size: var(--fs-caption); font-weight: var(--fw-bold); color: var(--text-tertiary); white-space: nowrap; }
+.bx-wrap button.bx-head:hover { background: var(--bg-subtle); color: var(--text-accent); }
+.bx-wrap .bx-head.is-active { background: var(--gray-900); color: var(--text-inverse); }
+.bx-wrap .bx-head.is-active small, .bx-wrap .bx-head.is-active b { color: var(--gray-300); }
+.bx-head--static { cursor: default; }
+.bx-wrap[data-fit="2"] .bx-head, .bx-wrap[data-fit="3"] .bx-head, .bx-wrap[data-fit="4"] .bx-head { min-height: 24px; margin-bottom: var(--sp-1); }
+.bx-wrap[data-fit="3"] .bx-head small, .bx-wrap[data-fit="4"] .bx-head small { display: none; } /* 특검 이름은 상세·말풍선에 있음 */
+/* 상자 안 사람: 함께 재판 = 파란 테두리, 같은 사건 별도 재판·그 밖의 관계 = 회색(조금 작게) */
+.bx-ppl { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--chip-w), 1fr)); gap: var(--sp-2) var(--sp-1); }
+.bx-wrap .node { position: relative; left: auto; top: auto; z-index: auto; transform: none; min-width: 0; }
+.bx-wrap .node__dot { margin: 0; transform: none; }
+.bx-wrap .node:hover .node__dot, .bx-wrap .node:focus-visible .node__dot, .bx-wrap .node.is-hover .node__dot { transform: scale(1.08); }
+.bx-wrap .node.is-flying { z-index: var(--z-map-menu); }
+.bx-wrap .node.bx-chip { --s: var(--chip-s); gap: var(--sp-1); padding: 2px 0; }
+.bx-wrap .node.bx-chip.is-rel { --s: calc(var(--chip-s) - 8px); }
+.bx-wrap .node.bx-chip .node__dot { box-shadow: 0 0 0 2px var(--bg-page), 0 0 0 4px var(--accent); }
+.bx-wrap .node.bx-chip.is-rel .node__dot { box-shadow: 0 0 0 2px var(--bg-page), 0 0 0 3px var(--gray-300); }
+.bx-wrap .node.bx-chip strong { max-width: 100%; overflow: hidden; text-overflow: ellipsis; padding: 0; background: none;
+  font-size: var(--fs-label); line-height: var(--lh-label); font-weight: var(--fw-bold); color: var(--blue-700); }
+.bx-wrap .node.bx-chip.is-rel strong { font-size: var(--fs-caption); font-weight: var(--fw-regular); color: var(--text-secondary); }
+.bx-wrap[data-fit="1"] .node.bx-chip strong { font-size: var(--fs-caption); }
+/* 3단계(가로 이름표): 사진 20px + 이름 한 줄 */
+.bx-wrap[data-fit="2"] .bx-ppl, .bx-wrap[data-fit="3"] .bx-ppl, .bx-wrap[data-fit="4"] .bx-ppl { display: flex; flex-wrap: wrap; gap: var(--sp-1); }
+.bx-wrap[data-fit="2"] .node.bx-chip, .bx-wrap[data-fit="3"] .node.bx-chip, .bx-wrap[data-fit="4"] .node.bx-chip {
+  --s: 20px; flex-direction: row; gap: 6px; height: 26px; padding: 0 var(--sp-2) 0 3px; border-radius: var(--r-pill); background: var(--bg-subtle);
+}
+.bx-wrap[data-fit="2"] .node.bx-chip .node__dot, .bx-wrap[data-fit="3"] .node.bx-chip .node__dot, .bx-wrap[data-fit="4"] .node.bx-chip .node__dot { box-shadow: 0 0 0 2px var(--accent); }
+.bx-wrap[data-fit="2"] .node.bx-chip.is-rel .node__dot, .bx-wrap[data-fit="3"] .node.bx-chip.is-rel .node__dot, .bx-wrap[data-fit="4"] .node.bx-chip.is-rel .node__dot { box-shadow: 0 0 0 1px var(--gray-300); }
+.bx-wrap[data-fit="2"] .node.bx-chip strong, .bx-wrap[data-fit="3"] .node.bx-chip strong, .bx-wrap[data-fit="4"] .node.bx-chip strong { font-size: var(--fs-caption); line-height: 26px; }
+.bx-wrap[data-fit="3"] .node.bx-chip, .bx-wrap[data-fit="4"] .node.bx-chip { --s: 18px; gap: var(--sp-1); height: 22px; padding: 0 var(--sp-1) 0 2px; background: none; }
+.bx-wrap[data-fit="3"] .node.bx-chip strong, .bx-wrap[data-fit="4"] .node.bx-chip strong { line-height: 22px; }
+.bx-wrap[data-fit="3"] .bx-ppl, .bx-wrap[data-fit="4"] .bx-ppl { gap: 2px var(--sp-1); }
+.bx-wrap[data-fit="3"] .bx-also, .bx-wrap[data-fit="4"] .bx-also { margin-top: var(--sp-1); }
+.bx-wrap[data-fit="3"] .bx-also__long, .bx-wrap[data-fit="4"] .bx-also__long { display: none; }
+.bx-wrap[data-fit="3"] .bx-hub__role, .bx-wrap[data-fit="4"] .bx-hub__role { display: none; }
+/* 다른 상자에도 있는 사람(이름만) · 단독 재판 이름표 */
+.bx-also { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px var(--sp-1); margin-top: var(--sp-2); font-size: var(--fs-caption); line-height: var(--lh-caption); color: var(--text-tertiary); }
+.bx-head + .bx-also { margin-top: 0; }
+.bx-also span { margin-right: var(--sp-1); }
+.bx-also i, .bx-also em { font-style: normal; color: var(--text-tertiary); }
+.bx-also__p { padding: 0; border: 0; background: none; font: inherit; font-weight: var(--fw-medium); color: var(--text-secondary); cursor: pointer; }
+.bx-also__p:hover, .bx-also__p:focus-visible { color: var(--text-accent); text-decoration: underline; }
+.bx-solos { display: flex; flex-wrap: wrap; gap: var(--sp-1); }
+.bx-wrap .bx-solo { height: 26px; padding: 0 var(--sp-3); background: var(--bg-page); font-size: var(--fs-caption); }
+.bx-wrap .bx-solo.is-active { background: var(--gray-900); border-style: solid; }
+/* 가운데 인물 */
+.bx-center { align-self: center; justify-self: center; display: flex; flex-direction: column; align-items: center; gap: var(--sp-2); width: var(--hub-w); }
+.bx-wrap .node.bx-hub { --s: var(--hub-s); width: 100%; gap: 2px; text-align: center; }
+.bx-center__x {
+  position: relative; height: var(--h-sm); padding: 0 var(--sp-3); border: 0; border-radius: var(--r-pill);
+  background: var(--gray-900); color: var(--text-inverse); font-size: var(--fs-caption); font-weight: var(--fw-bold); box-shadow: var(--shadow-1);
+}
+.bx-center__x:hover { background: var(--gray-700); }
+.bx-wrap .node.bx-hub strong { margin-top: var(--sp-3); padding: 0; background: none; white-space: normal;
+  font-size: var(--fs-title); line-height: var(--lh-title); font-weight: var(--fw-heavy); color: var(--text-primary); }
+.bx-wrap .node.bx-hub.is-selected strong { color: var(--accent); }
+.bx-wrap[data-fit="2"] .node.bx-hub strong, .bx-wrap[data-fit="3"] .node.bx-hub strong, .bx-wrap[data-fit="4"] .node.bx-hub strong { margin-top: var(--sp-2); font-size: var(--fs-subtitle); }
+.bx-hub small { font-size: var(--fs-caption); line-height: var(--lh-caption); color: var(--text-tertiary); }
+.bx-wrap .node.bx-hub:hover .node__dot { transform: scale(1.04); }
+/* 마우스를 올린 사람이 함께 있는 사건 상자만 또렷하게 · 사건을 고를 때 한 번 강조는 조금 약하게 */
+.graph.is-bx-pointing .bx:not(.is-member) { opacity: .4; }
+.graph.is-branch.is-spotlight .node:not(.is-spot) { opacity: .35; }
+.graph.is-branch.is-spotlight .group-tag:not(.is-active) { opacity: .45; }
+.bx-wrap .node.is-spot::before { content: none; }
+.bx-wrap .node.is-spot .node__dot { animation-name: bx-pop; }
+@keyframes bx-pop { 40% { transform: scale(1.22); } }
+
 /* 범례 (위계 4) */
 .legend { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-2) var(--sp-5); margin-bottom: var(--sp-2); }
 .legend__item { display: inline-flex; align-items: center; gap: var(--sp-2); font-size: var(--fs-caption); font-weight: var(--fw-medium); color: var(--gray-700); }

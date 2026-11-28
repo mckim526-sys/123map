@@ -1,6 +1,7 @@
 // Reader-facing record of what changed on the site. Add one plain-language line per published change
 // (newest first). The "recently checked trials" list below it is built automatically from lastChecked.
 const SITE_CHANGES = [
+  ['2026-11-29', 'PC 관계도를 원형에서 좌우 가지형으로 바꿨습니다. 가운데 인물 양옆에 사건별 상자를 두고, 상자 제목을 누르면 그 재판, 안의 사람을 누르면 그 사람 중심으로 바뀝니다. 노트북 화면에서도 겹치지 않게 단계적으로 작아집니다.'],
   ['2026-11-29', '관계도에서 함께 재판받는 사람 없는 단독 사건 뱃지를 \'단독 재판 N\' 하나로 묶고(누르면 목록), 노트북처럼 관계도 영역이 좁을 때 인물 사진을 한 단계 작게 해 덜 복잡하게 했습니다.'],
   ['2026-11-29', '그날 밤 화면에서 인물 재판 기록을 숨기고, 그 자리에 장면마다 1심 판결문 원문과 쉬운 정리, 용어 풀이를 보여 주는 \'판결문으로 읽기\'를 넣었습니다.'],
   ['2026-11-29', '첫 화면 디자인 시안 1·2·3(기록지·얼굴들·다음 선고)을 drafts/ 에 정지 화면으로 올렸습니다(지금 첫 화면은 그대로).'],

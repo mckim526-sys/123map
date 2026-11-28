@@ -130,6 +130,6 @@ const Model = (() => {
 
   return {
     people, get, ROOT_ID, AGENCY_TOTALS, agencies, sources: catalogSources,
-    linkLabel, linkCases, triedTogether, trialmates, separateTrial, filterPeople, sharedCases, agencyRoot,
+    linkLabel, linkCases, triedTogether, trialmates, separateTrial, sameTrialRec, filterPeople, sharedCases, agencyRoot,
   };
 })();

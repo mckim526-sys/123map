@@ -11,7 +11,7 @@ const MapView = (() => {
   //  · 단독 재판 사건: 사람 없이 뱃지만 "사건명 · 단독"
   //  · 사건이 아닌 관계(가족·별도 관계): "그 밖의 관계" 무리
   //  · 한 사람이 여러 사건에 걸치면 첫 무리에 놓고, 강조할 때는 모든 사건에 포함
-  function caseLayout(S, list, center) {
+  function caseLayout(S, list, center, mergeSolos = true) {
     const inList = new Set(list.map(p => p.id));
     const recs = center.records.filter(r => S.agency === 'all' || r.agency === S.agency);
     const cases = recs.map(r => ({
@@ -31,7 +31,7 @@ const MapView = (() => {
     if (others.length) clusters.push({ id: '', label: '그 밖의 관계', other: true, ids: others.map(p => p.id), place: others });
     // 단독 재판 사건(함께 재판받는 사람 없음)이 둘 이상이면 뱃지 하나로 묶어 가운데를 덜 복잡하게 → 누르면 목록이 펼쳐짐
     const solos = clusters.filter(c => !c.total && !c.place.length && !c.other);
-    if (solos.length >= 2) {
+    if (mergeSolos && solos.length >= 2) {
       const at = clusters.indexOf(solos[0]);
       solos.forEach(c => clusters.splice(clusters.indexOf(c), 1));
       clusters.splice(Math.min(at, clusters.length), 0, { id: '', label: '단독 재판', soloGroup: true, members: solos.map(c => ({ id: c.id, label: c.label, agency: c.agency })), ids: [], place: [] });
@@ -62,16 +62,17 @@ const MapView = (() => {
     return { out, coIds, badges };
   }
 
-  function plan(S, list) {
+  // branch: 좌우 가지형(넓은 화면)은 단독 재판을 한 상자에 따로 모으므로 묶지 않은 사건 목록을 씀
+  function plan(S, list, branch = false) {
     const home = S.agency === 'all' && !S.detailOpen && !S.query;
     const rootId = Model.agencyRoot(S.agency);
     const center = Model.get(S.selected);
     const activeCase = S.detailOpen ? center.records.find(r => r.id === S.caseId) : null;
     if (home) {
       const root = Model.get(Model.ROOT_ID);
-      return { mode: 'ego', home, rootId, center: root, activeCase: null, ...caseLayout(S, list, root) };
+      return { mode: 'ego', home, rootId, center: root, activeCase: null, ...caseLayout(S, list, root, !branch) };
     }
-    if (S.detailOpen) return { mode: 'ego', home, rootId, center, activeCase, ...caseLayout(S, list, center) };
+    if (S.detailOpen) return { mode: 'ego', home, rootId, center, activeCase, ...caseLayout(S, list, center, !branch) };
     const lay = Layout.forceLayout(list, rootId, S.agency);
     return { mode: 'force', home, rootId, center, activeCase: null, out: lay.positions, presetEdges: lay.edges, coIds: new Set(), badges: [] };
   }
@@ -99,14 +100,23 @@ const MapView = (() => {
     layoutKey = key;
     Relation.close(); hideMenu(true);
     nodeLayer.classList.remove('is-replay');
+    // 넓은 화면의 인물 중심 보기는 좌우 가지형(가운데 인물, 양옆 사건 상자)으로
+    if (egoNow && useBranch(gr.width)) return drawBranch(S, list);
     const LW = nodeLayer.clientWidth || 1, LH = nodeLayer.clientHeight || 1;
     // 이전 그리기 때 크기 대비 비율: 크기가 바뀐 순간 기존 인물·선이 늘어나 보이지 않게 이전 픽셀 위치로 보정
     const sx = prevSize.w ? prevSize.w / LW : 1, sy = prevSize.h ? prevSize.h / LH : 1;
-    const oldEls = [...nodeLayer.children];
+    // 좌우 가지형에서 넘어오면: 상자 속 사진 자리(관계도 안 백분율)에서 출발
+    const wasBranch = !!$('.bx-wrap', nodeLayer);
+    const oldEls = wasBranch ? $$('.node[data-id]', nodeLayer) : [...nodeLayer.children];
     const before = new Map(oldEls.map(el => {
+      if (wasBranch) {
+        const d = $('.node__dot', el).getBoundingClientRect();
+        return [el.dataset.id, [(d.left + d.width / 2 - gr.left) / (gr.width || 1) * 100, (d.top + d.height / 2 - gr.top) / (gr.height || 1) * 100, 1]];
+      }
       const cs = getComputedStyle(el);
       return [el.dataset.id || el.dataset.intro, [parseFloat(cs.left) / LW * 100 * sx, parseFloat(cs.top) / LH * 100 * sy, +cs.opacity]];
     }));
+    leaveBranch();
 
     const { mode, out, home, rootId, center, activeCase, presetEdges, coIds, badges } = plan(S, list);
     const egoMode = mode === 'ego';
@@ -231,6 +241,211 @@ const MapView = (() => {
     renderFocus(S, egoMode && S.detailOpen ? center : null);
     // 지금 보는 사건 표시 + 같은 인물에서 사건만 바뀌었으면 그 사건 무리를 한 번 강조
     markActiveCase();
+  }
+
+  // ── 좌우 가지형: 넓은 화면의 인물 중심 보기 ─────────────
+  // 가운데 중심 인물, 양옆 기둥에 사건 상자(양쪽 높이가 비슷하게 나눔). 중심 인물에서 상자마다 곡선 하나.
+  //  · 상자 제목을 누르면 그 재판 상세 · 상자 안 사람을 누르면 그 사람 중심으로(같은 사건 기록이 열림)
+  //  · 한 사람은 첫 상자에만 사진으로 놓고, 다른 상자의 사건에도 함께 있으면 그 상자엔 이름만 적음
+  //  · 단독 재판은 한 상자에 모으고, 사건이 아닌 관계는 '그 밖의 관계' 상자
+  //  · 영역에 다 들어가지 않으면 한 단계씩 작게(사진 40 → 32 → 가로 이름표 → 촘촘한 이름표), 그래도 넘치면 기둥 안에서만 세로 스크롤
+  // 모바일(그래프 보기)과 특검·검색 보기는 기존 배치 그대로
+  const BRANCH_MIN_W = 520;
+  const useBranch = w => !isMobile() && w >= BRANCH_MIN_W;
+  const LEGEND_NOTE = $('.legend__note')?.textContent || '';
+  const BRANCH_NOTE = '상자는 같은 사건·기소 내용 또는 가족 관계로 묶은 것이며 공모나 유죄를 뜻하지 않습니다. 사건 제목을 누르면 재판 상세, 사람을 누르면 그 사람 중심으로 바뀝니다.';
+  function setNote(t) { const n = $('.legend__note'); if (n && n.textContent !== t) n.textContent = t; }
+  function leaveBranch() {
+    graph.classList.remove('is-branch', 'is-bx-pointing'); $('#mapPane').classList.remove('is-branch');
+    setNote(LEGEND_NOTE);
+  }
+  function ghostLayer() {
+    let layer = $('#ghostLayer', graph);
+    if (!layer) {
+      layer = document.createElement('div');
+      layer.id = 'ghostLayer'; layer.setAttribute('aria-hidden', 'true');
+      graph.insertBefore(layer, nodeLayer);
+    }
+    return layer;
+  }
+
+  function drawBranch(S, list) {
+    const { center, activeCase, coIds, badges } = plan(S, list, true);
+    cancelAnimationFrame(anim); clearSpotlight(); closeSoloMenu();
+    const g = graph.getBoundingClientRect();
+    // 이전 사진 자리(가운데·크기): 남는 사람은 그 자리에서 새 자리로 날아감
+    const prev = new Map();
+    $$('.node[data-id], .node[data-intro]', nodeLayer).forEach(el => { const id = el.dataset.id || el.dataset.intro; if (!prev.has(id)) prev.set(id, $('.node__dot', el).getBoundingClientRect()); });
+    const key = `b|${center.id}|${S.agency}|${S.query}`, changed = key !== lastKey;
+    lastKey = key;
+    // 처음 화면(clock.html) 전환이 움직임을 맡을 때(MAP_SKIP_ANIM)·움직임 줄이기·크기만 바뀐 경우는 바로 결과 배치
+    const skip = window.MAP_SKIP_ANIM; window.MAP_SKIP_ANIM = false;
+    const motion = changed && !skip && !reducedMotion();
+    const oldWrap = $('.bx-wrap', nodeLayer), oldNodes = oldWrap ? [] : $$('.node[data-id]', nodeLayer);
+    const oldEdges = [...edgeLayer.children];
+
+    const recOf = id => center.records.find(r => r.id === id);
+    // 그 사람의 같은 사건 기록 (같은 재판 → 같은 사건 별도 재판 순)
+    const recFor = (p, r) => r && (Model.sameTrialRec(center, r, p) || p.records.find(o => (o.related || []).includes(center.id)));
+    const chip = (p, kind, r, title = '') => {
+      const o = recFor(p, r);
+      return `<button class="node bx-chip ${kind}" data-id="${esc(p.id)}"${o ? ` data-case-link="${esc(o.id)}"` : ''}${title ? ` title="${esc(title)}"` : ''}
+        aria-label="${esc(p.name)} 중심으로 보기">${avatar(p, 'node__dot')}<strong>${esc(p.name)}</strong></button>`;
+    };
+    const alsoLine = (ids, r) => {
+      if (!ids.length) return '';
+      const names = ids.slice(0, 6).map(id => {
+        const p = Model.get(id), o = recFor(p, r);
+        return `<button class="bx-also__p" data-id="${esc(id)}"${o ? ` data-case-link="${esc(o.id)}"` : ''}>${esc(p.name)}</button>`;
+      }).join('<i aria-hidden="true">·</i>');
+      return `<p class="bx-also"><span>다른 상자에도<span class="bx-also__long"> 있는 사람</span></span>${names}${ids.length > 6 ? `<em>외 ${ids.length - 6}명</em>` : ''}</p>`;
+    };
+    const items = [], solos = [];
+    badges.forEach((b, i) => {
+      if (b.other) return;
+      if (!b.total && !b.place.length) { solos.push([b, i]); return; }
+      const r = recOf(b.id), here = new Set(b.place.map(p => p.id));
+      const also = [...new Set([...b.ids, ...(b.sep || [])])].filter(id => !here.has(id) && id !== center.id);
+      const count = b.total ? `함께 ${b.total}명` : '별도 재판';
+      items.push(`<section class="bx${b.total ? '' : ' is-sep'}" data-b="${i}">
+        <i class="bx-bg" aria-hidden="true"></i>
+        <button class="group-tag bx-head" data-group="${i}" data-id="${esc(center.id)}" data-case-link="${esc(b.id)}"
+          aria-label="${esc(center.name)} ${esc(b.label)} 재판 보기 (${count})"><span class="bx-head__t">${esc(b.label)}</span><small>${esc(b.agency)}</small><b>${count}</b></button>
+        ${b.place.length ? `<div class="bx-ppl">${b.place.map(p => chip(p, b.ids.includes(p.id) ? 'is-co' : 'is-rel is-sep', r)).join('')}</div>` : ''}
+        ${alsoLine(also, r)}
+        ${!b.place.length && !also.length ? `<p class="bx-also">함께 재판받는 ${b.total}명은 지금 조건(검색·특검)에서 숨겨져 있습니다</p>` : ''}
+      </section>`);
+    });
+    if (solos.length) items.push(`<section class="bx is-solo" data-b="solo">
+        <i class="bx-bg" aria-hidden="true"></i>
+        <p class="bx-head bx-head--static"><span class="bx-head__t">단독 재판</span><small>혼자 피고인</small><b>${solos.length}건</b></p>
+        <div class="bx-solos">${solos.map(([b, i]) => `<button class="group-tag is-solo bx-solo" data-group="${i}" data-id="${esc(center.id)}" data-case-link="${esc(b.id)}"
+          aria-label="${esc(center.name)} ${esc(b.label)} 재판 보기 (단독 재판)">${esc(b.label)}</button>`).join('')}</div>
+      </section>`);
+    const oi = badges.findIndex(b => b.other);
+    if (oi >= 0) items.push(`<section class="bx is-other" data-b="${oi}">
+        <i class="bx-bg" aria-hidden="true"></i>
+        <button class="group-tag group-tag--other bx-head" data-group="${oi}" aria-label="그 밖의 관계 ${badges[oi].ids.length}명 강조"><span class="bx-head__t">그 밖의 관계</span><small>같은 재판 아님</small><b>${badges[oi].ids.length}명</b></button>
+        <div class="bx-ppl">${badges[oi].place.map(p => chip(p, 'is-rel', null, Model.linkLabel(center, p, S.agency) || '')).join('')}</div>
+      </section>`);
+
+    const caseN = center.records.filter(r => S.agency === 'all' || r.agency === S.agency).length;
+    const placedIds = badges.filter(b => !b.other).flatMap(b => b.place.map(p => p.id));
+    const otherN = oi >= 0 ? badges[oi].ids.length : 0, sepN = placedIds.filter(id => !coIds.has(id)).length;
+    // 가운데 인물: '○○ 중심' 줄 대신 사진 아래에 선택 해제 (관계도 높이를 아낌)
+    const hub = `<div class="bx-center"><button class="node bx-hub ${S.detailOpen ? 'is-selected' : ''} ${center.id === Model.agencyRoot(S.agency) ? 'is-root' : ''}" data-id="${esc(center.id)}"
+        aria-label="${esc(center.name)} ${S.detailOpen ? '선택 해제' : '재판 보기'}">${avatar(center, 'node__dot')}<strong>${esc(center.name)}</strong>
+        ${center.role ? `<small class="bx-hub__role">${esc(center.role)}</small>` : ''}<small>사건 ${caseN}건 · 연결 ${placedIds.length + otherN}명</small></button>
+        ${S.detailOpen ? `<button class="bx-center__x" data-close-detail aria-label="${esc(center.name)} 선택 해제">선택 해제 ×</button>` : ''}</div>`;
+
+    // 그리기: 상자 높이를 재서 양쪽 기둥 높이가 비슷하게 나누고, 넘치면 한 단계 작게
+    graph.classList.add('is-branch'); $('#mapPane').classList.add('is-branch');
+    graph.classList.remove('is-dense', 'is-spotlight', 'has-case', 'has-solo', 'is-bx-pointing');
+    setNote(BRANCH_NOTE);
+    groupLayer.innerHTML = '';
+    nodeLayer.innerHTML = `<div class="bx-wrap${items.length === 1 ? ' is-single' : ''}${items.length ? '' : ' is-alone'}">
+      <svg class="bx-links" aria-hidden="true"></svg><div class="bx-side is-l"></div>${hub}<div class="bx-side is-r"></div></div>`;
+    const wrap = $('.bx-wrap', nodeLayer), L = $('.bx-side.is-l', wrap), R = $('.bx-side.is-r', wrap);
+    const tpl = document.createElement('template');
+    tpl.innerHTML = items.join('');
+    const els = [...tpl.content.children];
+    const fits = side => side.scrollHeight <= side.clientHeight + 1;
+    for (let fit = 0; fit <= 4; fit++) {
+      wrap.dataset.fit = fit;
+      if (els.length === 1) R.append(els[0]);
+      else if (els.length) {
+        els.forEach(el => L.append(el)); // 두 기둥 폭이 같으므로 한쪽에 모아 높이를 잼
+        const hs = els.map(el => el.offsetHeight);
+        let hl = 0, hr = 0;
+        els.forEach((el, k) => { if (hl <= hr) { L.append(el); hl += hs[k]; } else { R.append(el); hr += hs[k]; } });
+      }
+      if (fit === 4 || (fits(L) && fits(R))) break;
+    }
+
+    // 곡선: 중심 인물 사진 가장자리 → 상자 안쪽 가장자리(제목 높이). 기둥이 스크롤되면 보이는 범위 안으로
+    function links() {
+      const svg = $('.bx-links', wrap), w = wrap.getBoundingClientRect(), h = $('.bx-hub .node__dot', wrap).getBoundingClientRect();
+      svg.setAttribute('viewBox', `0 0 ${w.width} ${w.height}`);
+      const hx = h.left + h.width / 2 - w.left, hy = h.top + h.height / 2 - w.top, hr = h.width / 2 + 6;
+      svg.innerHTML = $$('.bx', wrap).map(bx => {
+        const r = bx.getBoundingClientRect(), s = bx.parentElement.getBoundingClientRect(), head = $('.bx-head', bx).getBoundingClientRect();
+        if (r.bottom < s.top + 8 || r.top > s.bottom - 8) return '';
+        const left = r.left + r.width / 2 < h.left + h.width / 2;
+        const x = (left ? r.right : r.left) - w.left;
+        const y = Math.min(Math.max(head.top + head.height / 2, s.top + 8), s.bottom - 8) - w.top;
+        const sx = hx + (left ? -hr : hr), mx = (sx + x) / 2;
+        const co = !/\bis-(solo|other|sep)\b/.test(bx.className);
+        return `<path class="bx-link ${co ? 'is-co' : 'is-rel'}" data-b="${esc(bx.dataset.b)}" d="M ${sx} ${hy} C ${mx} ${hy}, ${mx} ${y}, ${x} ${y}"${co ? ' pathLength="1"' : ''}/>`;
+      }).join('');
+      markActiveCase();
+    }
+    let raf = 0;
+    [L, R].forEach(side => side.addEventListener('scroll', () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(links); }, { passive: true }));
+
+    last = { center, activeCase, badges, coIds, egoMode: true, branch: true };
+    links();
+    prevSize = { w: nodeLayer.clientWidth, h: nodeLayer.clientHeight };
+    // 좌우 가지형은 영역에 꼭 맞게 그리므로 확대·이동 없이 1배
+    view.s = 1; view.x = graph.offsetLeft; view.y = graph.offsetTop; moved = false;
+    renderFocus(S, null);
+    $('#mapContext').textContent = `${center.name} 중심 · 사건 ${caseN}건 · 함께 재판 ${coIds.size}명${sepN ? ` · 같은 사건 별도 재판 ${sepN}명` : ''}${otherN ? ` · 그 밖의 관계 ${otherN}명` : ''}`; // 누르기 안내는 아래 범례 줄에
+
+    // ── 움직임: 이전 배치는 잠깐 흐려지고, 남는 사람은 날아가고, 새 상자·사람은 차례로, 곡선은 마지막에 그려짐
+    const ghosts = ghostLayer();
+    if (!motion) { ghosts.replaceChildren(); edgeLayer.replaceChildren(); lastSettle = 0; return; }
+    const newIds = new Set($$('.node[data-id]', wrap).map(el => el.dataset.id));
+    if (oldWrap) {
+      oldWrap.inert = true;
+      $$('[data-id], [data-case-link], [data-group]', oldWrap).forEach(el => {
+        if (el.classList.contains('node') && newIds.has(el.dataset.id)) el.style.visibility = 'hidden'; // 날아가는 사람은 새 자리에서 움직임
+        el.removeAttribute('data-id'); el.removeAttribute('data-case-link'); el.removeAttribute('data-group');
+      });
+      ghosts.replaceChildren(oldWrap);
+      oldWrap.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 200, easing: 'ease-in', fill: 'forwards' }).finished.then(() => oldWrap.remove(), () => {});
+    } else if (oldNodes.length) {
+      const pct = new Map([...prev].map(([id, r]) => [id, [(r.left + r.width / 2 - g.left) / (g.width || 1) * 100, (r.top + r.height / 2 - g.top) / (g.height || 1) * 100]]));
+      fadeOut(oldNodes, pct, newIds, 0);
+    }
+    if (oldEdges.length) {
+      const holder = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      holder.setAttribute('class', 'edge-ghosts'); holder.style.pointerEvents = 'none';
+      oldEdges.forEach(e => holder.appendChild(e));
+      edgeLayer.replaceChildren(holder);
+      holder.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 200, fill: 'forwards' }).finished.then(() => holder.remove(), () => {});
+    }
+    const EASE = 'cubic-bezier(.65, 0, .35, 1)', OUT = 'cubic-bezier(.2, .8, .3, 1)', POP = 'cubic-bezier(.2, .8, .3, 1.15)';
+    const flying = new Set();
+    $$('.node[data-id]', wrap).forEach(el => {
+      const from = prev.get(el.dataset.id); if (!from || !from.width) return;
+      const d = $('.node__dot', el), to = d.getBoundingClientRect();
+      const dx = from.left + from.width / 2 - to.left - to.width / 2, dy = from.top + from.height / 2 - to.top - to.height / 2, k = from.width / (to.width || 1);
+      if (Math.abs(dx) < 1 && Math.abs(dy) < 1 && Math.abs(k - 1) < .02) return;
+      flying.add(el); el.classList.add('is-flying');
+      el.animate([{ transform: `translate(${dx}px, ${dy}px)` }, { transform: 'none' }], { duration: 560, easing: EASE });
+      d.animate([{ transform: `scale(${k})` }, { transform: 'none' }], { duration: 560, easing: EASE })
+        .finished.then(() => el.classList.remove('is-flying'), () => el.classList.remove('is-flying'));
+    });
+    const hubEl = $('.bx-hub', wrap);
+    if (!flying.has(hubEl)) hubEl.animate([{ opacity: 0, transform: 'scale(.85)' }, { opacity: 1, transform: 'none' }], { duration: 380, easing: OUT, fill: 'backwards' });
+    $('.bx-center__x', wrap)?.animate([{ opacity: 0, transform: 'translateY(4px)' }, { opacity: 1, transform: 'none' }], { duration: 280, delay: 420, easing: OUT, fill: 'backwards' });
+    $$('.bx', wrap).forEach((bx, bi) => {
+      const t = 140 + bi * 45;
+      $('.bx-bg', bx).animate([{ opacity: 0, transform: 'scale(.97)' }, { opacity: 1, transform: 'none' }], { duration: 320, delay: t, easing: OUT, fill: 'backwards' });
+      $$('.bx-head, .bx-solo, .bx-also', bx).forEach(el => el.animate([{ opacity: 0, transform: 'translateY(4px)' }, { opacity: 1, transform: 'none' }], { duration: 280, delay: t + 60, easing: OUT, fill: 'backwards' }));
+      $$('.node', bx).forEach((el, ci) => {
+        if (!flying.has(el)) el.animate([{ opacity: 0, transform: 'scale(.6)' }, { opacity: 1, transform: 'none' }], { duration: 340, delay: t + 80 + Math.min(ci, 12) * 22, easing: POP, fill: 'backwards' });
+      });
+    });
+    const paths = $$('.bx-link', wrap);
+    paths.forEach((p, i) => {
+      const t = 380 + i * 40;
+      if (p.classList.contains('is-co')) {
+        p.style.strokeDasharray = '1';
+        p.animate([{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], { duration: 420, delay: t, easing: OUT, fill: 'backwards' })
+          .finished.then(() => { p.style.strokeDasharray = ''; }, () => {});
+      } else p.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 300, delay: t, fill: 'backwards' });
+    });
+    lastSettle = Math.max(560, 380 + paths.length * 40 + 420);
   }
 
   // 선 경로: 두 인물(px 좌표·아바타 반지름) 사이를 살짝 휜 곡선으로, 아바타 가장자리에서 시작 (viewBox 900×620)
@@ -390,6 +605,7 @@ const MapView = (() => {
 
   function drawIntro() {
     layoutKey = 'intro';
+    leaveBranch();
     prevSize = { w: nodeLayer.clientWidth, h: nodeLayer.clientHeight };
     $('#mapFocus') && ($('#mapFocus').hidden = true);
     clearSpotlight(); Relation.close(); last = null; lastKey = ''; cancelAnimationFrame(anim);
@@ -511,7 +727,13 @@ const MapView = (() => {
   function markActiveCase() {
     const aid = last?.egoMode && last.activeCase ? last.activeCase.id : null;
     const active = aid ? last.badges.find(b => b.id === aid || (b.soloGroup && b.members.some(m => m.id === aid))) : null;
-    $$('.group-tag', groupLayer).forEach((t, i) => t.classList.toggle('is-active', !!active && last.badges[i] === active));
+    $$('.group-tag[data-group]', graph).forEach(t => t.classList.toggle('is-active', !!active && last.badges[+t.dataset.group] === active));
+    if (last?.branch) { // 좌우 가지형: 그 사건 상자 테두리·제목(검정)과 곡선만 진하게, 다른 상자는 그대로
+      $$('.bx', nodeLayer).forEach(bx => bx.classList.toggle('is-active', !!$('.group-tag.is-active', bx)));
+      $$('.bx-link', nodeLayer).forEach(p => p.classList.toggle('is-active', !!$(`.bx.is-active[data-b="${p.dataset.b}"]`, nodeLayer)));
+      graph.classList.remove('has-case', 'has-solo');
+      return;
+    }
     $$('.solo-menu__item', groupLayer).forEach(t => t.classList.toggle('is-active', t.dataset.caseLink === aid));
     $$('.solo-stem', edgeLayer).forEach(p => p.classList.toggle('is-active', !!aid && p.dataset.case.split(' ').includes(aid))); // 지금 보는 단독 사건이면 점선도 진하게
     const ids = new Set(active?.ids || []);
@@ -547,8 +769,8 @@ const MapView = (() => {
   document.addEventListener('click', e => { if (!e.target.closest('#soloMenu, [data-solo-group]')) closeSoloMenu(); });
   addEventListener('keydown', e => { if (e.key === 'Escape') closeSoloMenu(); });
 
-  // '그 밖의 관계' 뱃지: 상세를 바꾸지 않고 그 무리만 강조
-  groupLayer.addEventListener('click', e => {
+  // '그 밖의 관계' 뱃지(좌우 가지형은 상자 제목): 상세를 바꾸지 않고 그 무리만 강조
+  graph.addEventListener('click', e => {
     const t = e.target.closest('.group-tag--other');
     const b = t && last?.badges[+t.dataset.group];
     if (b) spotlight(new Set([...b.ids, last.center.id]));
@@ -559,13 +781,23 @@ const MapView = (() => {
     if (!canHover()) return;
     let current = null;
     const clear = () => {
-      $$('.is-hover, .is-peer, .is-peer-weak', graph).forEach(el => el.classList.remove('is-hover', 'is-peer', 'is-peer-weak'));
+      $$('.is-hover, .is-peer, .is-peer-weak, .is-member', graph).forEach(el => el.classList.remove('is-hover', 'is-peer', 'is-peer-weak', 'is-member'));
       $$('.edge.is-lit', graph).forEach(el => el.classList.remove('is-lit'));
-      graph.classList.remove('is-pointing'); current = null;
+      graph.classList.remove('is-pointing', 'is-bx-pointing'); current = null;
     };
     const light = id => {
       if (id === current) return;
-      clear(); current = id; graph.classList.add('is-pointing');
+      clear(); current = id;
+      if (last?.branch) { // 좌우 가지형: 그 사람이 함께 있는 사건 상자만 또렷하게(나머지 상자는 흐리게)
+        graph.classList.add('is-bx-pointing');
+        $$('.node', nodeLayer).forEach(n => n.classList.toggle('is-hover', n.dataset.id === id));
+        $$('.bx', nodeLayer).forEach(bx => {
+          const b = last.badges[+bx.dataset.b];
+          bx.classList.toggle('is-member', id === last.center.id || !!b && (b.ids.includes(id) || (b.sep || []).includes(id) || b.place.some(p => p.id === id)));
+        });
+        return;
+      }
+      graph.classList.add('is-pointing');
       const strong = new Set(), weak = new Set();
       $$('.edge', edgeLayer).forEach(e => {
         const { from, to } = e.dataset;
@@ -582,7 +814,7 @@ const MapView = (() => {
     graph.addEventListener('mouseenter', () => graph.classList.add('is-hovering'));
     graph.addEventListener('mouseleave', () => { graph.classList.remove('is-hovering'); clear(); });
     graph.addEventListener('mouseover', e => {
-      const node = e.target.closest('.node');
+      const node = e.target.closest('.node, .bx-also__p');
       if (node?.dataset.intro) return; // 오프닝 인물은 메뉴로 처리
       if (node) return light(node.dataset.id);
       const edge = e.target.closest('.edge');
@@ -621,7 +853,7 @@ const MapView = (() => {
         <p class="case-tip__eyebrow">그 밖의 관계 · ${b.ids.length}명</p>
         <p class="case-tip__title">같은 재판은 아닌 사람들</p>
         <p class="case-tip__why">${esc(c.name)}${wa(c.name)} 다른 사건으로 기소됐거나, 가족·별도 관계로 이어진 사람들입니다. 함께 재판받지 않습니다.</p>
-        <p class="case-tip__hint">이름표를 누르면 이 사람들만 강조합니다</p>`;
+        <p class="case-tip__hint">누르면 이 사람들만 강조합니다</p>`;
       const r = c.records.find(v => v.id === b.id);
       if (!r) return '';
       const mates = b.ids.filter(id => id !== c.id);
@@ -630,7 +862,7 @@ const MapView = (() => {
         ? `${esc(c.name)} 혼자 피고인인 재판입니다.`
         : !mates.length ? `${esc(c.name)}${wa(c.name)} 함께 재판받는 ${b.total}명은 지금 조건(검색·특검)에서 숨겨져 있습니다.`
         : `${esc(c.name)}${wa(c.name)} 같은 사건으로 함께 기소돼 재판받는 사람들입니다 — ${esc(listNames(mates))}${b.total > mates.length ? ` 등 ${b.total}명` : ''}.`)
-        + (sep.length ? ` 같은 사건으로 따로 기소돼 별도로 재판받는 사람(점선): ${esc(listNames(sep))}.` : '');
+        + (sep.length ? ` 같은 사건으로 따로 기소돼 별도로 재판받는 사람(${last.branch ? '회색 테두리' : '점선'}): ${esc(listNames(sep))}.` : '');
       const charges = (r.charges || []).slice(0, 3).map(ch => `<li><b>${esc(ch.name)}</b>${ch.act ? `<span>${esc(ch.act)}</span>` : ''}</li>`).join('');
       const more = (r.charges || []).length > 3 ? `<p class="case-tip__more">외 ${r.charges.length - 3}개 혐의</p>` : '';
       return `
@@ -639,7 +871,7 @@ const MapView = (() => {
         <p class="case-tip__why">${why}</p>
         ${charges ? `<p class="case-tip__label">특검이 기소한 혐의</p><ul class="case-tip__charges">${charges}</ul>${more}` : ''}
         ${r.status ? `<p class="case-tip__status"><span>지금</span>${esc(r.status)}</p>` : ''}
-        <p class="case-tip__hint">${on ? `지금 ${where}에서 보고 있는 재판입니다 · 이름표를 다시 누르면 강조를 풉니다` : `이름표를 누르면 ${where}에 이 재판의 상세가 열립니다`}</p>`;
+        <p class="case-tip__hint">${on ? `지금 ${where}에서 보고 있는 재판입니다 · 다시 누르면 강조를 풉니다` : `누르면 ${where}에 이 재판의 상세가 열립니다`}</p>`;
     }
     function place(tag) {
       const t = tag.getBoundingClientRect(), w = tip.offsetWidth, h = tip.offsetHeight, gap = 10, pad = 8;
@@ -677,20 +909,22 @@ const MapView = (() => {
       if (shownFor) shownFor.removeAttribute('aria-describedby');
       shownFor = null; tip.hidden = true; tip.classList.remove('is-in');
     }
-    groupLayer.addEventListener('mouseover', e => {
+    // 사건 뱃지(좌우 가지형은 상자 제목·단독 재판 이름표)는 관계도 어디에 있든 같은 말풍선
+    graph.addEventListener('mouseover', e => {
       const tag = e.target.closest('.group-tag'); if (!tag) return;
       clearTimeout(timer); timer = setTimeout(() => show(tag), shownFor ? 0 : 160);
     });
-    groupLayer.addEventListener('mouseout', e => {
+    graph.addEventListener('mouseout', e => {
       const tag = e.target.closest('.group-tag'); if (!tag || tag.contains(e.relatedTarget)) return;
       clearTimeout(timer); timer = setTimeout(hide, 80);
     });
-    groupLayer.addEventListener('focusin', e => { const tag = e.target.closest('.group-tag'); if (tag && tag.matches(':focus-visible')) show(tag); });
-    groupLayer.addEventListener('focusout', hide);
+    graph.addEventListener('focusin', e => { const tag = e.target.closest('.group-tag'); if (tag && tag.matches(':focus-visible')) show(tag); });
+    graph.addEventListener('focusout', hide);
     // 누르거나, 관계도가 다시 그려지거나 움직이면 닫음
     ['click', 'wheel', 'pointerdown'].forEach(ev => graph.addEventListener(ev, hide, { passive: true }));
     addEventListener('keydown', e => { if (e.key === 'Escape') hide(); });
-    new MutationObserver(() => { if (shownFor && !shownFor.isConnected) hide(); }).observe(groupLayer, { childList: true });
+    const mo = new MutationObserver(() => { if (shownFor && !shownFor.isConnected) hide(); });
+    mo.observe(groupLayer, { childList: true }); mo.observe(nodeLayer, { childList: true });
   }
   bindCaseTip();
 
@@ -743,6 +977,7 @@ const MapView = (() => {
     if (mode !== viewMode) { viewMode = mode; viewKey = null; } // 화면 폭이 모바일↔데스크톱으로 바뀌면 처음부터
     const prev = viewKey;
     viewKey = layoutKey;
+    if (graph.classList.contains('is-branch')) { resetView(); return; }
     if (layoutKey === 'intro') { if (prev !== 'intro') resetView(); else applyView(); return; }
     if (prev === null || prev === 'intro') { resetView(true); return; }
     // 데스크톱에서 직접 옮기지 않았다면 기본 보기 그대로 ('○○ 중심' 줄이 생기거나 사라져 관계도 자리가 바뀌어도 어긋나지 않게)
@@ -765,6 +1000,7 @@ const MapView = (() => {
   pane.addEventListener('pointerdown', e => {
     if (!pts.size) dragged = false; // 새 손가락 조작마다 '끌었음' 초기화 (버튼 탭이 막히지 않게)
     if (e.target.closest('.map-zoom, .map-focus, .case-menu')) return;
+    if (graph.classList.contains('is-branch')) return; // 좌우 가지형은 영역에 꼭 맞게 그리므로 끌어 옮기지 않음(기둥 안 스크롤은 그대로)
     if (e.pointerType === 'mouse') { if (e.button !== 0) return; e.preventDefault(); } // 마우스 끌기 중 글자 선택 방지
     pts.set(e.pointerId, local(e));
     startGesture();
@@ -808,7 +1044,7 @@ const MapView = (() => {
   const unscaled = fn => (...a) => {
     const t = graph.style.transform;
     graph.style.transform = '';
-    try { return fn(...a); } finally { graph.style.transform = t; }
+    try { return fn(...a); } finally { graph.style.transform = graph.classList.contains('is-branch') ? '' : t; }
   };
   const render = unscaled(drawMap), renderIntro = unscaled(drawIntro);
 
@@ -819,5 +1055,8 @@ const MapView = (() => {
     markActiveCase();
   }
 
-  return { render, renderIntro, centerOnMobile, spotlightCase, clearCase };
+  // 이번에 좌우 가지형으로 그리는가 ('○○ 중심' 줄 표시 여부를 그리기 전에 정할 때 씀)
+  const wantsBranch = () => useBranch(graph.offsetWidth);
+
+  return { render, renderIntro, centerOnMobile, spotlightCase, clearCase, wantsBranch };
 })();

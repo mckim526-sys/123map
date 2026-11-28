@@ -30,7 +30,8 @@
     $('#mapLegend').hidden = S.intro && home; // 오프닝에는 같은 재판 선이 없음
     // 모바일 오프닝은 범례가 숨겨지고 안내문도 모바일에서 숨겨 빈 띠가 남으므로 아래 영역 전체를 숨김
     $('#mapFoot').hidden = S.view !== 'map' || ego || (S.intro && home && isMobile());
-    $('#mapFocus').hidden = !(S.detailOpen && S.view === 'map'); // '○○ 중심' 줄도 관계도 높이에 영향
+    // '○○ 중심' 줄도 관계도 높이에 영향 · 좌우 가지형(넓은 화면)은 가운데 인물 아래에 선택 해제가 있어 줄을 두지 않음
+    $('#mapFocus').hidden = !(S.detailOpen && S.view === 'map' && !ego && !MapView.wantsBranch());
     // 이번에 그릴 때의 관계도 크기를 기록 → 같은 크기로 크기 감시가 또 그리지 않게
     const gEl = $('#graph'); // 모바일 확대·축소(transform)와 무관한 실제 크기
     graphSize = gEl.offsetWidth + 'x' + gEl.offsetHeight;
