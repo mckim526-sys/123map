@@ -1,33 +1,36 @@
 // 타임라인: 날짜가 기록된 심급만 모아 날짜순으로. 같은 날·같은 재판부·같은 사건 선고는 한 줄로 묶음.
 const TimelineView = (() => {
-  // 2024.12.3 밤 경과 (공개된 사실)
+  // 2024.12.3 밤 경과 (1심 판결문 범죄사실의 시각 · '그날 밤' 탭과 같은 기준)
   const NIGHT = [
     ['22:27', '대통령 윤석열, 비상계엄 선포'],
-    ['23:00', '계엄사령부 포고령 1호 발령'],
-    ['12.4 01:01', '국회 본회의, 재석 190명 전원 찬성으로 계엄 해제 요구 결의'],
-    ['12.4 04:27', '대통령, 계엄 해제 담화 발표'],
-    ['12.4 04:30', '국무회의, 계엄 해제 의결'],
+    ['23:23', '계엄사령부 포고령 1호 공고'],
+    ['12.4 01:03', '국회 본회의, 재석 190명 전원 찬성으로 계엄 해제 요구 결의안 가결'],
+    ['12.4 04:26', '대통령, 계엄 해제 방침 발표'],
+    ['12.4 04:27', '국무회의, 계엄 해제안 의결'],
   ];
 
   const kind = (text, upcoming) => upcoming ? 'upcoming'
+    : /파기|환송/.test(text) ? 'remand'
     : /무죄|공소기각/.test(text) ? 'acquit'
     : /확정/.test(text) ? 'final'
-    : /징역|벌금|유죄|무기|사형/.test(text) ? 'guilty' : 'other';
+    : /징역|금고|벌금|유죄|무기|사형|선고유예/.test(text) ? 'guilty' : 'other';
 
   function collect(list, agency) {
     const today = todaySeoul();
     const groups = new Map();
     for (const p of list) for (const r of p.records) {
       if (agency !== 'all' && r.agency !== agency) continue;
-      (r.stages || []).forEach((s, i) => {
+      // 환송심처럼 심급 세 칸 밖의 일정: record.next = [[내용, 재판부, 날짜, 심급 이름]]
+      [...(r.stages || []).map((s, i) => [s, i === 2 ? '대법원' : (i + 1) + '심']), ...(r.next || []).map(n => [n, n[3] || '환송심'])].forEach(([s, stageLabel]) => {
         const m = String(s[2] || '').match(/(\d{4})\.(\d{2})\.(\d{2})/);
         if (!m) return;
         const upcoming = /예정/.test(s[2]) || /예정/.test(s[0]) || m[0] > today;
         if (/보도|제출|배당/.test(s[2]) && !upcoming) return; // 보도·제출일은 법원 판단이 아님
+        if (/없음|포기|취하/.test(s[0] || '') && !/징역|금고|벌금|무죄|유죄/.test(s[0] || '')) return; // 열리지 않은 심급
         const key = [m[0], s[1], r.family || r.id, s[0]].join('|');
         if (!groups.has(key)) groups.set(key, {
           date: new Date(+m[1], +m[2] - 1, +m[3]), ymd: m[0], text: s[0], court: s[1],
-          stage: i === 2 ? '대법원' : (i + 1) + '심', label: r.label, agency: r.agency, upcoming, people: [],
+          stage: stageLabel, label: r.label, agency: r.agency, upcoming, people: [],
         });
         const g = groups.get(key);
         if (!g.people.some(v => v.p.id === p.id)) g.people.push({ p, caseId: r.id });
@@ -38,7 +41,7 @@ const TimelineView = (() => {
 
   // 일정 제목: 내부 메모를 빼고, '판단 전'·'선고 전'만 남으면 '심리 중'
   const tlText = t => dropMemo(t).split(' · ').filter(x => x && !/^(판단|선고) 전$/.test(x)).join(' · ') || '심리 중';
-  const KIND_LABEL = { upcoming: '예정', acquit: '무죄', final: '확정', guilty: '유죄', other: '절차' };
+  const KIND_LABEL = { upcoming: '예정', remand: '파기환송', acquit: '무죄', final: '확정', guilty: '유죄', other: '절차' };
   const kindLabel = (k, text) => k === 'acquit' && /공소기각/.test(text) ? '공소기각' : KIND_LABEL[k];
   const WEEK = '일월화수목금토';
   const dday = date => {
