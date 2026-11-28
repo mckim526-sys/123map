@@ -29,6 +29,13 @@ const MapView = (() => {
     });
     const others = list.filter(p => p.id !== center.id && !coIds.has(p.id) && !placed.has(p.id) && Model.linkLabel(center, p, S.agency));
     if (others.length) clusters.push({ id: '', label: '그 밖의 관계', other: true, ids: others.map(p => p.id), place: others });
+    // 단독 재판 사건(함께 재판받는 사람 없음)이 둘 이상이면 뱃지 하나로 묶어 가운데를 덜 복잡하게 → 누르면 목록이 펼쳐짐
+    const solos = clusters.filter(c => !c.total && !c.place.length && !c.other);
+    if (solos.length >= 2) {
+      const at = clusters.indexOf(solos[0]);
+      solos.forEach(c => clusters.splice(clusters.indexOf(c), 1));
+      clusters.splice(Math.min(at, clusters.length), 0, { id: '', label: '단독 재판', soloGroup: true, members: solos.map(c => ({ id: c.id, label: c.label, agency: c.agency })), ids: [], place: [] });
+    }
 
     // 원 둘레에 무리를 이어 붙임 (단독 사건은 빈 자리 하나, 무리 사이 한 칸)
     const seq = [];
@@ -50,7 +57,7 @@ const MapView = (() => {
     const badges = clusters.map(c => {
       const a = (ang(c.from) + ang(c.to)) / 2, empty = !c.place.length;
       const r = empty ? 19 : 24; // 단독 사건 뱃지는 중심 인물 가까이(가는 점선으로 이어 줌)
-      return { ...c, solo: !c.other && !c.total, x: 50 + r * Math.cos(a), y: 47 + (r + 4) * Math.sin(a) };
+      return { ...c, solo: !c.other && !c.soloGroup && !c.total, x: 50 + r * Math.cos(a), y: 47 + (r + 4) * Math.sin(a) };
     });
     return { out, coIds, badges };
   }
@@ -109,16 +116,25 @@ const MapView = (() => {
       return coIds.has(p.id) ? 'is-co' : 'is-rel';
     };
 
+    // 관계도 영역이 작은데 사람이 많으면(15인치 노트북 등) 사진·이름표를 한 단계 작게
+    graph.classList.toggle('is-dense', egoMode && !isMobile() && out.length > 20 && gr.width * gr.height < out.length * 15000);
     nodeLayer.innerHTML = out.map(({ p, x, y, major }) => `
       <button class="node ${p.id === center.id && S.detailOpen ? 'is-selected' : ''} ${p.id === rootId && (!egoMode || p.id === center.id) ? 'is-root' : ''} ${major ? 'is-major' : 'is-minor'} ${nodeKind(p)}"
         data-id="${esc(p.id)}" style="left:${x}%;top:${y}%" aria-label="${esc(p.name)} 재판 보기">
         ${avatar(p, 'node__dot')}<strong>${esc(p.name)}</strong>
       </button>`).join('');
     // 사건 뱃지: 누르면 그 사건의 재판 상세가 열림 (왼쪽 → 오른쪽). '그 밖의 관계'는 강조만
-    groupLayer.innerHTML = badges.map((b, i) => b.other
+    groupLayer.innerHTML = badges.map((b, i) => b.soloGroup
+      ? `<button class="group-tag is-solo group-tag--solos" data-group="${i}" data-solo-group aria-expanded="false" aria-controls="soloMenu" style="left:${b.x}%;top:${b.y}%"
+          aria-label="${esc(center.name)} 단독 재판 ${b.members.length}건 목록 열기">${esc(b.label)}<b>${b.members.length}</b></button>`
+      : b.other
       ? `<button class="group-tag group-tag--other" data-group="${i}" style="left:${b.x}%;top:${b.y}%" aria-label="그 밖의 관계 ${b.ids.length}명 강조">${esc(b.label)}<b>${b.ids.length}</b></button>`
       : `<button class="group-tag ${b.solo ? 'is-solo' : ''}" data-group="${i}" data-id="${esc(center.id)}" data-case-link="${esc(b.id)}" style="left:${b.x}%;top:${b.y}%"
           aria-label="${esc(center.name)} ${esc(b.label)} 사건 보기${b.solo ? ' (단독 재판)' : ` (함께 재판 ${b.total}명)`}">${esc(b.label)}<b>${b.solo ? '단독' : b.total}</b></button>`).join('');
+    const sg = badges.find(b => b.soloGroup);
+    if (sg) groupLayer.insertAdjacentHTML('beforeend', `<div class="solo-menu" id="soloMenu" role="menu" hidden>
+      <p class="solo-menu__title">${esc(center.name)} 혼자 피고인인 재판</p>
+      ${sg.members.map(m => `<button class="solo-menu__item" role="menuitem" data-id="${esc(center.id)}" data-case-link="${esc(m.id)}">${esc(m.label)}<small>${esc(m.agency)}</small></button>`).join('')}</div>`);
     clearSpotlight();
     last = { center, activeCase, badges, coIds, egoMode };
 
@@ -188,18 +204,18 @@ const MapView = (() => {
         <path class="edge__hit" d="${d}"/><path class="edge__line" d="${d}"${co ? ' pathLength="1"' : ''}/><title>${esc(label)}</title></g>`;
     }).join('');
     // 단독 사건 뱃지: 함께 재판받는 사람이 없어 선이 없으므로, 중심 인물에서 뱃지까지 가는 점선으로 '이 사람의 사건'임을 보여 줌
-    if (egoMode) edgeLayer.insertAdjacentHTML('afterbegin', badges.filter(b => b.solo && b.px).map(b => {
+    if (egoMode) edgeLayer.insertAdjacentHTML('afterbegin', badges.filter(b => (b.solo || b.soloGroup) && b.px).map(b => {
       const A = at(out[0]), dx = b.px.x - A.x, dy = b.px.y - A.y, len = Math.hypot(dx, dy) || 1;
       // 뱃지 쪽 끝은 뱃지 테두리에서 멈춤(가로·세로 중 먼저 닿는 쪽)
       const stop = Math.min(Math.abs(b.px.w / 2 / (dx / len || 1e-6)), Math.abs(b.px.h / 2 / (dy / len || 1e-6))) + 3;
       if (len - stop <= A.r + 6) return '';
       const x1 = (A.x + dx / len * (A.r + 3)) * 900 / W, y1 = (A.y + dy / len * (A.r + 3)) * 620 / H;
       const x2 = (b.px.x - dx / len * stop) * 900 / W, y2 = (b.px.y - dy / len * stop) * 620 / H;
-      return `<path class="solo-stem" data-case="${esc(b.id)}" d="M ${x1} ${y1} L ${x2} ${y2}"/>`;
+      return `<path class="solo-stem" data-case="${esc(b.soloGroup ? b.members.map(m => m.id).join(' ') : b.id)}" d="M ${x1} ${y1} L ${x2} ${y2}"/>`;
     }).join(''));
 
     // 안내 문구
-    const caseN = badges.filter(b => !b.other).length, coN = coIds.size;
+    const caseN = badges.reduce((n, b) => n + (b.other ? 0 : b.soloGroup ? b.members.length : 1), 0), coN = coIds.size;
     const otherN = egoMode ? (badges.find(b => b.other)?.ids.length || 0) : 0, sepN = out.length - 1 - coN - otherN;
     let ctx;
     if (egoMode) ctx = `${center.name} 중심 · 사건 ${caseN}건 · 함께 재판 ${coN}명${sepN ? ` · 같은 사건 별도 재판 ${sepN}명` : ''}${otherN ? ` · 그 밖의 관계 ${otherN}명` : ''} · 사건 뱃지를 누르면 그 사건이 열립니다`;
@@ -493,9 +509,11 @@ const MapView = (() => {
 
   // 지금 상세에서 보는 사건의 뱃지를 표시
   function markActiveCase() {
-    const active = last?.egoMode && last.activeCase ? last.badges.find(b => b.id === last.activeCase.id) : null;
+    const aid = last?.egoMode && last.activeCase ? last.activeCase.id : null;
+    const active = aid ? last.badges.find(b => b.id === aid || (b.soloGroup && b.members.some(m => m.id === aid))) : null;
     $$('.group-tag', groupLayer).forEach((t, i) => t.classList.toggle('is-active', !!active && last.badges[i] === active));
-    $$('.solo-stem', edgeLayer).forEach(p => p.classList.toggle('is-active', !!active && p.dataset.case === active.id)); // 지금 보는 단독 사건이면 점선도 진하게
+    $$('.solo-menu__item', groupLayer).forEach(t => t.classList.toggle('is-active', t.dataset.caseLink === aid));
+    $$('.solo-stem', edgeLayer).forEach(p => p.classList.toggle('is-active', !!aid && p.dataset.case.split(' ').includes(aid))); // 지금 보는 단독 사건이면 점선도 진하게
     const ids = new Set(active?.ids || []);
     graph.classList.toggle('has-case', !!active && ids.size > 0);
     graph.classList.toggle('has-solo', !!active && ids.size === 0); // 단독 사건: 다른 사람과 잇는 선은 모두 흐리게
@@ -507,6 +525,27 @@ const MapView = (() => {
     const b = last.badges.find(v => v.id === last.activeCase.id);
     spotlight(new Set([...(b?.ids || []), last.center.id]), Math.max(0, lastSettle - 120));
   }
+
+  // '단독 재판' 묶음 뱃지: 누르면 사건 목록이 뱃지 곁에 펼쳐짐
+  function closeSoloMenu() {
+    const m = document.getElementById('soloMenu'); if (!m || m.hidden) return;
+    m.hidden = true; groupLayer.querySelector('[data-solo-group]')?.setAttribute('aria-expanded', 'false');
+  }
+  groupLayer.addEventListener('click', e => {
+    const t = e.target.closest('[data-solo-group]'), m = document.getElementById('soloMenu');
+    if (e.target.closest('.solo-menu__item')) return closeSoloMenu();
+    if (!t || !m) return;
+    e.stopPropagation();
+    if (!m.hidden) return closeSoloMenu();
+    m.hidden = false; t.setAttribute('aria-expanded', 'true');
+    // 뱃지 아래(자리가 없으면 위)에, 관계도 밖으로 나가지 않게
+    const g = graph.getBoundingClientRect(), r = t.getBoundingClientRect(), w = m.offsetWidth, h = m.offsetHeight;
+    const left = Math.min(Math.max(4, r.left - g.left + r.width / 2 - w / 2), g.width - w - 4);
+    const below = r.bottom - g.top + 6, top = below + h <= g.height - 4 ? below : Math.max(4, r.top - g.top - 6 - h);
+    m.style.left = left / g.width * 100 + '%'; m.style.top = top / g.height * 100 + '%';
+  });
+  document.addEventListener('click', e => { if (!e.target.closest('#soloMenu, [data-solo-group]')) closeSoloMenu(); });
+  addEventListener('keydown', e => { if (e.key === 'Escape') closeSoloMenu(); });
 
   // '그 밖의 관계' 뱃지: 상세를 바꾸지 않고 그 무리만 강조
   groupLayer.addEventListener('click', e => {
@@ -573,6 +612,11 @@ const MapView = (() => {
       const c = last.center;
       const on = tag.classList.contains('is-active'); // 지금 오른쪽 상세에서 보는 사건
       const where = isMobile() ? '아래' : '오른쪽'; // 좁은 창은 상세가 아래 시트
+      if (b.soloGroup) return `
+        <p class="case-tip__eyebrow">단독 재판 · ${b.members.length}건</p>
+        <p class="case-tip__title">${esc(c.name)} 혼자 피고인인 재판</p>
+        <p class="case-tip__why">${esc(b.members.map(m => m.label).join(' · '))}</p>
+        <p class="case-tip__hint">누르면 사건 목록이 열립니다 · 고르면 ${where}에 그 재판의 상세가 열립니다</p>`;
       if (b.other) return `
         <p class="case-tip__eyebrow">그 밖의 관계 · ${b.ids.length}명</p>
         <p class="case-tip__title">같은 재판은 아닌 사람들</p>

@@ -225,6 +225,18 @@ body.has-detail .workspace { grid-template-columns: minmax(0, 1fr) var(--panel-w
 .group-tag.is-active b { color: var(--gray-300); }
 .group-tag.is-solo { border-style: dashed; }
 .group-tag--other { color: var(--text-tertiary); }
+/* '단독 재판' 묶음 뱃지 → 누르면 사건 목록 */
+.group-tag--solos[aria-expanded="true"] { border-color: var(--border-accent); color: var(--text-accent); }
+.solo-menu { position: absolute; z-index: var(--z-map-menu); pointer-events: auto; min-width: 200px; max-width: 280px; padding: var(--sp-2);
+  border: 1px solid var(--border-default); border-radius: var(--r-md); background: var(--bg-page); box-shadow: var(--shadow-2); }
+.solo-menu[hidden] { display: none; }
+.solo-menu__title { margin: 0 0 var(--sp-1); padding: var(--sp-1) var(--sp-2); font-size: var(--fs-caption); font-weight: var(--fw-bold); color: var(--text-tertiary); }
+.solo-menu__item { width: 100%; display: flex; align-items: baseline; justify-content: space-between; gap: var(--sp-3); padding: var(--sp-2); border: 0; border-radius: var(--r-sm);
+  background: none; text-align: left; font: inherit; font-size: var(--fs-label); font-weight: var(--fw-medium); color: var(--text-primary); cursor: pointer; }
+.solo-menu__item small { flex: none; font-size: var(--fs-caption); font-weight: var(--fw-regular); color: var(--text-tertiary); }
+.solo-menu__item:hover { background: var(--bg-subtle); color: var(--text-accent); }
+.solo-menu__item.is-active { background: var(--gray-900); color: var(--text-inverse); font-weight: var(--fw-bold); }
+.solo-menu__item.is-active small { color: var(--gray-300); }
 
 /* 오프닝: 두 핵심 인물이 차례로 떠오름 → 올리면 사건 목록이 차르륵 */
 @keyframes intro-in {
@@ -338,6 +350,14 @@ body.has-detail .workspace { grid-template-columns: minmax(0, 1fr) var(--panel-w
 .node.is-selected { --s: 56px; z-index: var(--z-map-focus); }
 .node.is-selected strong { font-size: var(--fs-subtitle); font-weight: var(--fw-heavy); color: var(--accent); }
 .node.is-root.is-selected { --s: 64px; }
+/* 좁은 관계도(15인치 노트북 등)에 사람이 많을 때: 사진·이름표 한 단계 작게 (map.js가 .is-dense를 붙임) */
+.graph.is-dense .node.is-major, .graph.is-dense .node.is-co { --s: 34px; }
+.graph.is-dense .node.is-rel { --s: 24px; }
+.graph.is-dense .node.is-selected, .graph.is-dense .node.is-root.is-selected, .graph.is-dense .node.is-root { --s: 52px; }
+.graph.is-dense .node.is-major strong, .graph.is-dense .node.is-co strong { font-size: var(--fs-caption); }
+.graph.is-dense .node.is-rel strong { font-size: 11px; line-height: 16px; }
+.graph.is-dense .node.is-selected strong, .graph.is-dense .node.is-root strong { font-size: var(--fs-body); }
+.graph.is-dense .group-tag { height: 22px; font-size: 11.5px; }
 .node.is-root.is-selected strong { font-size: var(--fs-title); }
 .node.is-muted { --s: 24px; opacity: .25; }
 .node.is-muted strong { font-size: var(--fs-caption); color: var(--text-tertiary); }
