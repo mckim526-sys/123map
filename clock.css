@@ -129,6 +129,12 @@ body.picked .fig { width: 100%; margin-top: 0; translate: none; }
 body.picked .fig.off { width: 56%; align-self: flex-end; }
 body.picked .fig.off .fig-label small, body.picked .fig-label em { display: none; }
 body.picked .fig.off .fig-label b { font-size: var(--fs-subtitle); line-height: var(--lh-subtitle); }
+/* 사진을 고른 뒤(데스크톱): 고른 사진은 화면 높이에 맞춰 낮게(얼굴 기준으로 자름), 다른 사람은 얼굴이 보이는 정사각형
+   → 노트북(150% 배율, 보이는 높이 약 570px)에서도 두 사람 얼굴이 한 화면에 */
+@media (min-width: 761px) {
+  body.picked .fig.on .fig-photo { aspect-ratio: auto; height: clamp(180px, calc(100svh - 370px), 347px); }
+  body.picked .fig.off .fig-photo { aspect-ratio: 1 / 1; }
+}
 body.picked .cases { display: block; background: var(--bg-page); border: 1px solid var(--border-default); border-radius: var(--r-lg); box-shadow: var(--shadow-1); overflow: hidden; }
 
 .cases-title { margin: 0; padding: var(--sp-5) var(--sp-6) var(--sp-4); border-bottom: 1px solid var(--border-default); display: flex; align-items: center; gap: var(--sp-2);

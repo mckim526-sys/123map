@@ -1,6 +1,7 @@
 // Reader-facing record of what changed on the site. Add one plain-language line per published change
 // (newest first). The "recently checked trials" list below it is built automatically from lastChecked.
 const SITE_CHANGES = [
+  ['2026-11-29', '처음 화면에서 인물 사진을 누른 뒤 고른 사진을 화면 높이에 맞춰 낮추고 다른 인물은 얼굴이 보이는 정사각형으로 줄여, 노트북 화면에서도 두 사람 얼굴이 함께 보이게 했습니다.'],
   ['2026-11-29', '머리글 왼쪽을 MBC 로고로 바꾸고, 처음 화면 문장을 \'법정은 어디까지 왔을까\' 한 줄로 줄였습니다.'],
   ['2026-11-29', '타임라인 탭을 누르면 늘 달력 맨 위가 보이게 했습니다(인물을 골랐으면 그 사람 일정이 있는 달). 노트북처럼 높이가 낮은 화면에서는 날짜 칸을 두 줄로 줄여 한 달이 한 화면에 들어옵니다.'],
   ['2026-11-29', '재판부 표시에서 판사 이름(재판장·주심·배석)을 모두 빼고 법원·재판부·사건번호만 남겨 사건마다 표기를 같게 했습니다.'],
