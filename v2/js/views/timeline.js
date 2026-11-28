@@ -36,6 +36,8 @@ const TimelineView = (() => {
     return [...groups.values()];
   }
 
+  // 일정 제목: 내부 메모를 빼고, '판단 전'·'선고 전'만 남으면 '심리 중'
+  const tlText = t => dropMemo(t).split(' · ').filter(x => x && !/^(판단|선고) 전$/.test(x)).join(' · ') || '심리 중';
   const KIND_LABEL = { upcoming: '예정', acquit: '무죄', final: '확정', guilty: '유죄', other: '절차' };
   const kindLabel = (k, text) => k === 'acquit' && /공소기각/.test(text) ? '공소기각' : KIND_LABEL[k];
   const WEEK = '일월화수목금토';
@@ -62,8 +64,8 @@ const TimelineView = (() => {
         ${dd ? `<span class="tl-dday">${dd}</span>` : ''}
       </div>
       <div class="tl-item__body">
-        <p class="tl-item__result">${k === 'upcoming' ? '' : `<span class="kind kind--${k}">${kindLabel(k, e.text)}</span>`}${esc(e.text)}</p>
-        <p class="tl-item__meta">${esc(e.stage)} · ${esc(e.label)} · ${esc(e.agency)}${e.court ? ` · ${esc(e.court)}` : ''}</p>
+        <p class="tl-item__result">${k === 'upcoming' ? '' : `<span class="kind kind--${k}">${kindLabel(k, e.text)}</span>`}${esc(tlText(e.text))}</p>
+        <p class="tl-item__meta">${esc(e.stage)} · ${esc(e.label)} · ${esc(e.agency)}${dropMemo(e.court) ? ` · ${esc(dropMemo(e.court))}` : ''}</p>
         <div class="tl-item__people">${e.people.map(v => `<button class="pill pill--person ${sel?.id === v.p.id ? 'is-me' : ''}" data-id="${esc(v.p.id)}" data-case-link="${esc(v.caseId)}">${avatar(v.p, 'ava--sm')}${esc(v.p.name)}</button>`).join('')}</div>
       </div>
     </article>`;

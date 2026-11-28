@@ -9,13 +9,16 @@ const stageName = n => (+n === 3 ? '대법원' : n + '심');
 const NOT_YET = /^(미확인|미도달(\s*확인 당시)?|판단 전)$/;
 const stageText = s => (!s || !s[0] ? '' : NOT_YET.test(s[0].trim()) && !/\d{4}\.\d{2}\.\d{2}/.test(s[2] || '') ? '진행 전' : s[0]);
 // 심급 칸을 읽는 사람 기준의 말로 (데이터는 그대로). stages: 기록의 심급 3칸, i: 0~2
-//  · 앞 심급 선고 전 → '1심 선고 후' / '2심 선고 후'
+//  · 앞 심급 선고 전 → 흐린 '—' (심급 자리는 남겨 어디까지 왔는지 보이게)
 //  · 앞 심급 선고 뒤, 상소 여부 모름 → '항소 여부 확인 중' / '상고 여부 확인 중'
 //  · 상고·항소 제기, 배당, 심리 중(선고 전) → '심리 중'
 //  · '상고 없음 · 2심 확정' → '상고 없음'
 //  재판부 칸의 내부 메모('후속 MBC 보도 확인 중', '대조 중', '미진행', '미확인' 등)는 숨김
 const RULED = /징역|금고|벌금|무죄|유죄|공소기각|집행유예|선고유예|무기|사형|면소|기각|확정|형 면제/;
 const ruled = t => RULED.test(t || '') && !/예정|선고 전|판단 전|미확인/.test(t || '');
+// 데이터 문구에서 내부 메모 조각('선고 미확인', '대조 중', '확인 중' 등)을 뺀 나머지 (모두 메모면 빈 문자열)
+const MEMO = /미확인|대조 중|확인 중|미진행|미도달/;
+const dropMemo = t => String(t || '').split(/\s*·\s*/).filter(x => x && !MEMO.test(x)).join(' · ');
 function stageView(stages, i) {
   const s = stages[i] || ['', '', ''], t = String(s[0] || '').trim();
   const court = String(s[1] || '').split(/\s*·\s*/).filter(x => x && !/확인 중|대조 중|미진행|미확인|미도달/.test(x)).join(' · ');
@@ -27,7 +30,7 @@ function stageView(stages, i) {
     if (i === 0) text = '진행 전';
     else if (ruled(prev) && !/확정/.test(prev)) text = `${appeal} 여부 확인 중`;
     else if (/확정/.test(prev)) text = '진행 전';
-    else text = `${stageName(i)} 선고 후`;
+    else text = '—'; // 앞 심급이 아직 선고 전: 이 심급은 흐린 '—'
   } else if (/없음|포기|취하/.test(t) && !ruled(t.replace(/\S*\s*확정/, ''))) {
     text = (t.match(/^[^·]*?(없음|포기|취하)/) || [t])[0].trim();
     return { text, court: '', quiet: true }; // 열리지 않은 심급: 재판부·메모 줄 없음

@@ -58,7 +58,7 @@ const DetailView = (() => {
           <span class="verdict__mark" aria-hidden="true">${state === 'done' ? '✓' : n}</span>
           <div class="verdict__text">
             <p class="verdict__stage">${stageName(n)}${when.date ? ` <time>${esc(when.date)}</time>` : ''}${tag ? `<span class="verdict__tag">${tag}</span>` : ''}</p>
-            <b class="verdict__result">${esc(view.text || '기록 없음')}</b>
+            <b class="verdict__result${view.text === '—' ? ' is-dash' : ''}">${esc(view.text || '기록 없음')}</b>
             ${court ? `<span class="verdict__court">${esc(court)}</span>` : ''}
           </div>
         </li>`;

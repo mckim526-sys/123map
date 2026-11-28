@@ -547,6 +547,7 @@ body.has-detail .detail {
 .is-final .verdict__tag { background: var(--navy-800); }
 .verdict__result { font-size: var(--fs-subtitle); line-height: var(--lh-subtitle); }
 .verdict__item.is-todo .verdict__result, .verdict__item.is-unknown .verdict__result { font-weight: var(--fw-medium); color: var(--text-tertiary); }
+.verdict__result.is-dash { font-weight: var(--fw-regular); color: var(--gray-300); }
 .verdict__court { font-size: var(--fs-caption); line-height: var(--lh-caption); color: var(--text-secondary); }
 
 /* 혐의 카드: 제목 + 최신 판단을 먼저, 기소 내용·심급별 판단은 펼쳐서 */
