@@ -7,14 +7,23 @@ const DetailView = (() => {
     `<h3 class="section-title"${id ? ` data-sec="${id}"` : ''}>${title}${aside ? `<small>${aside}</small>` : ''}</h3>`;
 
   // 판단이 실제로 나온 마지막 심급 ("항소심 판단 전", "판단 미확인" 등은 제외)
-  const PENDING = /판단 전|미확인|확인 중|대조 중|해당 없음|미도달|없음|취하|^\s*[-–]?\s*$/; // 판단이 아니거나 열리지 않은 심급
+  const PENDING = /판단 전|미확인|확인 중|대조 중|해당 없음|미도달|없음|취하|^\s*[-–—]?\s*$/;
+  const rulingKind = t => /무죄|공소기각|면소/.test(t) ? 'acquit' : /유죄|징역|벌금/.test(t) ? 'guilty' : 'other';
+  const rulingSummary = text => String(text || '').trim().split(/\.(?:\s|$)|\s+[—–-]\s+/, 1)[0];
+
+  function isPendingRuling(text) {
+    if (!PENDING.test(text || '')) return false;
+    // 판단 뒤의 확인 메모 때문에 이미 선고된 판단까지 숨기지 않습니다.
+    const summary = rulingSummary(text);
+    return PENDING.test(summary) || rulingKind(summary) === 'other';
+  }
+
   function latestRuling(judgments) {
     for (let i = judgments.length - 1; i >= 0; i--) {
-      if (!PENDING.test(judgments[i] || '')) return { stage: i + 1, text: String(judgments[i]).split(/\s+[—–-]\s+/)[0] };
+      if (!isPendingRuling(judgments[i])) return { stage: i + 1, text: rulingSummary(judgments[i]) };
     }
     return null;
   }
-  const rulingKind = t => /무죄|공소기각|면소/.test(t) ? 'acquit' : /유죄|징역|벌금/.test(t) ? 'guilty' : 'other';
 
   function relatedPeople(person, agency) {
     return Model.people
@@ -77,7 +86,10 @@ const DetailView = (() => {
         </summary>
         <div class="charge__body">
           <div class="charge__act"><span class="field-label">기소 내용</span><p>${esc(c.act)}</p></div>
-          <dl class="charge__rulings">${c.judgments.map((j, i) => `<div class="ruling${PENDING.test(j || '') ? ' is-pending' : ''}"><dt>${stageName(i + 1)}</dt><dd>${PENDING.test(j || '') ? '—' : esc(j)}</dd></div>`).join('')}</dl>
+          <dl class="charge__rulings">${c.judgments.map((j, i) => {
+            const pending = isPendingRuling(j);
+            return `<div class="ruling${pending ? ' is-pending' : ''}"><dt>${stageName(i + 1)}</dt><dd>${pending ? '—' : esc(j)}</dd></div>`;
+          }).join('')}</dl>
         </div>
       </details>`;
     }).join('');
@@ -192,8 +204,8 @@ const DetailView = (() => {
         <th scope="row"><b>${esc(c.name)}</b><span>${esc(c.act)}</span></th>
         ${[0, 1, 2].map(i => {
           const j = c.judgments[i] || '';
-          const pending = PENDING.test(j);
-          return `<td class="${pending ? 'is-pending' : 'is-' + rulingKind(j)}" data-stage="${stageName(i + 1)}">${pending ? '—' : esc(j || '—')}</td>`;
+          const pending = isPendingRuling(j);
+          return `<td class="${pending ? 'is-pending' : 'is-' + rulingKind(rulingSummary(j))}" data-stage="${stageName(i + 1)}">${pending ? '—' : esc(j || '—')}</td>`;
         }).join('')}
       </tr>`).join('');
     $('#compareEyebrow').textContent = `${person.name} · ${record.agency} · 혐의별 1심·2심·대법원 판단`;
