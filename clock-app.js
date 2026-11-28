@@ -22,9 +22,12 @@
     document.querySelectorAll('[data-go]').forEach(a => a.setAttribute('aria-current', a.dataset.go === view ? 'page' : 'false'));
     if (!app) return;
     if (!frame.src) { frame.src = 'v2/' + h; frameHash = h; return; }
+    const w = frame.contentWindow;
+    // 미리 불러오기가 아직 빈 문서에 머물러 있으면 load에서 현재 주소를 적용합니다.
+    if (w.location.protocol === 'about:') return;
     // 바깥에서 들어온 주소: 인물 주소는 지도 안에서 관계도로 엶(ROUTE_FROM_PARENT). 처음 화면에서 같은 주소로 다시 들어와도 다시 적용
     if (h !== frameHash || entering) {
-      frameHash = h; const w = frame.contentWindow; w.ROUTE_FROM_PARENT = true;
+      frameHash = h; w.ROUTE_FROM_PARENT = true;
       // 주소를 바로 바꾸고 즉시 적용(비동기 hashchange를 기다리면 탭 표시가 옛 보기로 남음)
       if (w.location.hash !== h) w.history.replaceState(null, '', h);
       w.dispatchEvent(new HashChangeEvent('hashchange'));
@@ -33,12 +36,16 @@
   // 재판 지도 안에서 보기·인물을 바꾸면 이 페이지 주소도 같이 (뒤로 가기 기록은 남기지 않음)
   frame.addEventListener('load', () => {
     const w = frame.contentWindow;
+    if (w.location.protocol === 'about:') return;
     const follow = () => { const h = w.location.hash; if (isApp(location.hash) && isApp(h) && h !== location.hash) { frameHash = h; history.replaceState(null, '', h); sync(); } };
     w.addEventListener('hashchange', follow);
     const push = w.history.replaceState.bind(w.history); // v2는 replaceState로 주소를 바꿈
     w.history.replaceState = (...a) => { push(...a); follow(); };
     const pushS = w.history.pushState.bind(w.history);
     w.history.pushState = (...a) => { pushS(...a); follow(); };
+    frame.dataset.ready = '1';
+    loading.hidden = true;
+    if (isApp(location.hash)) sync();
   });
   // ── 처음 화면 → 관계도 전환 ──
   // ① 처음 화면이 어둠 속으로 가라앉고 고른 사람 사진만 떠오름 → ② 사진이 관계도 가운데 그 사람 원으로 날아가며 둥글어짐
@@ -135,7 +142,6 @@
   const INTENT = '[data-go], a[data-enter], a.case-head';
   ['pointerover', 'touchstart', 'focusin'].forEach(t => document.addEventListener(t, e => { if (e.target.closest && e.target.closest(INTENT)) preload(); }, { passive: true }));
   if (/^#(yoon|keon)$/.test(location.hash)) preload(); // 사진을 고른 상태로 들어온 주소
-  frame.addEventListener('load', () => { frame.dataset.ready = '1'; loading.hidden = true; });
   let entering = false;
   document.addEventListener('click', e => {
     const a = e.target.closest('a.case-head, a[data-enter]');

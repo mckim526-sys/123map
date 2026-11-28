@@ -1,6 +1,7 @@
 // Reader-facing record of what changed on the site. Add one plain-language line per published change
 // (newest first). The "recently checked trials" list below it is built automatically from lastChecked.
 const SITE_CHANGES = [
+  ['2026-11-28', '첫 화면에서 재판 지도를 불러오는 중에 그날 밤 등 보기 탭을 누르면 로딩이 끝난 뒤 고른 보기를 열도록 고쳤습니다.'],
   ['2026-11-28', '첫 화면 인물 사진의 번호를 빼고, 그날 밤에 장면 제목을 달아 발언·1심 판단·당사자 입장을 주체별로 나눴습니다. 모바일 장소별 목록은 끝까지 스크롤할 수 있도록 고쳤습니다.'],
   ['2026-11-28', '출처·보도 안내를 세 줄로 줄이고, 가장 최근 변경 기록의 날짜를 표시하도록 바꿨습니다.'],
   ['2026-11-29', '재판 상세의 설명 상자를 3줄 이내로 요약하고, 관련 보도의 기사 제목은 한 줄을 넘으면 …으로 줄여 보이게 했습니다.'],
