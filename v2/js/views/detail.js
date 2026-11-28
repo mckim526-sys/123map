@@ -18,9 +18,21 @@ const DetailView = (() => {
     return PENDING.test(summary) || rulingKind(summary) === 'other';
   }
 
+  // 배지에는 결론만 짧게 ("결론 — 이유"의 앞부분. 문장이 길면 핵심 결론으로 줄임)
+  function rulingLabel(text) {
+    const t = rulingSummary(text);
+    if (t.length <= 12) return t;
+    if (/파기환송/.test(t)) return '파기환송';
+    if (/공소기각/.test(t)) return /유지/.test(t) ? '공소기각 유지' : '공소기각';
+    if (/유죄/.test(t) && /무죄/.test(t)) return '일부 유죄';
+    if (/무죄/.test(t)) return /확정/.test(t) ? '무죄 확정' : '무죄';
+    if (/유죄/.test(t)) return /확정/.test(t) ? '유죄 확정' : '유죄';
+    return t;
+  }
+
   function latestRuling(judgments) {
     for (let i = judgments.length - 1; i >= 0; i--) {
-      if (!isPendingRuling(judgments[i])) return { stage: i + 1, text: rulingSummary(judgments[i]) };
+      if (!isPendingRuling(judgments[i])) return { stage: i + 1, text: rulingLabel(judgments[i]) };
     }
     return null;
   }
