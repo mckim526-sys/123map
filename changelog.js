@@ -1,6 +1,7 @@
 // Reader-facing record of what changed on the site. Add one plain-language line per published change
 // (newest first). The "recently checked trials" list below it is built automatically from lastChecked.
 const SITE_CHANGES = [
+  ['2026-11-29', '재판 상세의 설명 상자를 3줄 이내로 요약하고, 관련 보도의 기사 제목은 한 줄을 넘으면 …으로 줄여 보이게 했습니다.'],
   ['2026-11-28', '그날 밤의 각 장면과 장소별 목록에 1심 판결문과 공소사실의 출처와 쪽수를 표시하고, 이진우 통화 발언 시각을 판결문에 맞춰 바로잡았습니다.'],
   ['2026-11-29', '혐의별 판단을 \'결론 — 이유\' 형태로 다듬어 배지에 결론(유죄·무죄·파기환송 등)만 짧게 보이게 하고, 재판 설명에 남아 있던 작업 메모와 불필요한 단서 문장을 정리했습니다.'],
   ['2026-11-29', '확인되지 않았던 일정·재판 경과를 다시 찾아 체포 저지 사건 첫 공판(12월 10일), 조성현 결심(12월 31일), 군 사령관 항소심 일정, 신용해·김상환·최재혁·손동신 1심 진행 상황, 강의구 2심 재판부를 채웠습니다.'],

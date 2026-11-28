@@ -111,7 +111,7 @@ const DetailView = (() => {
     return (record.news || []).map(n => `
       <a class="news-card" href="${esc(n.url)}" target="_blank" rel="noopener noreferrer">
         <span class="news-card__meta">${esc(n.publisher || 'MBC')} · ${esc(n.date)}</span>
-        <b class="news-card__title">${esc(n.title)}</b>
+        <b class="news-card__title" title="${esc(n.title)}">${esc(n.title)}</b>
       </a>`).join('');
   }
 

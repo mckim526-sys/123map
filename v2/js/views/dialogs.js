@@ -13,7 +13,7 @@ const Dialogs = {
     }).sort((a, b) => (b.date || '0').localeCompare(a.date || '0'));
     $('#sourceLinks').innerHTML = items.map(s => `
       <a href="${esc(s.url)}" target="_blank" rel="noopener">
-        <time>${esc(s.date || '날짜 미상')}</time><span>${esc(s.title)} ↗</span>
+        <time>${esc(s.date || '날짜 미상')}</time><span title="${esc(s.title)}">${esc(s.title)}</span><i aria-hidden="true">↗</i>
       </a>`).join('');
     $('#sourcesBtn').addEventListener('click', () => $('#sourcesDialog').showModal());
     $$('[data-close]').forEach(b => b.addEventListener('click', () => b.closest('dialog').close()));
