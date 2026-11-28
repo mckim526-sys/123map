@@ -70,8 +70,8 @@ body.pv.in-app::after { display: none; }
   background: linear-gradient(180deg, rgba(11,15,22,.05) 0%, rgba(11,15,22,0) 38%, rgba(11,15,22,.72) 76%, rgba(11,15,22,.94) 100%); }
 .pv .fig-img { filter: grayscale(1) contrast(1.12) brightness(.86); transition: transform 1.2s cubic-bezier(.2, .8, .2, 1), filter .6s; }
 .pv .fig:hover .fig-img, .pv .fig.on .fig-img { transform: scale(1.025); filter: grayscale(1) contrast(1.12) brightness(.96); }
-.pv .fig[data-fig="keon"] .fig-img { filter: grayscale(1) contrast(1.05) brightness(.66); }
-.pv .fig[data-fig="keon"]:hover .fig-img, .pv .fig[data-fig="keon"].on .fig-img { filter: grayscale(1) contrast(1.05) brightness(.76); }
+.pv .fig[data-fig="keon"] .fig-img { filter: grayscale(1) contrast(1.1) brightness(.56); }
+.pv .fig[data-fig="keon"]:hover .fig-img, .pv .fig[data-fig="keon"].on .fig-img { filter: grayscale(1) contrast(1.1) brightness(.66); }
 .pv .fig-label { position: absolute; left: 0; right: 0; bottom: 0; z-index: 1; padding: var(--sp-4); }
 .pv .fig-label small { font-size: 11px; letter-spacing: .14em; color: var(--paper-2); }
 .pv .fig-label b { margin-top: 2px; font-family: var(--font-serif); font-size: clamp(22px, 2vw, 28px); line-height: 1.25; font-weight: 700; letter-spacing: -.01em; color: var(--paper); }
