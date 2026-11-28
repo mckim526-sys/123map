@@ -634,6 +634,20 @@ body.has-detail .detail {
 .compare tbody th span { display: block; margin-top: var(--sp-1); font-size: var(--fs-caption); color: var(--text-secondary); }
 .compare td { width: 24.6%; }
 .compare td.is-pending { color: var(--text-tertiary); }
+/* 좁은 화면: 가로 스크롤 없이 세로로 — 위에 심급별 결과, 아래에 혐의마다 1심·2심·대법원 줄 */
+@media (max-width: 760px) {
+  .compare-wrap { overflow-x: visible; }
+  .compare { min-width: 0; }
+  .compare, .compare thead, .compare tbody, .compare tr, .compare th, .compare td { display: block; width: auto; }
+  .compare thead tr { display: grid; grid-template-columns: repeat(3, 1fr); background: var(--bg-subtle); }
+  .compare thead th:first-child { display: none; }
+  .compare thead th { padding: var(--sp-3); }
+  .compare thead th b { font-size: var(--fs-body); }
+  .compare tbody tr { border-top: 1px solid var(--border-default); padding: var(--sp-3) var(--sp-4); }
+  .compare tbody th, .compare td { padding: 0; border-top: 0; }
+  .compare td { display: grid; grid-template-columns: 52px 1fr; gap: var(--sp-2); margin-top: var(--sp-2); }
+  .compare td::before { content: attr(data-stage); font-size: var(--fs-caption); font-weight: var(--fw-bold); color: var(--text-tertiary); }
+}
 .compare td.is-acquit { color: var(--teal-600); }
 .modal::backdrop { background: var(--overlay); }
 .modal__head {

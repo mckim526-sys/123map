@@ -193,7 +193,7 @@ const DetailView = (() => {
         ${[0, 1, 2].map(i => {
           const j = c.judgments[i] || '';
           const pending = PENDING.test(j);
-          return `<td class="${pending ? 'is-pending' : 'is-' + rulingKind(j)}">${pending ? '—' : esc(j || '—')}</td>`;
+          return `<td class="${pending ? 'is-pending' : 'is-' + rulingKind(j)}" data-stage="${stageName(i + 1)}">${pending ? '—' : esc(j || '—')}</td>`;
         }).join('')}
       </tr>`).join('');
     $('#compareEyebrow').textContent = `${person.name} · ${record.agency} · 혐의별 1심·2심·대법원 판단`;

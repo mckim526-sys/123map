@@ -1,6 +1,7 @@
 // Reader-facing record of what changed on the site. Add one plain-language line per published change
 // (newest first). The "recently checked trials" list below it is built automatically from lastChecked.
 const SITE_CHANGES = [
+  ['2026-11-28', '모바일에서 ‘혐의별 1심·2심·대법원 나란히 보기’가 1심만 보이고 나머지는 옆으로 밀리던 것을 세로로 쌓아 한눈에 보이게 했습니다.'],
   ['2026-11-28', '심급 칸의 ‘진행 전·판단 미확인’을 상황에 맞게(‘2심 선고 후’·‘상고 여부 확인 중’·‘심리 중’·‘상고 없음’) 보여 주고, 혐의별 판단의 미확인 칸은 흐린 ‘—’로 바꿨습니다.'],
   ['2026-11-27', '관저 이전 예산 전용 사건 피고인 4명의 1심 판단과 황교안 사건의 구형·선고 예정일을 반영했습니다.'],
   ['2026-11-28', '관련 보도 카드의 ‘기사 원문 보기’ 문구를 뺐습니다(카드를 누르면 기사로 이동).'],
