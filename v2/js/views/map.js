@@ -98,7 +98,7 @@ const MapView = (() => {
       return;
     }
     layoutKey = key;
-    Relation.close(); hideMenu(true);
+    hideMenu(true); hideEdgeTip();
     nodeLayer.classList.remove('is-replay');
     // 넓은 화면의 인물 중심 보기는 좌우 가지형(가운데 인물, 양옆 사건 상자)으로
     if (egoNow && useBranch(gr.width)) return drawBranch(S, list);
@@ -146,7 +146,7 @@ const MapView = (() => {
       <p class="solo-menu__title">${esc(center.name)} 혼자 피고인인 재판</p>
       ${sg.members.map(m => `<button class="solo-menu__item" role="menuitem" data-id="${esc(center.id)}" data-case-link="${esc(m.id)}">${esc(m.label)}<small>${esc(m.agency)}</small></button>`).join('')}</div>`);
     clearSpotlight();
-    last = { center, activeCase, badges, coIds, egoMode };
+    last = { center, activeCase, badges, coIds, egoMode, agency: S.agency };
 
     // 실제로 그려진 이름표 크기를 재서 겹침을 풀고, 선은 점의 가장자리에서 시작
     const g = graph.getBoundingClientRect();
@@ -211,7 +211,7 @@ const MapView = (() => {
       const co = isCo(pair);
       return `<g class="edge ${co ? 'is-co' : 'is-rel'} ${egoMode ? 'is-active' : ''}" tabindex="0" role="button"
         aria-label="${esc(a.p.name + ' · ' + b.p.name + ' : ' + label)}" data-edge data-from="${esc(a.p.id)}" data-to="${esc(b.p.id)}">
-        <path class="edge__hit" d="${d}"/><path class="edge__line" d="${d}"${co ? ' pathLength="1"' : ''}/><title>${esc(label)}</title></g>`;
+        <path class="edge__hit" d="${d}"/><path class="edge__line" d="${d}"${co ? ' pathLength="1"' : ''}/></g>`;
     }).join('');
     // 단독 사건 뱃지: 함께 재판받는 사람이 없어 선이 없으므로, 중심 인물에서 뱃지까지 가는 점선으로 '이 사람의 사건'임을 보여 줌
     if (egoMode) edgeLayer.insertAdjacentHTML('afterbegin', badges.filter(b => (b.solo || b.soloGroup) && b.px).map(b => {
@@ -599,7 +599,7 @@ const MapView = (() => {
     leaveBranch();
     prevSize = { w: nodeLayer.clientWidth, h: nodeLayer.clientHeight };
     $('#mapFocus') && ($('#mapFocus').hidden = true);
-    clearSpotlight(); Relation.close(); last = null; lastKey = ''; cancelAnimationFrame(anim);
+    clearSpotlight(); hideEdgeTip(); last = null; lastKey = ''; cancelAnimationFrame(anim);
     const people = INTRO.map(([id, x, y]) => ({ p: Model.get(id), x, y })).filter(v => v.p);
     nodeLayer.innerHTML = people.map((v, i) => `
       <button class="node is-intro ${i === 0 ? 'is-root' : ''}" data-intro="${esc(v.p.id)}" style="left:${v.x}%;top:${v.y}%;--i:${i}"
@@ -622,7 +622,7 @@ const MapView = (() => {
       const x1 = (a.x / 100 * W + ra) * 900 / W, x2 = (b.x / 100 * W - rb) * 900 / W, y = a.y * 6.2;
       const label = Model.linkLabel(a.p, b.p, 'all') || '';
       edgeLayer.innerHTML = `<g class="edge is-rel is-active intro-edge" tabindex="0" role="button" data-edge data-from="${esc(a.p.id)}" data-to="${esc(b.p.id)}"
-        aria-label="${esc(a.p.name + ' · ' + b.p.name + ' : ' + label)}"><path class="edge__hit" d="M ${x1} ${y} L ${x2} ${y}"/><path class="edge__line" d="M ${x1} ${y} L ${x2} ${y}"/><title>${esc(label)}</title></g>`;
+        aria-label="${esc(a.p.name + ' · ' + b.p.name + ' : ' + label)}"><path class="edge__hit" d="M ${x1} ${y} L ${x2} ${y}"/><path class="edge__line" d="M ${x1} ${y} L ${x2} ${y}"/></g>`;
     } else edgeLayer.innerHTML = '';
 
     $('#mapContext').textContent = '12·3 사건의 두 핵심 인물에서 시작합니다 · 사건을 고르면 연결된 사람들이 펼쳐집니다';
@@ -926,6 +926,39 @@ const MapView = (() => {
     mo.observe(groupLayer, { childList: true }); mo.observe(nodeLayer, { childList: true });
   }
   bindCaseTip();
+
+  // ── 관계선 말풍선 ─────────────────────────
+  // 선에 마우스를 올리면 두 사람 · 그 선이 뜻하는 사건(함께 재판 / 별도 재판 / 가족 관계)을 짧게. 누르면 그 사건 재판 상세(main.js openLink)
+  // 터치 화면은 띄우지 않음(누르면 바로 상세)
+  const edgeTip = document.createElement('div');
+  edgeTip.className = 'edge-tip'; edgeTip.setAttribute('role', 'tooltip'); edgeTip.hidden = true;
+  document.body.appendChild(edgeTip);
+  let edgeTipFor = null;
+  function hideEdgeTip() { edgeTipFor = null; edgeTip.hidden = true; }
+  function edgeTipText(a, b) {
+    const pa = Model.get(a), pb = Model.get(b);
+    const cases = Model.linkCases(pa, pb, last?.agency || 'all');
+    const c = cases[0];
+    const what = !c ? '' : c.kind === 'co' ? `${c.title} · 함께 재판` : c.title; // 별도 재판은 제목에 '· 별도 재판'이 붙어 있음
+    return `<b>${esc(pa.name)} · ${esc(pb.name)}</b>${what ? `<span>${esc(what)}${cases.length > 1 ? ` 외 ${cases.length - 1}건` : ''}</span>` : ''}
+      <small>${c?.records?.length ? '누르면 재판 상세' : '누르면 ' + esc(pa.name) + ' 재판 기록'}</small>`;
+  }
+  function placeEdgeTip(x, y) {
+    const w = edgeTip.offsetWidth, h = edgeTip.offsetHeight, pad = 8;
+    edgeTip.style.left = Math.min(Math.max(pad, x + 14), innerWidth - w - pad) + 'px';
+    edgeTip.style.top = (y + 18 + h <= innerHeight - pad ? y + 18 : Math.max(pad, y - 12 - h)) + 'px';
+  }
+  if (canHover()) {
+    graph.addEventListener('mouseover', e => {
+      const edge = e.target.closest('.edge[data-edge]');
+      if (!edge) return;
+      if (edgeTipFor !== edge) { edgeTipFor = edge; edgeTip.innerHTML = edgeTipText(edge.dataset.from, edge.dataset.to); edgeTip.hidden = false; }
+      placeEdgeTip(e.clientX, e.clientY);
+    });
+    graph.addEventListener('mousemove', e => { if (edgeTipFor && e.target.closest('.edge') === edgeTipFor) placeEdgeTip(e.clientX, e.clientY); });
+    graph.addEventListener('mouseout', e => { const edge = e.target.closest('.edge[data-edge]'); if (edge && !edge.contains(e.relatedTarget)) hideEdgeTip(); });
+    ['click', 'wheel', 'pointerdown'].forEach(ev => graph.addEventListener(ev, hideEdgeTip, { passive: true }));
+  }
 
   // ── 관계도 이동·확대 (데스크톱·모바일 공통) ─────────────────
   // 모바일: 관계도를 넉넉한 크기(680×620)로 그리고 한 손가락 끌기 = 이동, 두 손가락 = 확대·축소. 기본 0.9배

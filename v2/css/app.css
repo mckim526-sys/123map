@@ -321,7 +321,7 @@ body.has-detail .workspace { grid-template-columns: minmax(0, 1fr) var(--panel-w
 .edge__line { fill: none; stroke: var(--edge-rel); stroke-width: 1.2; stroke-dasharray: 4 4; vector-effect: non-scaling-stroke; transition: opacity var(--motion), stroke-width var(--motion); }
 .edge.is-co .edge__line { stroke: var(--edge-co); stroke-width: 1.5; stroke-dasharray: none; stroke-linecap: round; opacity: .7; }
 .edge.is-rel .edge__line { opacity: .55; }
-.edge:hover .edge__line, .edge:focus-visible .edge__line, .edge.is-previewing .edge__line { stroke: var(--blue-700); stroke-width: 2.5; opacity: 1; }
+.edge:hover .edge__line, .edge:focus-visible .edge__line { stroke: var(--blue-700); stroke-width: 2.5; opacity: 1; }
 
 /* 노드: 아바타 크기 4단계 (중심 64 / 선택 56 / 함께 재판 40 / 기타 28) · 이름표 3단계 (title / label / caption)
    --s 하나로 크기를 정하고, 이름표는 아바타 바로 아래에 붙음 */
@@ -723,7 +723,7 @@ body.has-detail .detail {
 .person-chip b { margin-left: 2px; font-size: var(--fs-label); }
 .person-chip span { font-size: var(--fs-caption); color: var(--text-tertiary); }
 .person-chip.is-co b { color: var(--blue-700); }
-.person-chip:hover, .person-chip.is-previewing { border-color: var(--border-accent); }
+.person-chip:hover { border-color: var(--border-accent); }
 .detail-more { margin-top: var(--sp-1); }
 .detail-more > summary { width: fit-content; padding: var(--sp-2) var(--sp-1); cursor: pointer; font-size: var(--fs-label); font-weight: var(--fw-bold); color: var(--text-secondary); }
 .detail-more > summary:hover { color: var(--text-primary); }
@@ -731,31 +731,16 @@ body.has-detail .detail {
 .detail-more__collapse, .detail-more[open] .detail-more__expand { display: none; }
 .detail-more[open] .detail-more__collapse { display: inline; }
 
-/* 11 ── 연결 팝업 */
-.relation-pop {
-  position: fixed; z-index: var(--z-popover); display: flex; flex-direction: column; width: 380px; max-height: min(640px, calc(100vh - 24px));
-  border-radius: var(--r-lg); background: var(--bg-page); box-shadow: var(--shadow-3); overflow: hidden;
+/* 11 ── 관계선 말풍선 (선에 마우스를 올리면 · map.js) */
+.edge-tip {
+  position: fixed; z-index: var(--z-popover); max-width: 280px; padding: var(--sp-2) var(--sp-3); pointer-events: none;
+  border: 1px solid var(--border-default); border-radius: var(--r-md); background: var(--bg-page); box-shadow: var(--shadow-2);
+  display: flex; flex-direction: column; gap: 2px; font-size: var(--fs-caption); line-height: var(--lh-caption); color: var(--text-secondary);
 }
-.rp-head { display: flex; align-items: flex-start; gap: var(--sp-3); padding: var(--sp-4) var(--sp-4) var(--sp-4) var(--sp-5); border-bottom: 1px solid var(--border-default); }
-.rp-head__text { flex: 1; min-width: 0; }
-.rp-head h2 { margin: var(--sp-1) 0; font-size: var(--fs-title); line-height: var(--lh-title); }
-.rp-photo { flex: none; width: 48px; height: 48px; border-radius: var(--r-md); object-fit: cover; background: var(--bg-muted); }
-.rp-photo--empty { font-size: 0; }
-.rp-photo--empty small { display: none; }
-.rp-body { flex: 1; overflow-y: auto; padding: var(--sp-4) var(--sp-5); }
-.rp-body .section-title:first-of-type { margin-top: var(--sp-4); }
-.rp-case { font-size: var(--fs-subtitle); font-weight: var(--fw-bold); }
-.rp-roster { margin: var(--sp-3) 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: var(--sp-2); }
-.rp-roster li { padding: var(--sp-3); border: 1px solid var(--border-default); border-radius: var(--r-md); }
-.rp-roster li.is-pair { background: var(--bg-subtle); }
-.rp-roster__head { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-1) var(--sp-2); margin-bottom: var(--sp-1); }
-.rp-roster__head .badge { margin-left: auto; }
-.rp-roster p { font-size: var(--fs-label); line-height: var(--lh-body); color: var(--gray-700); }
-.rp-account { display: flex; flex-direction: column; gap: var(--sp-2); padding: var(--sp-3) 0; border-top: 1px solid var(--border-default); font-size: var(--fs-body); }
-.rp-account__title { font-weight: var(--fw-bold); }
-.rp-account .badge { align-self: flex-start; }
-.rp-caution { margin-top: var(--sp-5); }
-.rp-foot { padding: var(--sp-3) var(--sp-5) var(--sp-4); border-top: 1px solid var(--border-default); }
+.edge-tip[hidden] { display: none; }
+.edge-tip b { font-size: var(--fs-label); line-height: var(--lh-label); color: var(--text-primary); }
+.edge-tip span { color: var(--text-primary); }
+.edge-tip small { font-size: var(--fs-caption); color: var(--text-tertiary); }
 
 /* 12 ── 대화상자 */
 .modal {
@@ -887,7 +872,6 @@ body.has-detail .detail {
   .sheet-backdrop { display: block; position: fixed; inset: 0; z-index: var(--z-sheet-backdrop); border: 0; background: var(--overlay); }
   .detail__body { padding: var(--sp-4) var(--sp-4) var(--sp-10); }
 
-  .relation-pop { left: var(--sp-2) !important; right: var(--sp-2); top: auto !important; bottom: var(--sp-2); width: auto; max-height: 80vh; z-index: var(--z-popover-mobile); }
   /* 오프닝: 인물 크기 축소, 사건 목록은 화면 아래 시트로 */
   .node.is-intro { --s: 72px; }
   .node.is-intro.is-root { --s: 88px; }

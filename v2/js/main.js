@@ -263,7 +263,12 @@
     $$('.case-tabs .is-active').forEach(b => { b.classList.remove('is-active'); b.setAttribute('aria-selected', 'false'); });
   }
 
-  Relation.setContext({ open, agency: () => S.agency });
+  // 관계선을 누르면 그 선이 뜻하는 사건의 재판 상세로 바로 (연결 창 없음). 선 앞쪽 사람의 그 사건 기록을 먼저
+  function openLink(a, b) {
+    const link = Model.linkCases(Model.get(a), Model.get(b), S.agency)[0];
+    const hit = link?.records.find(x => x.person.id === a) || link?.records[0];
+    return hit ? open(hit.person.id, hit.record.id) : open(a);
+  }
 
   // ── 클릭 위임 ──
   document.addEventListener('click', e => {
@@ -295,7 +300,7 @@
     if (t.closest('[data-intro-skip]')) { history.pushState(null, '', '#map'); return applyRoute(); }
     if (t.closest('[data-close-detail]') || t.closest('#sheetBackdrop')) return closeDetail();
     const edge = t.closest('[data-edge]');
-    if (edge) return Relation.open(edge.dataset.from, edge.dataset.to, edge, true);
+    if (edge) return openLink(edge.dataset.from, edge.dataset.to);
     // 두 번 누르면 취소: 이미 고른 사건(뱃지·탭)을 다시 누르면 사건 강조 해제
     if (t.closest('.group-tag.is-active[data-case-link], .case-tabs .is-active[data-case]')) return clearCase();
     const caseLink = t.closest('[data-case-link]');
@@ -369,7 +374,7 @@
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape' && S.detailOpen && !document.querySelector('dialog[open]')) closeDetail();
     if ((e.key === 'Enter' || e.key === ' ') && e.target.dataset?.edge !== undefined) {
-      e.preventDefault(); Relation.open(e.target.dataset.from, e.target.dataset.to, e.target, true);
+      e.preventDefault(); openLink(e.target.dataset.from, e.target.dataset.to);
     }
   });
 

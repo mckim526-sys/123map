@@ -118,7 +118,7 @@
 - `.icon-btn`(닫기) · `.badge`(상태, `--neutral`) · `.pill`(인물 이름 버튼)
 - `.segmented`(보기 전환) · `.chips`(필터, 선택 시 검정) · `.case-tabs`(사건 선택, 선택 시 파랑)
 - `.content-card`(head / pane / foot) · `.case-card` · `.charge` · `.news-card` · `.callout`
-- `.stepper`(연결 팝업의 1·2·3심 막대) · `.verdict`(상세의 심급별 결과 타임라인: done ✓ / current 파랑 채움 / final 남색 / todo 빈 원 / **skip 점선 원·흐린 글자**)
+- `.stepper`(1·2·3심 막대, progress.js) · `.verdict`(상세의 심급별 결과 타임라인: done ✓ / current 파랑 채움 / final 남색 / todo 빈 원 / **skip 점선 원·흐린 글자**)
   - skip = 앞 심급에서 확정됐거나, 결과가 "취하·없음·미도달·해당 없음"인 심급(열리지 않은 심급)
   - 이음선은 다음 심급이 열렸을 때만: 열림 → 파랑 실선(`link-on`), 진행 전 → 회색 점선(`link-pending`), 열리지 않음 → **끊김**
   - 혐의 카드의 "최신 판단" 배지도 열리지 않은 심급은 건너뜀 (예: "3심 상고심 없음" 대신 "1심 무죄")
