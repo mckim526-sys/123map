@@ -175,9 +175,13 @@ const DetailView = (() => {
           </div>`).join('')}
       </section>`;
 
+    // 누르면 그 사람 중심으로 관계도가 바뀌고, 상세에는 그 사람의 같은 사건 기록(지금 보는 재판 → 칩에 적힌 사건 순)이 열림
     const people = related.map(v => {
       const co = Model.triedTogether(person, v, agency);
-      return `<button class="person-chip ${co ? 'is-co' : ''}" data-id="${esc(v.id)}" data-related-to="${esc(person.id)}" aria-haspopup="dialog">
+      const link = Model.linkCases(person, v, agency)[0];
+      const rec = Model.sameTrialRec(person, record, v) || link?.records.find(x => x.person.id === v.id)?.record;
+      return `<button class="person-chip ${co ? 'is-co' : ''}" data-id="${esc(v.id)}"${rec ? ` data-case-link="${esc(rec.id)}"` : ''}
+        aria-label="${esc(v.name)} 중심으로 보기 (${co ? '함께 기소 · ' : ''}${esc(Model.linkLabel(person, v, agency))})">
         ${avatar(v, 'ava--sm')}<b>${esc(v.name)}</b><span>${co ? '함께 기소 · ' : ''}${esc(Model.linkLabel(person, v, agency))}</span></button>`;
     });
 
@@ -198,7 +202,7 @@ const DetailView = (() => {
       ${section('혐의별 판단', `${record.charges.length}건 · 눌러서 펼치기`, 'charges')}
       <div class="stack">${chargeList(record)}</div>
       ${record.note ? `<p class="callout">${esc(record.note)}</p>` : ''}
-      ${people.length ? section('연결된 인물', `${people.length}명 · 누르면 관계 설명`, 'people') + expandableList(people, 7, '명', 'person-chips') : ''}
+      ${people.length ? section('연결된 인물', `${people.length}명 · 누르면 그 사람 중심으로`, 'people') + expandableList(people, 7, '명', 'person-chips') : ''}
       ${section('관련 보도', `MBC · ${news.length}건`, 'news')}
       ${news.length ? expandableList(news.map(newsCard), 5, '건', 'news-list') : '<p class="caption">연결할 보도를 확인하고 있습니다.</p>'}
       <div class="detail__fineprint">

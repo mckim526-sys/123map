@@ -115,17 +115,7 @@ const Relation = (() => {
     if (pinned) $('.rp-close', pop).focus();
   }
 
-  const chipTarget = el => {
-    const chip = el.closest('[data-related-to]');
-    return chip ? { a: chip.dataset.relatedTo, b: chip.dataset.id, anchor: chip } : null;
-  };
-
   // ── 이벤트 ──
-  document.addEventListener('pointerover', e => {
-    if (e.pointerType !== 'mouse') return;
-    const t = chipTarget(e.target);
-    if (t) open(t.a, t.b, t.anchor);
-  });
   document.addEventListener('pointerout', e => {
     if (!st || st.pinned || e.pointerType !== 'mouse') return;
     const next = e.relatedTarget;
@@ -136,11 +126,6 @@ const Relation = (() => {
   pop.addEventListener('pointerover', () => clearTimeout(closeTimer));
   document.addEventListener('pointerdown', e => {
     if (st && !pop.contains(e.target) && !st.anchor.contains(e.target)) close();
-  });
-  document.addEventListener('focusin', e => {
-    if (quietFocus) return;
-    const t = chipTarget(e.target);
-    if (t) open(t.a, t.b, t.anchor);
   });
   pop.addEventListener('change', e => {
     if (e.target.id !== 'rpCase') return;
@@ -156,5 +141,5 @@ const Relation = (() => {
   }, true);
   addEventListener('resize', () => close());
 
-  return { open, close, chipTarget, setContext: c => Object.assign(ctx, c) };
+  return { open, close, setContext: c => Object.assign(ctx, c) };
 })();

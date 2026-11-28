@@ -768,6 +768,12 @@ const MapView = (() => {
   });
 
   // ── 마우스 오버 강조 ─────────────────────────
+  let peekFns = null;
+  function peek(id) {
+    if (!peekFns) return;
+    if (!id || !$(`.node[data-id="${CSS.escape(id)}"]`, nodeLayer)) { graph.classList.remove('is-hovering'); return peekFns.clear(); }
+    graph.classList.add('is-hovering'); peekFns.light(id);
+  }
   function bindHover() {
     if (!canHover()) return;
     let current = null;
@@ -802,6 +808,8 @@ const MapView = (() => {
         else if (weak.has(n.dataset.id)) n.classList.add('is-peer-weak');
       });
     };
+    // 상세 '연결된 인물'에 마우스를 올렸을 때(main.js): 관계도에 그 사람이 있으면 같은 방식으로 표시
+    peekFns = { light, clear };
     graph.addEventListener('mouseenter', () => graph.classList.add('is-hovering'));
     graph.addEventListener('mouseleave', () => { graph.classList.remove('is-hovering'); clear(); });
     graph.addEventListener('mouseover', e => {
@@ -1049,5 +1057,5 @@ const MapView = (() => {
   // 이번에 좌우 가지형으로 그리는가 ('○○ 중심' 줄 표시 여부를 그리기 전에 정할 때 씀)
   const wantsBranch = () => useBranch(graph.offsetWidth);
 
-  return { render, renderIntro, centerOnMobile, spotlightCase, clearCase, wantsBranch };
+  return { render, renderIntro, centerOnMobile, spotlightCase, clearCase, wantsBranch, peek };
 })();

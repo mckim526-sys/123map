@@ -296,8 +296,6 @@
     if (t.closest('[data-close-detail]') || t.closest('#sheetBackdrop')) return closeDetail();
     const edge = t.closest('[data-edge]');
     if (edge) return Relation.open(edge.dataset.from, edge.dataset.to, edge, true);
-    const chip = Relation.chipTarget(t);
-    if (chip) return Relation.open(chip.a, chip.b, chip.anchor, true);
     // 두 번 누르면 취소: 이미 고른 사건(뱃지·탭)을 다시 누르면 사건 강조 해제
     if (t.closest('.group-tag.is-active[data-case-link], .case-tabs .is-active[data-case]')) return clearCase();
     const caseLink = t.closest('[data-case-link]');
@@ -316,6 +314,16 @@
       const p = Model.get(S.selected);
       DetailView.compare(p, p.records.find(r => r.id === S.caseId), S.agency);
     }
+  });
+
+  // 상세 '연결된 인물'에 마우스를 올리면 관계도에서 그 사람을 표시 (누르면 그 사람 중심으로 — 위 data-case-link)
+  $('#detail').addEventListener('mouseover', e => {
+    const c = e.target.closest('.person-chip[data-id]');
+    if (c && S.view === 'map') MapView.peek(c.dataset.id);
+  });
+  $('#detail').addEventListener('mouseout', e => {
+    const c = e.target.closest('.person-chip[data-id]');
+    if (c && !c.contains(e.relatedTarget)) MapView.peek(null);
   });
 
   // 특검 필터
