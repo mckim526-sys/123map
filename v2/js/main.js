@@ -281,6 +281,9 @@
     }
     if (t.closest('#mapModeBtn')) {
       S.mobileMode = S.mobileMode === 'ego' ? 'graph' : 'ego';
+      // 목록형에서 중심으로 고른 사람이 있으면 그래프도 그 사람 중심으로
+      const c = EgoView.center && EgoView.center();
+      if (S.mobileMode === 'graph' && !S.detailOpen && c && c !== Model.agencyRoot(S.agency)) return open(c);
       render();
       return MapView.centerOnMobile(S.agency);
     }

@@ -50,6 +50,7 @@ const EgoView = (() => {
     const cases = recs.map(r => ({
       rec: r, label: shortLabel(r.label),
       people: [...Model.trialmates(center, r)].filter(id => inPool.has(id)).map(id => Model.get(id)),
+      total: Model.trialmates(center, r).size, // 실제 공동피고인 수(검색·필터와 무관)
       sep: Model.separateTrial(center, r).filter(id => inPool.has(id)).map(id => Model.get(id)), // 같은 사건 · 별도 재판
     })); // 사건 순서는 데이터 순서 그대로 (본류가 먼저)
     const co = new Set(cases.flatMap(c => c.people.map(p => p.id)));
@@ -88,12 +89,13 @@ const EgoView = (() => {
       const r = c.rec, on = r.id === activeCase;
       const body = (c.people.length
         ? tiles(r.id, c.people.map(p => ({ p })), S.detailOpen ? S.selected : '')
+        : c.total ? `<p class="ego-solo">함께 재판받는 ${c.total}명은 지금 조건(검색·특검)에서 숨겨져 있습니다</p>`
         : `<p class="ego-solo">함께 재판받는 사람 없이 단독으로 재판받습니다</p>`)
         + (c.sep.length ? `<p class="ego-sep">같은 사건 · 별도 재판</p>${tiles(r.id + '__sep', c.sep.map(p => ({ p, why: '별도 재판' })), S.detailOpen ? S.selected : '')}` : '');
       return `<section class="ego-card${on ? ' is-active' : ''}">
         <button class="ego-card__head" data-id="${esc(center.id)}" data-case-link="${esc(r.id)}" aria-label="${esc(c.label)} 재판 상세 보기">
           <span><b>${esc(c.label)}</b><span class="caption">${esc(r.agency)} · ${esc(r.status)}</span></span>
-          <span class="ego-card__n">${c.people.length ? `${c.people.length}명` : '단독'}</span><i aria-hidden="true">›</i>
+          <span class="ego-card__n">${c.total ? `${c.total}명` : '단독'}</span><i aria-hidden="true">›</i>
         </button>${body}</section>`;
     };
     const otherCard = others.length ? `<section class="ego-card">
@@ -123,7 +125,7 @@ const EgoView = (() => {
     const inList = new Set(list.map(p => p.id));
     const map = new Map();
     Model.people.forEach(p => p.records.forEach(r => {
-      const key = r.family ? r.agency + ':' + r.family : r.agency + ':' + r.label;
+      const key = r.agency + ':' + (r.family || r.id); // 같은 재판 = 같은 family 또는 같은 기록 id(명단 공유)
       if (!map.has(key)) map.set(key, { key, agency: r.agency, label: shortLabel(r.label), rows: new Map() });
       map.get(key).rows.set(p.id, { p, r });
     }));

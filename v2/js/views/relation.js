@@ -21,8 +21,11 @@ const Relation = (() => {
     for (const id of ids) {
       if (out.some(v => v.person.id === id)) continue;
       const q = Model.get(id), s = seed.record;
-      const rec = q.records.find(r => (s.family && r.family === s.family) || (r.members || []).includes(seed.person.id))
-        || q.records.find(r => r.label === s.label);
+      // 같은 재판의 기록: 같은 기록 id → 같은 family → 서로를 명단에 둔 같은 이름 기록 (다른 사건으로 새지 않게)
+      const rec = q.records.find(r => r.id === s.id)
+        || (s.family && q.records.find(r => r.family === s.family))
+        || q.records.find(r => (r.members || []).includes(seed.person.id) && r.label === s.label)
+        || q.records.find(r => (s.members || []).includes(q.id) && r.label === s.label);
       if (rec) out.push({ person: q, record: rec });
     }
     return out;
@@ -104,7 +107,7 @@ const Relation = (() => {
       return;
     }
     close();
-    st = { a, b, anchor, pinned, cases: Model.sharedCases(a, b, label), index: 0 };
+    st = { a, b, anchor, pinned, cases: Model.linkCases(a, b, ctx.agency()), index: 0 };
     anchor.classList.add('is-previewing'); anchor.setAttribute('aria-expanded', 'true');
     pop.hidden = false; render();
     if (pinned) $('.rp-close', pop).focus();

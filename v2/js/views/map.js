@@ -16,7 +16,8 @@ const MapView = (() => {
     const recs = center.records.filter(r => S.agency === 'all' || r.agency === S.agency);
     const cases = recs.map(r => ({
       id: r.id, label: shortLabel(r.label), agency: r.agency,
-      ids: [...Model.trialmates(center, r)].filter(id => inList.has(id)),
+      ids: [...Model.trialmates(center, r)].filter(id => inList.has(id)), // 화면에 놓을 사람(검색·필터 반영)
+      total: Model.trialmates(center, r).size, // 실제 공동피고인 수(사건 기록 기준)
       sep: Model.separateTrial(center, r).filter(id => inList.has(id)), // 같은 사건 · 별도 재판 (점선으로 그 사건 곁에)
     }));
     const coIds = new Set(cases.flatMap(c => c.ids));
@@ -49,7 +50,7 @@ const MapView = (() => {
     const badges = clusters.map(c => {
       const a = (ang(c.from) + ang(c.to)) / 2, empty = !c.place.length;
       const r = empty ? 19 : 24; // 단독 사건 뱃지는 중심 인물 가까이(가는 점선으로 이어 줌)
-      return { ...c, solo: !c.other && !c.ids.length, x: 50 + r * Math.cos(a), y: 47 + (r + 4) * Math.sin(a) };
+      return { ...c, solo: !c.other && !c.total, x: 50 + r * Math.cos(a), y: 47 + (r + 4) * Math.sin(a) };
     });
     return { out, coIds, badges };
   }
@@ -117,7 +118,7 @@ const MapView = (() => {
     groupLayer.innerHTML = badges.map((b, i) => b.other
       ? `<button class="group-tag group-tag--other" data-group="${i}" style="left:${b.x}%;top:${b.y}%" aria-label="그 밖의 관계 ${b.ids.length}명 강조">${esc(b.label)}<b>${b.ids.length}</b></button>`
       : `<button class="group-tag ${b.solo ? 'is-solo' : ''}" data-group="${i}" data-id="${esc(center.id)}" data-case-link="${esc(b.id)}" style="left:${b.x}%;top:${b.y}%"
-          aria-label="${esc(center.name)} ${esc(b.label)} 사건 보기${b.solo ? ' (단독 재판)' : ` (함께 재판 ${b.ids.length}명)`}">${esc(b.label)}<b>${b.solo ? '단독' : b.ids.length}</b></button>`).join('');
+          aria-label="${esc(center.name)} ${esc(b.label)} 사건 보기${b.solo ? ' (단독 재판)' : ` (함께 재판 ${b.total}명)`}">${esc(b.label)}<b>${b.solo ? '단독' : b.total}</b></button>`).join('');
     clearSpotlight();
     last = { center, activeCase, badges, coIds, egoMode };
 
@@ -581,14 +582,15 @@ const MapView = (() => {
       if (!r) return '';
       const mates = b.ids.filter(id => id !== c.id);
       const sep = (b.sep || []).filter(id => !last.coIds.has(id));
-      const why = (b.solo || !mates.length
+      const why = (b.solo
         ? `${esc(c.name)} 혼자 피고인인 재판입니다.`
-        : `${esc(c.name)}${wa(c.name)} 같은 사건으로 함께 기소돼 재판받는 사람들입니다 — ${esc(listNames(mates))}.`)
+        : !mates.length ? `${esc(c.name)}${wa(c.name)} 함께 재판받는 ${b.total}명은 지금 조건(검색·특검)에서 숨겨져 있습니다.`
+        : `${esc(c.name)}${wa(c.name)} 같은 사건으로 함께 기소돼 재판받는 사람들입니다 — ${esc(listNames(mates))}${b.total > mates.length ? ` 등 ${b.total}명` : ''}.`)
         + (sep.length ? ` 같은 사건으로 따로 기소돼 별도로 재판받는 사람(점선): ${esc(listNames(sep))}.` : '');
       const charges = (r.charges || []).slice(0, 3).map(ch => `<li><b>${esc(ch.name)}</b>${ch.act ? `<span>${esc(ch.act)}</span>` : ''}</li>`).join('');
       const more = (r.charges || []).length > 3 ? `<p class="case-tip__more">외 ${r.charges.length - 3}개 혐의</p>` : '';
       return `
-        <p class="case-tip__eyebrow">${esc(r.agency)}${mates.length && !b.solo ? ` · ${esc(c.name)} 외 ${mates.length}명` : ' · 단독 재판'}</p>
+        <p class="case-tip__eyebrow">${esc(r.agency)}${!b.solo ? ` · ${esc(c.name)} 외 ${b.total}명` : ' · 단독 재판'}</p>
         <p class="case-tip__title">${esc(r.title || r.label)}</p>
         <p class="case-tip__why">${why}</p>
         ${charges ? `<p class="case-tip__label">특검이 기소한 혐의</p><ul class="case-tip__charges">${charges}</ul>${more}` : ''}

@@ -204,6 +204,8 @@ body.has-detail .workspace { grid-template-columns: minmax(0, 1fr) var(--panel-w
 #mapPane:active { cursor: grabbing; }
 #edgeLayer { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
 #nodeLayer, #groupLayer { position: absolute; inset: 0; }
+#nodeLayer { pointer-events: none; } /* 빈 자리는 아래 선(edge)이 클릭을 받음 */
+#nodeLayer .node { pointer-events: auto; }
 #groupLayer { pointer-events: none; }
 /* 사건 뱃지: 중심 인물의 사건마다 하나 (그 사건 사람들 무리 쪽에) */
 .group-tag {
