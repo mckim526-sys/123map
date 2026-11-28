@@ -1,6 +1,7 @@
 // Reader-facing record of what changed on the site. Add one plain-language line per published change
 // (newest first). The "recently checked trials" list below it is built automatically from lastChecked.
 const SITE_CHANGES = [
+  ['2026-11-28', 'PC 첫 화면의 여백을 높이에 맞춰 조정하고 하단에는 짧은 배경 사진 설명만 남겼습니다.'],
   ['2026-11-28', '재판 상세에서 연결된 인물은 7명, 관련 보도는 5건까지 먼저 보여 주고 나머지는 각 목록에서 펼칠 수 있게 했습니다.'],
   ['2026-11-29', '첫 화면 새 디자인 미리보기(clock-preview.html)를 만들었습니다. 신문 1면처럼 정돈한 화면에 선고를 한 줄로 보여 주는 \'법정의 시간\' 띠를 더했습니다(지금 첫 화면은 그대로).'],
   ['2026-11-28', '재판 상세의 추가 일정은 날짜·시간·절차를 먼저 표시하고 재판부는 펼쳐 볼 수 있게 했습니다. 혐의별 판단 비교 버튼 문구를 줄였습니다.'],
