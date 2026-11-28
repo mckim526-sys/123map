@@ -51,13 +51,14 @@ const DetailView = (() => {
       const link = !next || next.state === 'skip' ? '' : ['done', 'current', 'final'].includes(next.state) ? 'link-on' : 'link-pending';
       const tag = { current: '현재', final: '확정' }[state];
       const when = splitWhen(s[2]);
-      const court = [s[1], when.extra].filter(Boolean).join(' · '); // 사건번호는 재판부 줄 끝으로
+      const view = stageView(record.stages, n - 1);
+      const court = [view.court, when.extra].filter(Boolean).join(' · '); // 사건번호는 재판부 줄 끝으로
       return `
         <li class="verdict__item is-${state} ${link}"${n === prog.stage ? ' aria-current="step"' : ''}>
           <span class="verdict__mark" aria-hidden="true">${state === 'done' ? '✓' : n}</span>
           <div class="verdict__text">
             <p class="verdict__stage">${stageName(n)}${when.date ? ` <time>${esc(when.date)}</time>` : ''}${tag ? `<span class="verdict__tag">${tag}</span>` : ''}</p>
-            <b class="verdict__result">${esc(stageText(s) || '기록 없음')}</b>
+            <b class="verdict__result">${esc(view.text || '기록 없음')}</b>
             ${court ? `<span class="verdict__court">${esc(court)}</span>` : ''}
           </div>
         </li>`;
@@ -76,7 +77,7 @@ const DetailView = (() => {
         </summary>
         <div class="charge__body">
           <div class="charge__act"><span class="field-label">기소 내용</span><p>${esc(c.act)}</p></div>
-          <dl class="charge__rulings">${c.judgments.map((j, i) => `<div class="ruling"><dt>${stageName(i + 1)}</dt><dd>${esc(j)}</dd></div>`).join('')}</dl>
+          <dl class="charge__rulings">${c.judgments.map((j, i) => `<div class="ruling${PENDING.test(j || '') ? ' is-pending' : ''}"><dt>${stageName(i + 1)}</dt><dd>${PENDING.test(j || '') ? '—' : esc(j)}</dd></div>`).join('')}</dl>
         </div>
       </details>`;
     }).join('');
@@ -185,14 +186,14 @@ const DetailView = (() => {
   // 나란히 비교: 혐의(행) × 심급(열) 표
   function compare(person, record) {
     const stages = [0, 1, 2].map(i => record.stages[i] || ['', '', '']);
-    const head = stages.map((s, i) => { const w = splitWhen(s[2]); return `<th scope="col"><span>${stageName(i + 1)}${w.date ? ` · ${esc(w.date)}` : ''}</span><b>${esc(stageText(s) || '기록 없음')}</b></th>`; }).join('');
+    const head = stages.map((s, i) => { const w = splitWhen(s[2]); return `<th scope="col"><span>${stageName(i + 1)}${w.date ? ` · ${esc(w.date)}` : ''}</span><b>${esc(stageView(stages, i).text || '기록 없음')}</b></th>`; }).join('');
     const rows = record.charges.map(c => `
       <tr>
         <th scope="row"><b>${esc(c.name)}</b><span>${esc(c.act)}</span></th>
         ${[0, 1, 2].map(i => {
           const j = c.judgments[i] || '';
           const pending = PENDING.test(j);
-          return `<td class="${pending ? 'is-pending' : 'is-' + rulingKind(j)}">${esc(j || '—')}</td>`;
+          return `<td class="${pending ? 'is-pending' : 'is-' + rulingKind(j)}">${pending ? '—' : esc(j || '—')}</td>`;
         }).join('')}
       </tr>`).join('');
     $('#compareEyebrow').textContent = `${person.name} · ${record.agency} · 혐의별 1심·2심·대법원 판단`;

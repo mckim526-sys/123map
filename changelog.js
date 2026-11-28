@@ -1,6 +1,7 @@
 // Reader-facing record of what changed on the site. Add one plain-language line per published change
 // (newest first). The "recently checked trials" list below it is built automatically from lastChecked.
 const SITE_CHANGES = [
+  ['2026-11-28', '심급 칸의 ‘진행 전·판단 미확인’을 상황에 맞게(‘2심 선고 후’·‘상고 여부 확인 중’·‘심리 중’·‘상고 없음’) 보여 주고, 혐의별 판단의 미확인 칸은 흐린 ‘—’로 바꿨습니다.'],
   ['2026-11-27', '관저 이전 예산 전용 사건 피고인 4명의 1심 판단과 황교안 사건의 구형·선고 예정일을 반영했습니다.'],
   ['2026-11-28', '관련 보도 카드의 ‘기사 원문 보기’ 문구를 뺐습니다(카드를 누르면 기사로 이동).'],
   ['2026-11-28', 'MBC 단체 사진 등에서 박상현·김예성·김대우·윤상현·방정환 사진을 찾아 넣고, 처음 화면 아래 문구를 ‘재판 기록은 판결문과 공개 보도를 바탕으로 합니다.’로 바꿨습니다.'],

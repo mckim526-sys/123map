@@ -8,6 +8,33 @@ const stageName = n => (+n === 3 ? '대법원' : n + '심');
 // 아직 이르지 않은 심급(날짜 없음)의 '미확인·미도달·판단 전'은 화면에서 '진행 전' 하나로 (데이터는 그대로)
 const NOT_YET = /^(미확인|미도달(\s*확인 당시)?|판단 전)$/;
 const stageText = s => (!s || !s[0] ? '' : NOT_YET.test(s[0].trim()) && !/\d{4}\.\d{2}\.\d{2}/.test(s[2] || '') ? '진행 전' : s[0]);
+// 심급 칸을 읽는 사람 기준의 말로 (데이터는 그대로). stages: 기록의 심급 3칸, i: 0~2
+//  · 앞 심급 선고 전 → '1심 선고 후' / '2심 선고 후'
+//  · 앞 심급 선고 뒤, 상소 여부 모름 → '항소 여부 확인 중' / '상고 여부 확인 중'
+//  · 상고·항소 제기, 배당, 심리 중(선고 전) → '심리 중'
+//  · '상고 없음 · 2심 확정' → '상고 없음'
+//  재판부 칸의 내부 메모('후속 MBC 보도 확인 중', '대조 중', '미진행', '미확인' 등)는 숨김
+const RULED = /징역|금고|벌금|무죄|유죄|공소기각|집행유예|선고유예|무기|사형|면소|기각|확정|형 면제/;
+const ruled = t => RULED.test(t || '') && !/예정|선고 전|판단 전|미확인/.test(t || '');
+function stageView(stages, i) {
+  const s = stages[i] || ['', '', ''], t = String(s[0] || '').trim();
+  const court = String(s[1] || '').split(/\s*·\s*/).filter(x => x && !/확인 중|대조 중|미진행|미확인|미도달/.test(x)).join(' · ');
+  const dated = /\d{4}\.\d{2}\.\d{2}/.test(s[2] || '');
+  const prev = i > 0 ? String((stages[i - 1] || [])[0] || '') : '';
+  const appeal = i === 2 ? '상고' : '항소';
+  let text = t;
+  if (!t || (NOT_YET.test(t) && !dated)) {
+    if (i === 0) text = '진행 전';
+    else if (ruled(prev) && !/확정/.test(prev)) text = `${appeal} 여부 확인 중`;
+    else if (/확정/.test(prev)) text = '진행 전';
+    else text = `${stageName(i)} 선고 후`;
+  } else if (/없음|포기|취하/.test(t) && !ruled(t.replace(/\S*\s*확정/, ''))) {
+    text = (t.match(/^[^·]*?(없음|포기|취하)/) || [t])[0].trim();
+  } else if (!ruled(t) && !/예정/.test(t + (s[2] || '')) && /상고|항소|배당|심리|선고 전|판단 전|미확인/.test(t)) {
+    text = '심리 중';
+  }
+  return { text, court };
+}
 const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ESC_MAP[c]);
 
 const isMobile = () => matchMedia('(max-width:760px)').matches;
