@@ -164,7 +164,7 @@ const DetailView = (() => {
   function show(person, record, agency) {
     panel.innerHTML = `
       <div class="detail__bar">
-        <button class="sheet-handle" data-sheet-toggle aria-label="상세 크게 보기 / 작게 보기"><i></i></button>
+        <button class="sheet-handle" data-sheet-toggle aria-label="상세 크게 보기 / 작게 보기" aria-expanded="${document.body.classList.contains('sheet-full')}"><i></i></button>
         <div class="detail__bar-row">
           <span class="detail__bar-title">재판 기록 · ${esc(person.name)}</span>
           <button class="icon-btn" data-close-detail aria-label="재판 상세 닫기">×</button>

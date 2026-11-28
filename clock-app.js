@@ -3,6 +3,7 @@
 // 주소: clock.html (처음) · #map #list #timeline #night · #person/<id>/<caseId>
 (function () {
   const frame = document.getElementById('appFrame');
+  const loading = document.getElementById('appLoading'); // 관계도를 처음 불러오는 동안의 안내
   const tools = document.querySelector('.appbar__tools');
   const isApp = h => /^#(map|list|timeline|night)$/.test(h) || /^#person\//.test(h);
   let frameHash = '', wasApp = false;
@@ -11,6 +12,7 @@
     const h = location.hash, app = isApp(h);
     document.body.classList.toggle('in-app', app);
     frame.hidden = !app; tools.hidden = !app;
+    loading.hidden = !app || !!frame.dataset.ready;
     // 인물 주소일 때는 지도 안에서 지금 보는 보기를 표시 (처음엔 관계도)
     const entering = app && !wasApp; if (!app && wasApp) setTimeout(prewarm, 600); wasApp = app; // 처음 화면으로 돌아오면 다시 미리 그려 둠
     // 바깥에서 인물 주소로 들어오면 지도 안이 관계도로 바뀌므로 탭도 관계도 (지도 안에서 고른 인물이면 보던 보기)
@@ -126,10 +128,14 @@
   // 다가오는 선고 줄에 마우스를 올리면 그 재판을 미리 그려 둠
   document.addEventListener('pointerover', e => { const a = e.target.closest('a[data-enter]'); if (a) prewarm(a.getAttribute('href')); });
   frame.addEventListener('load', () => setTimeout(prewarm, 1200));
-  // 처음 화면이 자리 잡은 뒤 한가할 때 관계도를 미리 불러 둠 → 첫 전환에서 불러오기로 멈추지 않게
+  // 관계도(v2)는 첫 화면에서 자동으로 불러오지 않음 → 첫 화면만 보는 방문은 가볍게.
+  // 독자가 관계도로 갈 신호를 보일 때 미리 불러 둠: 사진을 눌러 사건 목록을 펼침, 머리글 보기 탭·다가오는 선고 줄·사건 줄에 손가락·마우스·초점이 닿음
   const preload = () => { if (!frame.src) { frame.src = 'v2/#map'; frameHash = '#map'; } };
-  addEventListener('load', () => (window.requestIdleCallback || setTimeout)(preload, { timeout: 2500 }));
-  frame.addEventListener('load', () => { frame.dataset.ready = '1'; });
+  document.getElementById('stage').addEventListener('click', preload);
+  const INTENT = '[data-go], a[data-enter], a.case-head';
+  ['pointerover', 'touchstart', 'focusin'].forEach(t => document.addEventListener(t, e => { if (e.target.closest && e.target.closest(INTENT)) preload(); }, { passive: true }));
+  if (/^#(yoon|keon)$/.test(location.hash)) preload(); // 사진을 고른 상태로 들어온 주소
+  frame.addEventListener('load', () => { frame.dataset.ready = '1'; loading.hidden = true; });
   let entering = false;
   document.addEventListener('click', e => {
     const a = e.target.closest('a.case-head, a[data-enter]');

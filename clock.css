@@ -261,6 +261,13 @@ body.picked .hero { display: none; }
 
 /* 재판 지도를 숨길 때 크기를 유지(display:none이면 관계도가 크기 0으로 다시 배치돼 깨짐) */
 .app-frame[hidden] { display: block; visibility: hidden; pointer-events: none; }
+/* 관계도를 처음 불러오는 동안: 빈 화면 대신 안내 (짧게 끝나면 보이지 않도록 0.3초 뒤에 나타남) */
+.app-loading { position: fixed; z-index: 3; top: 56px; left: 0; right: 0; bottom: 0; display: grid; place-items: center; background: var(--bg-page); color: var(--text-secondary); font-size: var(--fs-body); pointer-events: none; animation: app-loading-in .2s .3s both; }
+.app-loading[hidden] { display: none; }
+.app-loading span::after { content: ''; display: inline-block; width: 1em; text-align: left; animation: app-loading-dots 1.2s steps(4) infinite; }
+@keyframes app-loading-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes app-loading-dots { 0% { content: ''; } 25% { content: '.'; } 50% { content: '..'; } 75% { content: '...'; } }
+@media (prefers-reduced-motion: reduce) { .app-loading, .app-loading span::after { animation: none; } }
 
 /* 사건을 펼친 상태: 고른 사람의 사진이 항상 위(큰 칸), 다른 사람은 아래 작게 */
 body.picked .fig.on { order: -1; }

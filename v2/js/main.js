@@ -183,29 +183,41 @@
     $('.sheet-handle')?.setAttribute('aria-expanded', state === 'full');
   }
 
-  // 손잡이·머리 막대를 끌어 올리면 전체, 내리면 반 높이 → 더 내리면 닫힘. 손잡이를 누르면 반/전체 전환
+  // 손잡이(버튼): 탭·Enter·Space 모두 click 하나로 반/전체 전환
+  // 손잡이·머리 막대를 끌면: 8px 이상 움직여 '끌기'로 판정된 뒤에만 포인터를 잡음 → 올리면 전체, 내리면 반 높이 → 더 내리면 닫힘
+  // (누르자마자 포인터를 잡으면 손을 뗄 때 click이 손잡이에 가지 않아 탭이 무시되던 문제)
   (() => {
     const panel = $('#detail');
-    let drag = null;
+    let drag = null, suppressClick = false;
+    panel.addEventListener('click', e => {
+      if (!e.target.closest('[data-sheet-toggle]')) return;
+      if (suppressClick) { suppressClick = false; return; } // 끌기 직후의 click은 무시
+      setSheet(S.sheet === 'full' ? 'half' : 'full');
+    });
     panel.addEventListener('pointerdown', e => {
-      if (!isMobile() || !S.detailOpen) return;
+      if (!isMobile() || !S.detailOpen || e.button) return;
       if (!e.target.closest('.detail__bar') || (e.target.closest('button') && !e.target.closest('.sheet-handle'))) return;
-      drag = { y: e.clientY, top: panel.getBoundingClientRect().top, moved: 0 };
-      panel.classList.add('is-dragging');
-      panel.setPointerCapture(e.pointerId);
+      drag = { id: e.pointerId, y: e.clientY, top: panel.getBoundingClientRect().top, moved: 0, active: false };
     });
     panel.addEventListener('pointermove', e => {
-      if (!drag) return;
+      if (!drag || e.pointerId !== drag.id) return;
       drag.moved = e.clientY - drag.y;
+      if (!drag.active) {
+        if (Math.abs(drag.moved) < 8) return;
+        drag.active = true; // 여기서부터 끌기
+        panel.classList.add('is-dragging');
+        try { panel.setPointerCapture(e.pointerId); } catch (_) {}
+      }
       panel.style.top = Math.max(48, Math.min(innerHeight - 96, drag.top + drag.moved)) + 'px';
     });
     const end = e => {
-      if (!drag) return;
-      const { moved } = drag, onHandle = e.target.closest?.('.sheet-handle');
+      if (!drag || e.pointerId !== drag.id) return;
+      const { moved, active } = drag;
       drag = null;
+      if (!active) return; // 탭은 click이 처리
+      suppressClick = true; setTimeout(() => { suppressClick = false; }, 400);
       panel.classList.remove('is-dragging');
       panel.style.top = '';
-      if (Math.abs(moved) < 8) { if (onHandle) setSheet(S.sheet === 'full' ? 'half' : 'full'); return; }
       if (moved < -40) return setSheet('full');
       if (moved > 60) return S.sheet === 'full' ? setSheet('half') : closeDetail();
     };
