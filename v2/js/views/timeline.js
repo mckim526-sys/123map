@@ -107,7 +107,7 @@ const TimelineView = (() => {
     return months.includes(now) ? now : (months.find(m => m >= now) || months[months.length - 1] || now);
   }
 
-  function calendarHtml(events) {
+  function calendarHtml(events, modes = '') {
     const months = [...new Set(events.map(e => e.ymd.slice(0, 7)))].sort();
     if ((sel?.id || null) !== cal.selId) { cal.selId = sel?.id || null; cal.month = null; cal.day = null; }
     if (!cal.month) cal.month = pickMonth(events, months);
@@ -117,18 +117,21 @@ const TimelineView = (() => {
     const byDay = new Map();
     events.filter(e => e.ymd.startsWith(cal.month)).forEach(e => { if (!byDay.has(e.ymd)) byDay.set(e.ymd, []); byDay.get(e.ymd).push(e); });
     const cells = [];
+    // 높이가 낮은 데스크톱(노트북 등)은 칸마다 두 줄까지(이름 2개, 또는 이름 1개 + '+N건') → 한 달이 한 화면에 들어오게
+    const short = !isMobile() && innerHeight < 900;
     for (let i = 0; i < lead; i++) cells.push('<span class="cal-cell is-blank" aria-hidden="true"></span>');
     for (let d = 1; d <= days; d++) {
       const ymd = `${cal.month}.${String(d).padStart(2, '0')}`;
       const list = (byDay.get(ymd) || []).sort((a, b) => mine(b) - mine(a) || b.people.length - a.people.length);
       const wd = (lead + d - 1) % 7;
-      const evs = list.slice(0, 3).map(e => { const k = kind(e.text, e.upcoming);
+      const show = short ? (list.length > 2 ? 1 : list.length) : Math.min(3, list.length);
+      const evs = list.slice(0, show).map(e => { const k = kind(e.text, e.upcoming);
         const who = e.caseOnly ? e.label : `${e.people[0].p.name}${e.people.length > 1 ? ` 외 ${e.people.length - 1}` : ''}`;
         return `<span class="cal-ev cal-ev--${k} ${mine(e) ? 'is-mine' : ''}" title="${esc(who + ' · ' + e.text)}"><i class="cal-dot cal-dot--${k}"></i><b>${esc(who)}</b><span class="cal-ev__t"> ${esc(e.text)}</span></span>`; }).join('');
       const dots = list.slice(0, 4).map(e => `<i class="cal-dot cal-dot--${kind(e.text, e.upcoming)}"></i>`).join('');
       cells.push(`<button class="cal-cell ${list.length ? 'has-ev' : ''} ${list.some(mine) ? 'is-mine' : ''} ${ymd === today ? 'is-today' : ''} ${ymd === cal.day ? 'is-active' : ''} ${wd === 0 ? 'is-sun' : ''}"
         data-tl-day="${ymd}" ${list.length ? '' : 'disabled'} aria-pressed="${ymd === cal.day}" aria-label="${m}월 ${d}일 ${list.length ? `재판 일정 ${list.length}건` : '일정 없음'}">
-        <span class="cal-d">${d}</span><span class="cal-evs">${evs}${list.length > 3 ? `<span class="cal-more">+${list.length - 3}건</span>` : ''}</span><span class="cal-dots" aria-hidden="true">${dots}</span></button>`);
+        <span class="cal-d">${d}</span><span class="cal-evs">${evs}${list.length > show ? `<span class="cal-more">+${list.length - show}건</span>` : ''}</span><span class="cal-dots" aria-hidden="true">${dots}</span></button>`);
     }
     const i = months.indexOf(cal.month);
     const prev = i > 0 ? months[i - 1] : months.filter(x => x < cal.month).pop();
@@ -142,6 +145,7 @@ const TimelineView = (() => {
         <h3 class="cal-nav__title">${monthName(cal.month)}</h3>
         <button class="icon-btn" data-tl-month="${next || ''}" ${next ? '' : 'disabled'} aria-label="다음 일정이 있는 달">›</button>
         <button class="btn btn--secondary btn--sm cal-nav__today" data-tl-month="${today.slice(0, 7)}">오늘</button>
+        ${modes}
       </div>
       <div class="cal-months chips" aria-label="일정이 있는 달">${years.map(yr => `<span class="cal-year">${yr}</span>${months.filter(x => x.startsWith(yr)).map(x =>
         `<button data-tl-month="${x}" class="${x === cal.month ? 'is-active' : ''}">${Number(x.slice(5))}월</button>`).join('')}`).join('')}</div>
@@ -167,11 +171,13 @@ const TimelineView = (() => {
 
   function paint() {
     const pane = $('#timelinePane');
-    pane.innerHTML = `
-      <div class="tl-modes"><nav class="segmented segmented--sm" aria-label="타임라인 보기">
+    // 달력·목록 전환: 달력에서는 달 이동 줄 오른쪽에 붙여 달력이 한 줄 더 위에서 시작하게
+    const modes = `<nav class="segmented segmented--sm tl-switch" aria-label="타임라인 보기">
         <button data-tl-mode="cal" class="${cal.mode === 'cal' ? 'is-active' : ''}" aria-pressed="${cal.mode === 'cal'}">달력</button>
-        <button data-tl-mode="list" class="${cal.mode === 'list' ? 'is-active' : ''}" aria-pressed="${cal.mode === 'list'}">목록</button></nav></div>
-      ${cal.mode === 'cal' ? calendarHtml(lastEvents) : listHtml(lastEvents)}
+        <button data-tl-mode="list" class="${cal.mode === 'list' ? 'is-active' : ''}" aria-pressed="${cal.mode === 'list'}">목록</button></nav>`;
+    pane.classList.toggle('is-cal', cal.mode === 'cal');
+    pane.innerHTML = `
+      ${cal.mode === 'cal' ? calendarHtml(lastEvents, modes) : `<div class="tl-modes">${modes}</div>${listHtml(lastEvents)}`}
       <details class="tl-night" id="tl-night"><summary>시작점 · 2024년 12월 3일 밤</summary>
         <ol>${NIGHT.map(([t, d]) => `<li><time>${esc(t)}</time>${esc(d)}</li>`).join('')}</ol>
       </details>`;
@@ -215,7 +221,14 @@ const TimelineView = (() => {
     pane.scrollTo({ top: t.getBoundingClientRect().top - pane.getBoundingClientRect().top + pane.scrollTop - 8, behavior: reducedMotion() ? 'auto' : 'smooth' });
   });
 
+  // 타임라인 탭으로 들어오면 늘 달력을 맨 위에서 보여 줌 (인물을 골랐으면 그 사람 일정이 있는 달, 그 날짜가 표시됨)
+  function focusCalendar() {
+    const pane = $('#timelinePane');
+    if (cal.mode !== 'cal') { cal.mode = 'cal'; paint(); }
+    pane.scrollTop = 0;
+  }
+
   // 지금 타임라인에 보이는 일정 수 (카드 제목 배지용)
   let shownCount = 0;
-  return { render, count: () => shownCount };
+  return { render, count: () => shownCount, focusCalendar, mode: () => cal.mode };
 })();

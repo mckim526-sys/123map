@@ -5,9 +5,11 @@ const path = require('node:path');
 const vm = require('node:vm');
 
 test('timeline distinguishes mixed outcomes from acquittals and other proceedings', () => {
-  const pane = { addEventListener() {} };
+  const pane = { addEventListener() {}, classList: { toggle() {} } };
   const context = {
     $: selector => selector === '#timelinePane' ? pane : null,
+    isMobile: () => false,
+    innerHeight: 1000, // 데스크톱 기본 높이(칸마다 일정 3개까지)
     todaySeoul: () => '2026.11.15',
     dropMemo: value => value,
     esc: value => value,

@@ -57,7 +57,8 @@
   // 목록·타임라인으로 넘어가면 선택한 인물이 보이는 위치로 스크롤
   function revealSelection() {
     if (!S.detailOpen) return;
-    const pane = S.view === 'list' ? $('#listPane') : S.view === 'timeline' ? $('#timelinePane') : null;
+    // 타임라인은 목록 보기일 때만 그 인물 일정으로 이동 (달력 보기는 그 사람 일정이 있는 달을 맨 위에 보여 줌)
+    const pane = S.view === 'list' ? $('#listPane') : S.view === 'timeline' && TimelineView.mode() === 'list' ? $('#timelinePane') : null;
     if (!pane) return; // 관계도 보기에서는 스크롤할 목록이 없음
     const target = S.view === 'list' ? $('.row.is-selected', pane) : $('.tl-item.is-mine', pane); // 타임라인: 그 인물의 첫 일정
     if (!target) return;
@@ -353,6 +354,7 @@
     if (!personRoute(location.hash)) history.replaceState(null, '', '#' + S.view);
     render();
     $('#listPane').scrollTop = 0; $('#timelinePane').scrollTop = 0;
+    if (S.view === 'timeline') TimelineView.focusCalendar(); // 타임라인 탭 → 달력 맨 위
     revealSelection();
   }));
 
