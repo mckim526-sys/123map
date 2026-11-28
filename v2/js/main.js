@@ -194,24 +194,27 @@
       if (suppressClick) { suppressClick = false; return; } // 끌기 직후의 click은 무시
       setSheet(S.sheet === 'full' ? 'half' : 'full');
     });
-    panel.addEventListener('pointerdown', e => {
-      if (!isMobile() || !S.detailOpen || e.button) return;
-      if (!e.target.closest('.detail__bar') || (e.target.closest('button') && !e.target.closest('.sheet-handle'))) return;
-      drag = { id: e.pointerId, y: e.clientY, top: panel.getBoundingClientRect().top, moved: 0, active: false };
-    });
-    panel.addEventListener('pointermove', e => {
-      if (!drag || e.pointerId !== drag.id) return;
-      drag.moved = e.clientY - drag.y;
+    // 손가락은 touch 이벤트로 처리: 관계도가 iframe 안에 있어 브라우저가 끄는 동작을 화면 이동으로 가져가며 pointercancel을 보내기 때문
+    // (touchmove에서 preventDefault로 화면 이동을 막아야 끝까지 따라옴). 마우스·펜은 pointer 이벤트로.
+    const startAt = (target, y) => {
+      if (!isMobile() || !S.detailOpen) return false;
+      if (!target.closest('.detail__bar') || (target.closest('button') && !target.closest('.sheet-handle'))) return false;
+      drag = { y, top: panel.getBoundingClientRect().top, moved: 0, active: false };
+      return true;
+    };
+    const moveTo = y => {
+      if (!drag) return false;
+      drag.moved = y - drag.y;
       if (!drag.active) {
-        if (Math.abs(drag.moved) < 8) return;
+        if (Math.abs(drag.moved) < 8) return false;
         drag.active = true; // 여기서부터 끌기
         panel.classList.add('is-dragging');
-        try { panel.setPointerCapture(e.pointerId); } catch (_) {}
       }
       panel.style.top = Math.max(48, Math.min(innerHeight - 96, drag.top + drag.moved)) + 'px';
-    });
-    const end = e => {
-      if (!drag || e.pointerId !== drag.id) return;
+      return true;
+    };
+    const finish = () => {
+      if (!drag) return;
       const { moved, active } = drag;
       drag = null;
       if (!active) return; // 탭은 click이 처리
@@ -221,6 +224,21 @@
       if (moved < -40) return setSheet('full');
       if (moved > 60) return S.sheet === 'full' ? setSheet('half') : closeDetail();
     };
+    panel.addEventListener('touchstart', e => { if (e.touches.length === 1) startAt(e.target, e.touches[0].clientY); }, { passive: true });
+    // 손잡이 막대에서 시작한 손가락은 처음 움직임부터 화면 이동을 막아야 함(첫 touchmove를 놓치면 브라우저가 가져감)
+    panel.addEventListener('touchmove', e => { if (!drag) return; e.preventDefault(); moveTo(e.touches[0].clientY); }, { passive: false });
+    panel.addEventListener('touchend', finish);
+    panel.addEventListener('touchcancel', finish);
+    panel.addEventListener('pointerdown', e => {
+      if (e.pointerType === 'touch' || e.button) return;
+      if (startAt(e.target, e.clientY)) drag.id = e.pointerId;
+    });
+    panel.addEventListener('pointermove', e => {
+      if (e.pointerType === 'touch' || !drag || e.pointerId !== drag.id) return;
+      const wasActive = drag.active;
+      if (moveTo(e.clientY) && !wasActive) { try { panel.setPointerCapture(e.pointerId); } catch (_) {} }
+    });
+    const end = e => { if (e.pointerType !== 'touch' && drag && e.pointerId === drag.id) finish(); };
     panel.addEventListener('pointerup', end);
     panel.addEventListener('pointercancel', end);
   })()
